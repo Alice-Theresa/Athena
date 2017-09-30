@@ -78,23 +78,4 @@
 //    self.audioFileHandle = nil;
 }
 
-- (void)createAudioConverter:(CMSampleBufferRef)sampleBuffer {
-    CMFormatDescriptionRef inputFormat = CMSampleBufferGetFormatDescription(sampleBuffer);
-    const AudioStreamBasicDescription *inputASBD = CMAudioFormatDescriptionGetStreamBasicDescription(inputFormat);
-    
-    AudioStreamBasicDescription outputASBD = {
-        .mFormatID = kAudioFormatMPEG4AAC,
-        .mSampleRate = inputASBD->mSampleRate,
-        .mBitsPerChannel = inputASBD->mBitsPerChannel,
-        .mFramesPerPacket = 1,
-        .mBytesPerFrame = 2,
-        .mBytesPerPacket = 2,
-        .mChannelsPerFrame = 1,
-        .mFormatFlags = kLinearPCMFormatFlagIsPacked | kLinearPCMFormatFlagIsSignedInteger | kLinearPCMFormatFlagIsNonInterleaved,
-        .mReserved = 0
-    };
-}
-
-
-
 @end
