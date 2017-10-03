@@ -14,7 +14,7 @@
 @property (nonatomic, strong) AVAudioSession *audioSession;
 @property (nonatomic, strong) AVCaptureSession *captureSession;
 @property (nonatomic, strong) dispatch_queue_t queue;
-//@property (nonatomic, strong) NSFileHandle *audioFileHandle;
+
 
 @end
 
@@ -66,16 +66,10 @@
 
 - (void)startCapture {
     [self.captureSession startRunning];
-//    NSString *audioFile = [[NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES) lastObject] stringByAppendingPathComponent:@"abc.aac"];
-//    [[NSFileManager defaultManager] removeItemAtPath:audioFile error:nil];
-//    [[NSFileManager defaultManager] createFileAtPath:audioFile contents:nil attributes:nil];
-//    self.audioFileHandle = [NSFileHandle fileHandleForWritingAtPath:audioFile];
 }
 
 - (void)stopCapture {
     [self.captureSession stopRunning];
-//    [self.audioFileHandle closeFile];
-//    self.audioFileHandle = nil;
 }
 
 @end
