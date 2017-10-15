@@ -29,12 +29,14 @@
     self.manager = [CaptureManager shared];
     [self.manager settingAudioSession];
     [self.manager addAudioInputOutput:self];
+    
 }
 
 - (IBAction)recordingOrNot:(id)sender {
     UISwitch *switcher = sender;
     if (switcher.isOn) {
-        NSString *audioFile = [[NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES) lastObject] stringByAppendingPathComponent:@"abc.aac"];
+        NSString *fileName = [NSString stringWithFormat:@"%f.aac", [NSDate timeIntervalSinceReferenceDate]];
+        NSString *audioFile = [[NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES) lastObject] stringByAppendingPathComponent:fileName];
         [[NSFileManager defaultManager] removeItemAtPath:audioFile error:nil];
         [[NSFileManager defaultManager] createFileAtPath:audioFile contents:nil attributes:nil];
         self.audioFileHandle = [NSFileHandle fileHandleForWritingAtPath:audioFile];

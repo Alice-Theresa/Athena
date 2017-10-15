@@ -10,6 +10,12 @@
 
 @interface AACEncoder : NSObject
 
+/**
+ 使用编码器进行AAC编码
+
+ @param sampleBuffer 麦克风原始数据
+ @param completionBlock 回调block
+ */
 - (void)encodeSampleBuffer:(CMSampleBufferRef)sampleBuffer completionBlock:(void (^)(NSData *encodedData, NSError *error))completionBlock;
 
 @end

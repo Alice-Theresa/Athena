@@ -189,6 +189,7 @@ OSStatus inInputDataProc(AudioConverterRef inAudioConverter,
  复制PCM数据到缓冲区
  */
 - (size_t)copyPCMSamplesIntoBuffer:(AudioBufferList *)ioData {
+    size_t originalBufferSize = pcmBufferSize;
     if (!pcmBufferSize) {
         return 0;
     }
@@ -196,27 +197,27 @@ OSStatus inInputDataProc(AudioConverterRef inAudioConverter,
     ioData->mBuffers[0].mDataByteSize = (int)pcmBufferSize;
     pcmBuffer = NULL;
     pcmBufferSize = 0;
-    return pcmBufferSize;
+    return originalBufferSize;
 }
 
 /**
  生成ADTS头部
  */
 - (NSData *)adtsDataForPacketLength:(NSUInteger)packetLength {
-    int adtsLength = 7;
-    char *packet = malloc(sizeof(char) * adtsLength);
+    int ADTSLength = 7;
+    char *packet = malloc(sizeof(char) * ADTSLength);
     int profile = 2;
     int freqIdx = 4;
     int chanCfg = 1;
-    NSUInteger fullLength = adtsLength + packetLength;
+    NSUInteger fullLength = ADTSLength + packetLength;
     packet[0] = (char)0xFF;
     packet[1] = (char)0xF9;
-    packet[2] = (char)(((profile-1)<<6) + (freqIdx<<2) +(chanCfg>>2));
-    packet[3] = (char)(((chanCfg&3)<<6) + (fullLength>>11));
-    packet[4] = (char)((fullLength&0x7FF) >> 3);
-    packet[5] = (char)(((fullLength&7)<<5) + 0x1F);
+    packet[2] = (char)(((profile - 1) << 6) + (freqIdx << 2) +(chanCfg >> 2));
+    packet[3] = (char)(((chanCfg & 3) << 6) + (fullLength >> 11));
+    packet[4] = (char)((fullLength & 0x7FF) >> 3);
+    packet[5] = (char)(((fullLength & 7) << 5) + 0x1F);
     packet[6] = (char)0xFC;
-    NSData *data = [NSData dataWithBytesNoCopy:packet length:adtsLength freeWhenDone:YES];
+    NSData *data = [NSData dataWithBytesNoCopy:packet length:ADTSLength freeWhenDone:YES];
     return data;
 }
 

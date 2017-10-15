@@ -15,7 +15,6 @@
 @property (nonatomic, strong) AVCaptureSession *captureSession;
 @property (nonatomic, strong) dispatch_queue_t queue;
 
-
 @end
 
 @implementation CaptureManager
