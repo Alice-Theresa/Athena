@@ -7,7 +7,6 @@
 //
 
 #import <AVFoundation/AVFoundation.h>
-#import "avformat.h"
 
 #import "ViewController.h"
 #import "CaptureManager.h"

@@ -23,6 +23,12 @@
 		765ED7701F935ACA000CF16E /* libswresample.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 765ED6F71F935ACA000CF16E /* libswresample.a */; };
 		765ED7711F935ACA000CF16E /* libswscale.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 765ED6F81F935ACA000CF16E /* libswscale.a */; };
 		765ED7741F935CDB000CF16E /* AACSoftEncoder.m in Sources */ = {isa = PBXBuildFile; fileRef = 765ED7731F935CDB000CF16E /* AACSoftEncoder.m */; };
+		765ED7771F935FB8000CF16E /* AACEncoder.m in Sources */ = {isa = PBXBuildFile; fileRef = 765ED7761F935FB8000CF16E /* AACEncoder.m */; };
+		765ED77C1F938739000CF16E /* CoreMedia.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 765ED77B1F938739000CF16E /* CoreMedia.framework */; };
+		765ED7801F938773000CF16E /* VideoToolbox.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 765ED77F1F938773000CF16E /* VideoToolbox.framework */; };
+		765ED7821F938781000CF16E /* libiconv.2.4.0.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = 765ED7811F938781000CF16E /* libiconv.2.4.0.tbd */; };
+		765ED7841F93878B000CF16E /* libbz2.1.0.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = 765ED7831F93878B000CF16E /* libbz2.1.0.tbd */; };
+		765ED7861F938795000CF16E /* libz.1.2.8.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = 765ED7851F938795000CF16E /* libz.1.2.8.tbd */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -155,6 +161,15 @@
 		765ED76A1F935ACA000CF16E /* swresample.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = swresample.h; sourceTree = "<group>"; };
 		765ED7721F935CDB000CF16E /* AACSoftEncoder.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AACSoftEncoder.h; sourceTree = "<group>"; };
 		765ED7731F935CDB000CF16E /* AACSoftEncoder.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = AACSoftEncoder.m; sourceTree = "<group>"; };
+		765ED7751F935FB8000CF16E /* AACEncoder.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AACEncoder.h; sourceTree = "<group>"; };
+		765ED7761F935FB8000CF16E /* AACEncoder.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = AACEncoder.m; sourceTree = "<group>"; };
+		765ED7791F93872A000CF16E /* AVFoundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AVFoundation.framework; path = System/Library/Frameworks/AVFoundation.framework; sourceTree = SDKROOT; };
+		765ED77B1F938739000CF16E /* CoreMedia.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreMedia.framework; path = System/Library/Frameworks/CoreMedia.framework; sourceTree = SDKROOT; };
+		765ED77D1F938761000CF16E /* MediaToolbox.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = MediaToolbox.framework; path = System/Library/Frameworks/MediaToolbox.framework; sourceTree = SDKROOT; };
+		765ED77F1F938773000CF16E /* VideoToolbox.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = VideoToolbox.framework; path = System/Library/Frameworks/VideoToolbox.framework; sourceTree = SDKROOT; };
+		765ED7811F938781000CF16E /* libiconv.2.4.0.tbd */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.text-based-dylib-definition"; name = libiconv.2.4.0.tbd; path = usr/lib/libiconv.2.4.0.tbd; sourceTree = SDKROOT; };
+		765ED7831F93878B000CF16E /* libbz2.1.0.tbd */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.text-based-dylib-definition"; name = libbz2.1.0.tbd; path = usr/lib/libbz2.1.0.tbd; sourceTree = SDKROOT; };
+		765ED7851F938795000CF16E /* libz.1.2.8.tbd */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.text-based-dylib-definition"; name = libz.1.2.8.tbd; path = usr/lib/libz.1.2.8.tbd; sourceTree = SDKROOT; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -162,6 +177,11 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				765ED7861F938795000CF16E /* libz.1.2.8.tbd in Frameworks */,
+				765ED7841F93878B000CF16E /* libbz2.1.0.tbd in Frameworks */,
+				765ED7821F938781000CF16E /* libiconv.2.4.0.tbd in Frameworks */,
+				765ED7801F938773000CF16E /* VideoToolbox.framework in Frameworks */,
+				765ED77C1F938739000CF16E /* CoreMedia.framework in Frameworks */,
 				765ED76F1F935ACA000CF16E /* libavdevice.a in Frameworks */,
 				765ED7711F935ACA000CF16E /* libswscale.a in Frameworks */,
 				765ED76C1F935ACA000CF16E /* libavfilter.a in Frameworks */,
@@ -181,6 +201,7 @@
 				765ED66E1F935A70000CF16E /* FFmpeg-iOS */,
 				522136601F7F737500182B12 /* Athena */,
 				5221365F1F7F737500182B12 /* Products */,
+				765ED7781F938729000CF16E /* Frameworks */,
 			);
 			sourceTree = "<group>";
 		};
@@ -201,6 +222,8 @@
 				522136651F7F737500182B12 /* ViewController.m */,
 				522136771F7F738F00182B12 /* CaptureManager.h */,
 				522136781F7F738F00182B12 /* CaptureManager.m */,
+				765ED7751F935FB8000CF16E /* AACEncoder.h */,
+				765ED7761F935FB8000CF16E /* AACEncoder.m */,
 				52B338551F7F9BE2003BEFFB /* AACHardEncoder.h */,
 				52B338561F7F9BE2003BEFFB /* AACHardEncoder.m */,
 				765ED7721F935CDB000CF16E /* AACSoftEncoder.h */,
@@ -406,6 +429,20 @@
 			path = libswresample;
 			sourceTree = "<group>";
 		};
+		765ED7781F938729000CF16E /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				765ED7851F938795000CF16E /* libz.1.2.8.tbd */,
+				765ED7831F93878B000CF16E /* libbz2.1.0.tbd */,
+				765ED7811F938781000CF16E /* libiconv.2.4.0.tbd */,
+				765ED77F1F938773000CF16E /* VideoToolbox.framework */,
+				765ED77D1F938761000CF16E /* MediaToolbox.framework */,
+				765ED77B1F938739000CF16E /* CoreMedia.framework */,
+				765ED7791F93872A000CF16E /* AVFoundation.framework */,
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
@@ -481,6 +518,7 @@
 				522136711F7F737500182B12 /* main.m in Sources */,
 				765ED7741F935CDB000CF16E /* AACSoftEncoder.m in Sources */,
 				522136791F7F738F00182B12 /* CaptureManager.m in Sources */,
+				765ED7771F935FB8000CF16E /* AACEncoder.m in Sources */,
 				52B338571F7F9BE2003BEFFB /* AACHardEncoder.m in Sources */,
 				522136631F7F737500182B12 /* AppDelegate.m in Sources */,
 			);
@@ -623,7 +661,6 @@
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
-					"$(PROJECT_DIR)/Athena/FDKAAC/lib",
 					"$(PROJECT_DIR)/FFmpeg-iOS/lib",
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = com.Theresa.Athena;
@@ -643,7 +680,6 @@
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
-					"$(PROJECT_DIR)/Athena/FDKAAC/lib",
 					"$(PROJECT_DIR)/FFmpeg-iOS/lib",
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = com.Theresa.Athena;

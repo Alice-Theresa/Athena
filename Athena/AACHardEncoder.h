@@ -6,9 +6,9 @@
 //  Copyright © 2017年 Theresa. All rights reserved.
 //
 
-#import <Foundation/Foundation.h>
+#import "AACEncoder.h"
 
-@interface AACHardEncoder : NSObject
+@interface AACHardEncoder : AACEncoder
 
 /**
  使用编码器进行AAC编码
