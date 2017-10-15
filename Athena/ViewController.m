@@ -11,12 +11,13 @@
 #import "ViewController.h"
 #import "CaptureManager.h"
 #import "AACHardEncoder.h"
+#import "AACSoftEncoder.h"
 
 @interface ViewController () <AVCaptureAudioDataOutputSampleBufferDelegate>
 
 @property (nonatomic, strong) CaptureManager *manager;
 @property (nonatomic, strong) NSFileHandle *audioFileHandle;
-@property (nonatomic, strong) AACHardEncoder *encoder;
+@property (nonatomic, strong) AACEncoder *encoder;
 
 @end
 
@@ -26,7 +27,7 @@
     [super viewDidLoad];
     
     self.title = @"AAC编码";
-    self.encoder = [[AACHardEncoder alloc] init];
+    self.encoder = [[AACSoftEncoder alloc] init];
     self.manager = [CaptureManager shared];
     [self.manager settingAudioSession];
     [self.manager addAudioInputOutput:self];
