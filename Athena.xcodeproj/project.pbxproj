@@ -8,13 +8,14 @@
 
 /* Begin PBXBuildFile section */
 		522136631F7F737500182B12 /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 522136621F7F737500182B12 /* AppDelegate.m */; };
-		522136661F7F737500182B12 /* ViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 522136651F7F737500182B12 /* ViewController.m */; };
+		522136661F7F737500182B12 /* AudioEncodeViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 522136651F7F737500182B12 /* AudioEncodeViewController.m */; };
 		522136691F7F737500182B12 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 522136671F7F737500182B12 /* Main.storyboard */; };
 		5221366B1F7F737500182B12 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 5221366A1F7F737500182B12 /* Assets.xcassets */; };
 		5221366E1F7F737500182B12 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 5221366C1F7F737500182B12 /* LaunchScreen.storyboard */; };
 		522136711F7F737500182B12 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 522136701F7F737500182B12 /* main.m */; };
 		522136791F7F738F00182B12 /* CaptureManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 522136781F7F738F00182B12 /* CaptureManager.m */; };
 		5290678D1F94BF94001A7BFA /* libfdk-aac.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 5290678C1F94BF8F001A7BFA /* libfdk-aac.a */; };
+		529067971F95A48A001A7BFA /* SharedQueue.m in Sources */ = {isa = PBXBuildFile; fileRef = 529067961F95A48A001A7BFA /* SharedQueue.m */; };
 		52B338571F7F9BE2003BEFFB /* AACHardEncoder.m in Sources */ = {isa = PBXBuildFile; fileRef = 52B338561F7F9BE2003BEFFB /* AACHardEncoder.m */; };
 		765ED76B1F935ACA000CF16E /* libavutil.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 765ED6F21F935ACA000CF16E /* libavutil.a */; };
 		765ED76C1F935ACA000CF16E /* libavfilter.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 765ED6F31F935ACA000CF16E /* libavfilter.a */; };
@@ -24,7 +25,6 @@
 		765ED7701F935ACA000CF16E /* libswresample.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 765ED6F71F935ACA000CF16E /* libswresample.a */; };
 		765ED7711F935ACA000CF16E /* libswscale.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 765ED6F81F935ACA000CF16E /* libswscale.a */; };
 		765ED7741F935CDB000CF16E /* AACSoftEncoder.m in Sources */ = {isa = PBXBuildFile; fileRef = 765ED7731F935CDB000CF16E /* AACSoftEncoder.m */; };
-		765ED7771F935FB8000CF16E /* AACEncoder.m in Sources */ = {isa = PBXBuildFile; fileRef = 765ED7761F935FB8000CF16E /* AACEncoder.m */; };
 		765ED77C1F938739000CF16E /* CoreMedia.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 765ED77B1F938739000CF16E /* CoreMedia.framework */; };
 		765ED7801F938773000CF16E /* VideoToolbox.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 765ED77F1F938773000CF16E /* VideoToolbox.framework */; };
 		765ED7821F938781000CF16E /* libiconv.2.4.0.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = 765ED7811F938781000CF16E /* libiconv.2.4.0.tbd */; };
@@ -36,8 +36,8 @@
 		5221365E1F7F737500182B12 /* Athena.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Athena.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		522136611F7F737500182B12 /* AppDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AppDelegate.h; sourceTree = "<group>"; };
 		522136621F7F737500182B12 /* AppDelegate.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = AppDelegate.m; sourceTree = "<group>"; };
-		522136641F7F737500182B12 /* ViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ViewController.h; sourceTree = "<group>"; };
-		522136651F7F737500182B12 /* ViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = ViewController.m; sourceTree = "<group>"; };
+		522136641F7F737500182B12 /* AudioEncodeViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AudioEncodeViewController.h; sourceTree = "<group>"; };
+		522136651F7F737500182B12 /* AudioEncodeViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = AudioEncodeViewController.m; sourceTree = "<group>"; };
 		522136681F7F737500182B12 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
 		5221366A1F7F737500182B12 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		5221366D1F7F737500182B12 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
@@ -51,6 +51,9 @@
 		529067891F94BF8F001A7BFA /* genericStds.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = genericStds.h; sourceTree = "<group>"; };
 		5290678A1F94BF8F001A7BFA /* machine_type.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = machine_type.h; sourceTree = "<group>"; };
 		5290678C1F94BF8F001A7BFA /* libfdk-aac.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = "libfdk-aac.a"; sourceTree = "<group>"; };
+		529067931F959F8C001A7BFA /* AACEncoderProtocol.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AACEncoderProtocol.h; sourceTree = "<group>"; };
+		529067951F95A48A001A7BFA /* SharedQueue.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SharedQueue.h; sourceTree = "<group>"; };
+		529067961F95A48A001A7BFA /* SharedQueue.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = SharedQueue.m; sourceTree = "<group>"; };
 		52B338551F7F9BE2003BEFFB /* AACHardEncoder.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AACHardEncoder.h; sourceTree = "<group>"; };
 		52B338561F7F9BE2003BEFFB /* AACHardEncoder.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = AACHardEncoder.m; sourceTree = "<group>"; };
 		765ED6F21F935ACA000CF16E /* libavutil.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = libavutil.a; sourceTree = "<group>"; };
@@ -168,8 +171,6 @@
 		765ED76A1F935ACA000CF16E /* swresample.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = swresample.h; sourceTree = "<group>"; };
 		765ED7721F935CDB000CF16E /* AACSoftEncoder.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AACSoftEncoder.h; sourceTree = "<group>"; };
 		765ED7731F935CDB000CF16E /* AACSoftEncoder.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = AACSoftEncoder.m; sourceTree = "<group>"; };
-		765ED7751F935FB8000CF16E /* AACEncoder.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AACEncoder.h; sourceTree = "<group>"; };
-		765ED7761F935FB8000CF16E /* AACEncoder.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = AACEncoder.m; sourceTree = "<group>"; };
 		765ED7791F93872A000CF16E /* AVFoundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AVFoundation.framework; path = System/Library/Frameworks/AVFoundation.framework; sourceTree = SDKROOT; };
 		765ED77B1F938739000CF16E /* CoreMedia.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreMedia.framework; path = System/Library/Frameworks/CoreMedia.framework; sourceTree = SDKROOT; };
 		765ED77D1F938761000CF16E /* MediaToolbox.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = MediaToolbox.framework; path = System/Library/Frameworks/MediaToolbox.framework; sourceTree = SDKROOT; };
@@ -225,18 +226,16 @@
 		522136601F7F737500182B12 /* Athena */ = {
 			isa = PBXGroup;
 			children = (
+				5290679A1F95B8F3001A7BFA /* AudioDecoder */,
+				529067941F95A090001A7BFA /* AudioEncoder */,
 				522136611F7F737500182B12 /* AppDelegate.h */,
 				522136621F7F737500182B12 /* AppDelegate.m */,
-				522136641F7F737500182B12 /* ViewController.h */,
-				522136651F7F737500182B12 /* ViewController.m */,
+				522136641F7F737500182B12 /* AudioEncodeViewController.h */,
+				522136651F7F737500182B12 /* AudioEncodeViewController.m */,
 				522136771F7F738F00182B12 /* CaptureManager.h */,
 				522136781F7F738F00182B12 /* CaptureManager.m */,
-				765ED7751F935FB8000CF16E /* AACEncoder.h */,
-				765ED7761F935FB8000CF16E /* AACEncoder.m */,
-				52B338551F7F9BE2003BEFFB /* AACHardEncoder.h */,
-				52B338561F7F9BE2003BEFFB /* AACHardEncoder.m */,
-				765ED7721F935CDB000CF16E /* AACSoftEncoder.h */,
-				765ED7731F935CDB000CF16E /* AACSoftEncoder.m */,
+				529067951F95A48A001A7BFA /* SharedQueue.h */,
+				529067961F95A48A001A7BFA /* SharedQueue.m */,
 				522136671F7F737500182B12 /* Main.storyboard */,
 				5221366A1F7F737500182B12 /* Assets.xcassets */,
 				5221366C1F7F737500182B12 /* LaunchScreen.storyboard */,
@@ -281,6 +280,25 @@
 				5290678C1F94BF8F001A7BFA /* libfdk-aac.a */,
 			);
 			path = lib;
+			sourceTree = "<group>";
+		};
+		529067941F95A090001A7BFA /* AudioEncoder */ = {
+			isa = PBXGroup;
+			children = (
+				529067931F959F8C001A7BFA /* AACEncoderProtocol.h */,
+				52B338551F7F9BE2003BEFFB /* AACHardEncoder.h */,
+				52B338561F7F9BE2003BEFFB /* AACHardEncoder.m */,
+				765ED7721F935CDB000CF16E /* AACSoftEncoder.h */,
+				765ED7731F935CDB000CF16E /* AACSoftEncoder.m */,
+			);
+			path = AudioEncoder;
+			sourceTree = "<group>";
+		};
+		5290679A1F95B8F3001A7BFA /* AudioDecoder */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			path = AudioDecoder;
 			sourceTree = "<group>";
 		};
 		765ED66E1F935A70000CF16E /* FFmpeg-iOS */ = {
@@ -560,11 +578,11 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				522136661F7F737500182B12 /* ViewController.m in Sources */,
+				522136661F7F737500182B12 /* AudioEncodeViewController.m in Sources */,
+				529067971F95A48A001A7BFA /* SharedQueue.m in Sources */,
 				522136711F7F737500182B12 /* main.m in Sources */,
 				765ED7741F935CDB000CF16E /* AACSoftEncoder.m in Sources */,
 				522136791F7F738F00182B12 /* CaptureManager.m in Sources */,
-				765ED7771F935FB8000CF16E /* AACEncoder.m in Sources */,
 				52B338571F7F9BE2003BEFFB /* AACHardEncoder.m in Sources */,
 				522136631F7F737500182B12 /* AppDelegate.m in Sources */,
 			);

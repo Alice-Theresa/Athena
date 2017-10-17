@@ -6,8 +6,9 @@
 //  Copyright © 2017年 Theresa. All rights reserved.
 //
 
-#import "AACEncoder.h"
+#import <AVFoundation/AVFoundation.h>
+#import "AACEncoderProtocol.h"
 
-@interface AACSoftEncoder : AACEncoder
+@interface AACSoftEncoder : NSObject <AACEncoderProtocol>
 
 @end

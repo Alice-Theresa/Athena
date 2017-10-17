@@ -10,6 +10,19 @@
 
 #import "AACHardEncoder.h"
 
+@interface AACHardEncoder () {
+    AudioConverterRef  audioConverter;
+    uint8_t           *aacBuffer;
+    NSUInteger        aacBufferSize;
+    char              *pcmBuffer;
+    size_t            pcmBufferSize;
+}
+
+@property (nonatomic, strong) dispatch_queue_t encoderQueue;
+@property (nonatomic, strong) dispatch_queue_t callbackQueue;
+
+@end
+
 @implementation AACHardEncoder
 
 - (void)dealloc {
@@ -17,8 +30,10 @@
     free(aacBuffer);
 }
 
-- (instancetype)init {
+- (instancetype)initWithEncoderQueue:(dispatch_queue_t)encoderQueue callbackQueue:(dispatch_queue_t)callbackQueue {
     if (self = [super init]) {
+        _encoderQueue  = encoderQueue;
+        _callbackQueue = callbackQueue;
         audioConverter = NULL;
         pcmBufferSize  = 0;
         pcmBuffer      = NULL;

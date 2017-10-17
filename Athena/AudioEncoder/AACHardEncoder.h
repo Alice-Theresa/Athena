@@ -6,8 +6,9 @@
 //  Copyright © 2017年 Theresa. All rights reserved.
 //
 
-#import "AACEncoder.h"
+#import <AVFoundation/AVFoundation.h>
+#import "AACEncoderProtocol.h"
 
-@interface AACHardEncoder : AACEncoder
+@interface AACHardEncoder : NSObject <AACEncoderProtocol>
 
 @end
