@@ -76,7 +76,7 @@
     codecContext->channels       = av_get_channel_layout_nb_channels(codecContext->channel_layout);
     codecContext->bit_rate       = 96000;
     codecContext->frame_size     = ENCODE_SIZE;
-    codecContext->profile        = FF_PROFILE_AAC_HE;
+    codecContext->profile        = FF_PROFILE_AAC_HE;  //v2初始化会失败
     
     int ret = 0;
     if ((ret = avcodec_open2(codecContext, codec, NULL) < 0)) {

@@ -38,21 +38,19 @@
     
 }
 
+- (void)viewDidDisappear:(BOOL)animated {
+    [super viewDidDisappear:animated];
+    [self stopRecordingAndCloseFile];
+}
+
 - (IBAction)recordingOrNot:(id)sender {
     UISwitch *switcher = sender;
     if (switcher.isOn) {
         self.encoderSwitch.enabled = NO;
-        NSString *fileName = [NSString stringWithFormat:@"%f.aac", [NSDate timeIntervalSinceReferenceDate]];
-        NSString *audioFile = [[NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES) lastObject] stringByAppendingPathComponent:fileName];
-        [[NSFileManager defaultManager] removeItemAtPath:audioFile error:nil];
-        [[NSFileManager defaultManager] createFileAtPath:audioFile contents:nil attributes:nil];
-        self.audioFileHandle = [NSFileHandle fileHandleForWritingAtPath:audioFile];
-        [self.manager startCapture];
+        [self startRecordingAndOpenFile];
     } else {
         self.encoderSwitch.enabled = YES;
-        [self.audioFileHandle closeFile];
-        self.audioFileHandle = nil;
-        [self.manager stopCapture];
+        [self stopRecordingAndCloseFile];
     }
 }
 
@@ -64,12 +62,35 @@
         self.encoder = [[AACSoftEncoder alloc] initWithEncoderQueue:[SharedQueue audioEncode] callbackQueue:[SharedQueue audioCallback]];
     }
     if (!self.encoder) {
-        UIAlertController *alert = [UIAlertController alertControllerWithTitle:nil message:@"编码器初始化失败" preferredStyle:UIAlertControllerStyleAlert];
-        UIAlertAction *action = [UIAlertAction actionWithTitle:@"知道了" style:UIAlertActionStyleCancel handler:nil];
-        [alert addAction:action];
-        [self presentViewController:alert animated:YES completion:nil];
+        [self showAlert];
     }
 }
+
+#pragma mark - private
+
+- (void)startRecordingAndOpenFile {
+    NSString *fileName = [NSString stringWithFormat:@"%f.aac", [NSDate timeIntervalSinceReferenceDate]];
+    NSString *audioFile = [[NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES) lastObject] stringByAppendingPathComponent:fileName];
+    [[NSFileManager defaultManager] removeItemAtPath:audioFile error:nil];
+    [[NSFileManager defaultManager] createFileAtPath:audioFile contents:nil attributes:nil];
+    self.audioFileHandle = [NSFileHandle fileHandleForWritingAtPath:audioFile];
+    [self.manager startCapture];
+}
+
+- (void)stopRecordingAndCloseFile {
+    [self.audioFileHandle closeFile];
+    self.audioFileHandle = nil;
+    [self.manager stopCapture];
+}
+
+- (void)showAlert {
+    UIAlertController *alert = [UIAlertController alertControllerWithTitle:nil message:@"编码器初始化失败" preferredStyle:UIAlertControllerStyleAlert];
+    UIAlertAction *action = [UIAlertAction actionWithTitle:@"知道了" style:UIAlertActionStyleCancel handler:nil];
+    [alert addAction:action];
+    [self presentViewController:alert animated:YES completion:nil];
+}
+
+#pragma mark - delegate
 
 - (void)captureOutput:(AVCaptureOutput *)output didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer fromConnection:(AVCaptureConnection *)connection {
     __weak typeof(self) ws = self;

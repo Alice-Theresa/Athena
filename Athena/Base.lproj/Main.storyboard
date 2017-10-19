@@ -82,7 +82,23 @@
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="dkx-z0-nzr" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="156" y="125"/>
+            <point key="canvasLocation" x="985" y="-568"/>
+        </scene>
+        <!--Audio Decode View Controller-->
+        <scene sceneID="ndT-hg-yfk">
+            <objects>
+                <viewController id="qCf-g0-lFT" customClass="AudioDecodeViewController" sceneMemberID="viewController">
+                    <view key="view" contentMode="scaleToFill" id="cNs-b7-XDE">
+                        <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                        <viewLayoutGuide key="safeArea" id="fo4-kN-Iic"/>
+                    </view>
+                    <navigationItem key="navigationItem" id="uyY-3l-mij"/>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="DhT-F6-FES" userLabel="First Responder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="985" y="125"/>
         </scene>
         <!--Navigation Controller-->
         <scene sceneID="10x-Ub-861">
@@ -93,12 +109,50 @@
                         <autoresizingMask key="autoresizingMask"/>
                     </navigationBar>
                     <connections>
-                        <segue destination="BYZ-38-t0r" kind="relationship" relationship="rootViewController" id="wci-T8-aP5"/>
+                        <segue destination="W8A-Fc-E8D" kind="relationship" relationship="rootViewController" id="L6o-j4-2TD"/>
                     </connections>
                 </navigationController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="LFO-56-ZHH" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
             <point key="canvasLocation" x="-697" y="126"/>
+        </scene>
+        <!--Main View Controller-->
+        <scene sceneID="wH5-pj-d7O">
+            <objects>
+                <viewController id="W8A-Fc-E8D" customClass="MainViewController" sceneMemberID="viewController">
+                    <view key="view" contentMode="scaleToFill" id="cPy-3E-PTt">
+                        <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <subviews>
+                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="gFB-BW-fQD">
+                                <rect key="frame" x="156.5" y="184" width="61" height="30"/>
+                                <state key="normal" title="AAC解码"/>
+                                <connections>
+                                    <segue destination="qCf-g0-lFT" kind="push" id="GcB-iY-ysh"/>
+                                </connections>
+                            </button>
+                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="9Bp-W7-AnX">
+                                <rect key="frame" x="156.5" y="114" width="61" height="30"/>
+                                <state key="normal" title="AAC编码"/>
+                                <connections>
+                                    <segue destination="BYZ-38-t0r" kind="push" id="hco-LE-bhv"/>
+                                </connections>
+                            </button>
+                        </subviews>
+                        <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                        <constraints>
+                            <constraint firstItem="9Bp-W7-AnX" firstAttribute="top" secondItem="uVT-sD-2N3" secondAttribute="top" constant="50" id="7MC-qg-Puv"/>
+                            <constraint firstItem="gFB-BW-fQD" firstAttribute="top" secondItem="9Bp-W7-AnX" secondAttribute="bottom" constant="40" id="8es-n7-Ko9"/>
+                            <constraint firstItem="9Bp-W7-AnX" firstAttribute="centerX" secondItem="uVT-sD-2N3" secondAttribute="centerX" id="SGO-VH-t73"/>
+                            <constraint firstItem="gFB-BW-fQD" firstAttribute="centerX" secondItem="uVT-sD-2N3" secondAttribute="centerX" id="aCe-9v-h8l"/>
+                        </constraints>
+                        <viewLayoutGuide key="safeArea" id="uVT-sD-2N3"/>
+                    </view>
+                    <navigationItem key="navigationItem" id="PwI-9d-1OY"/>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="RhB-qS-niX" userLabel="First Responder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="190" y="125"/>
         </scene>
     </scenes>
 </document>
