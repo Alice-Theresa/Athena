@@ -11,7 +11,11 @@
 @interface SharedQueue : NSObject
 
 + (dispatch_queue_t)audioEncode;
-+ (dispatch_queue_t)audioDecode;
++ (dispatch_queue_t)audioBuffer;
 + (dispatch_queue_t)audioCallback;
+
++ (dispatch_queue_t)videoEncode;
++ (dispatch_queue_t)videoBuffer;
++ (dispatch_queue_t)videoCallback;
 
 @end

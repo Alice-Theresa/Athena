@@ -8,19 +8,19 @@
 
 #import <AVFoundation/AVFoundation.h>
 
-#import "AACEncoderProtocol.h"
+#import "AACEncoderInterface.h"
 #import "AudioEncodeViewController.h"
 #import "SharedQueue.h"
 
-#import "CaptureManager.h"
+#import "AudioCaptureManager.h"
 #import "AACHardEncoder.h"
 #import "AACSoftEncoder.h"
 
 @interface AudioEncodeViewController () <AVCaptureAudioDataOutputSampleBufferDelegate>
 
-@property (nonatomic, strong) CaptureManager *manager;
+@property (nonatomic, strong) AudioCaptureManager *manager;
 @property (nonatomic, strong) NSFileHandle *audioFileHandle;
-@property (nonatomic, strong) id<AACEncoderProtocol> encoder;
+@property (nonatomic, strong) id<AACEncoderInterface> encoder;
 @property (weak, nonatomic) IBOutlet UISwitch *encoderSwitch;
 
 @end
@@ -32,7 +32,7 @@
     
     self.title = @"AAC编码";
     self.encoder = [[AACHardEncoder alloc] initWithEncoderQueue:[SharedQueue audioEncode] callbackQueue:[SharedQueue audioCallback]];
-    self.manager = [CaptureManager shared];
+    self.manager = [AudioCaptureManager shared];
     [self.manager settingAudioSession];
     [self.manager addAudioInputOutput:self];
     
@@ -41,6 +41,7 @@
 - (void)viewDidDisappear:(BOOL)animated {
     [super viewDidDisappear:animated];
     [self stopRecordingAndCloseFile];
+    [self.manager clearCapture];
 }
 
 - (IBAction)recordingOrNot:(id)sender {
@@ -69,7 +70,7 @@
 #pragma mark - private
 
 - (void)startRecordingAndOpenFile {
-    NSString *fileName = [NSString stringWithFormat:@"%f.aac", [NSDate timeIntervalSinceReferenceDate]];
+    NSString *fileName = [NSString stringWithFormat:@"%ld.aac", (NSInteger)[NSDate timeIntervalSinceReferenceDate]];
     NSString *audioFile = [[NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES) lastObject] stringByAppendingPathComponent:fileName];
     [[NSFileManager defaultManager] removeItemAtPath:audioFile error:nil];
     [[NSFileManager defaultManager] createFileAtPath:audioFile contents:nil attributes:nil];

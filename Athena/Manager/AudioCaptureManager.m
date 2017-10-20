@@ -1,5 +1,5 @@
 //
-//  CaptureManager.m
+//  AudioCaptureManager.m
 //  Athena
 //
 //  Created by Theresa on 2017/9/30.
@@ -7,23 +7,26 @@
 //
 
 #import <AVFoundation/AVFoundation.h>
-#import "CaptureManager.h"
+#import "AudioCaptureManager.h"
+#import "SharedQueue.h"
 
-@interface CaptureManager ()
+@interface AudioCaptureManager ()
 
 @property (nonatomic, strong) AVAudioSession *audioSession;
 @property (nonatomic, strong) AVCaptureSession *captureSession;
-@property (nonatomic, strong) dispatch_queue_t queue;
+
+@property (nonatomic, strong) AVCaptureDeviceInput *inputDevice;
+@property (nonatomic, strong) AVCaptureAudioDataOutput *outputData;
 
 @end
 
-@implementation CaptureManager
+@implementation AudioCaptureManager
 
 + (instancetype)shared {
-    static CaptureManager *manager;
+    static AudioCaptureManager *manager;
     static dispatch_once_t onceToken;
     dispatch_once(&onceToken, ^{
-        manager = [[CaptureManager alloc] init];
+        manager = [[AudioCaptureManager alloc] init];
     });
     return manager;
 }
@@ -32,7 +35,6 @@
     if (self = [super init]) {
         _audioSession = [AVAudioSession sharedInstance];
         _captureSession = [[AVCaptureSession alloc] init];
-        _queue = dispatch_queue_create("com.audio.queue", DISPATCH_QUEUE_SERIAL);
     }
     return self;
 }
@@ -47,20 +49,25 @@
 - (void)addAudioInputOutput:(id<AVCaptureAudioDataOutputSampleBufferDelegate>)delegate {
     NSError *error;
     AVCaptureDevice *device = [AVCaptureDevice defaultDeviceWithMediaType:AVMediaTypeAudio];
-    AVCaptureDeviceInput *input = [AVCaptureDeviceInput deviceInputWithDevice:device error:&error];
-    if ([self.captureSession canAddInput:input]) {
-        [self.captureSession addInput:input];
+    self.inputDevice = [AVCaptureDeviceInput deviceInputWithDevice:device error:&error];
+    if ([self.captureSession canAddInput:self.inputDevice]) {
+        [self.captureSession addInput:self.inputDevice];
     } else {
         NSLog(@"Capture session add input failed");
     }
     
-    AVCaptureAudioDataOutput *output = [[AVCaptureAudioDataOutput alloc] init];
-    [output setSampleBufferDelegate:delegate queue:self.queue];
-    if ([self.captureSession canAddOutput:output]) {
-        [self.captureSession addOutput:output];
+    self.outputData = [[AVCaptureAudioDataOutput alloc] init];
+    [self.outputData setSampleBufferDelegate:delegate queue:[SharedQueue audioBuffer]];
+    if ([self.captureSession canAddOutput:self.outputData]) {
+        [self.captureSession addOutput:self.outputData];
     } else {
         NSLog(@"Capture session add output failed");
     }
+}
+
+- (void)clearCapture {
+    [self.captureSession removeInput:self.inputDevice];
+    [self.captureSession removeOutput:self.outputData];
 }
 
 - (void)startCapture {

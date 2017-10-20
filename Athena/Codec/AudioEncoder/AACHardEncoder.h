@@ -7,8 +7,8 @@
 //
 
 #import <AVFoundation/AVFoundation.h>
-#import "AACEncoderProtocol.h"
+#import "AACEncoderInterface.h"
 
-@interface AACHardEncoder : NSObject <AACEncoderProtocol>
+@interface AACHardEncoder : NSObject <AACEncoderInterface>
 
 @end

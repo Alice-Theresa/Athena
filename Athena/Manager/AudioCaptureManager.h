@@ -8,13 +8,14 @@
 
 #import <Foundation/Foundation.h>
 
-@interface CaptureManager : NSObject
+@interface AudioCaptureManager : NSObject
 
 + (instancetype)shared;
 
 - (void)settingAudioSession;
 - (void)addAudioInputOutput:(id<AVCaptureAudioDataOutputSampleBufferDelegate>)delegate;
 
+- (void)clearCapture;
 - (void)startCapture;
 - (void)stopCapture;
 

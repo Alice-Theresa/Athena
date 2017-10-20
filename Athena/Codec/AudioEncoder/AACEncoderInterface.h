@@ -1,5 +1,5 @@
 //
-//  AACEncoderProtocol.h
+//  AACEncoderInterface.h
 //  Athena
 //
 //  Created by Theresa on 2017/10/17.
@@ -8,7 +8,7 @@
 
 #import <Foundation/Foundation.h>
 
-@protocol AACEncoderProtocol <NSObject>
+@protocol AACEncoderInterface <NSObject>
 
 /**
  禁用初始化方法
