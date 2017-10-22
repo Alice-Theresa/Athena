@@ -345,7 +345,6 @@
 			isa = PBXGroup;
 			children = (
 				52AA250C1F987DED0084771B /* VideoEncoder */,
-				52AA251F1F99AEF00084771B /* VideoDecoder */,
 				529067941F95A090001A7BFA /* AudioEncoder */,
 				5290679A1F95B8F3001A7BFA /* AudioDecoder */,
 			);
@@ -390,13 +389,6 @@
 				529067A01F96F13B001A7BFA /* MainViewController.m */,
 			);
 			path = Main;
-			sourceTree = "<group>";
-		};
-		52AA251F1F99AEF00084771B /* VideoDecoder */ = {
-			isa = PBXGroup;
-			children = (
-			);
-			path = VideoDecoder;
 			sourceTree = "<group>";
 		};
 		765ED66E1F935A70000CF16E /* FFmpeg-iOS */ = {
@@ -823,7 +815,7 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_STYLE = Automatic;
-				DEVELOPMENT_TEAM = F72NM3PQH6;
+				DEVELOPMENT_TEAM = RJX3H8KBAF;
 				HEADER_SEARCH_PATHS = "$(SRCROOT)/FFmpeg-iOS/include";
 				INFOPLIST_FILE = Athena/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
@@ -843,7 +835,7 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_STYLE = Automatic;
-				DEVELOPMENT_TEAM = F72NM3PQH6;
+				DEVELOPMENT_TEAM = RJX3H8KBAF;
 				HEADER_SEARCH_PATHS = "$(SRCROOT)/FFmpeg-iOS/include";
 				INFOPLIST_FILE = Athena/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";

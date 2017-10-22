@@ -64,18 +64,18 @@
     VTSessionSetProperty(_encodeSesion, kVTCompressionPropertyKey_MaxKeyFrameInterval, frameIntervalRef);
     
     // 设置期望帧率
-    int fps = 10;
+    int fps = 30;
     CFNumberRef  fpsRef = CFNumberCreate(kCFAllocatorDefault, kCFNumberIntType, &fps);
     VTSessionSetProperty(_encodeSesion, kVTCompressionPropertyKey_ExpectedFrameRate, fpsRef);
     
     
-    //设置码率，上限，单位是bps
-    long bitRate = width * height * 3 * 4 * 8;
+    //设置码率，均值，单位是bps
+    long bitRate = 500000;
     CFNumberRef bitRateRef = CFNumberCreate(kCFAllocatorDefault, kCFNumberSInt32Type, &bitRate);
     VTSessionSetProperty(_encodeSesion, kVTCompressionPropertyKey_AverageBitRate, bitRateRef);
     
-    //设置码率，均值，单位是byte
-    long bitRateLimit = width * height * 3 * 4;
+    //设置码率，上限，单位是byte
+    long bitRateLimit = 800000;
     CFNumberRef bitRateLimitRef = CFNumberCreate(kCFAllocatorDefault, kCFNumberSInt32Type, &bitRateLimit);
     VTSessionSetProperty(_encodeSesion, kVTCompressionPropertyKey_DataRateLimits, bitRateLimitRef);
     
@@ -101,16 +101,12 @@
             [self settingEncodeSession:imageBuffer];
         }
         
-        // pts,必须设置，否则会导致编码出来的数据非常大，原因未知
-        CMTime pts = CMTimeMake(0, 1000); //self.frameID++
-        CMTime duration = kCMTimeInvalid;
-        
-        VTEncodeInfoFlags flags;
+        CMTime pts = CMTimeMake(1, 30);
         
         // 送入编码器编码
-        OSStatus statusCode = VTCompressionSessionEncodeFrame(_encodeSesion, imageBuffer, pts, duration, NULL, NULL, &flags);
+        OSStatus statusCode = VTCompressionSessionEncodeFrame(_encodeSesion, imageBuffer, pts, kCMTimeInvalid, NULL, NULL, NULL);
         if (statusCode != noErr) {
-            NSError *error = [NSError errorWithDomain:@"" code:0 userInfo:nil];
+            NSError *error = [NSError errorWithDomain:@"编码失败" code:0 userInfo:nil];
             [self.delegate encodedResult:nil error:error];
         }
         CFRelease(sampleBuffer);
@@ -121,13 +117,10 @@
  编码完成回调
  */
 void didCompressH264(void *outputCallbackRefCon, void *sourceFrameRefCon, OSStatus status, VTEncodeInfoFlags infoFlags, CMSampleBufferRef sampleBuffer) {
-    NSLog(@"didCompressH264 called with status %d infoFlags %d", (int)status, (int)infoFlags);
     if (status != 0) {
         return;
     }
-    
     if (!CMSampleBufferDataIsReady(sampleBuffer)) {
-        NSLog(@"didCompressH264 data is not ready ");
         return;
     }
     H264HardwareEncoder *encoder = (__bridge H264HardwareEncoder *)outputCallbackRefCon;
@@ -181,6 +174,8 @@ void didCompressH264(void *outputCallbackRefCon, void *sourceFrameRefCon, OSStat
     }
 }
 
+#pragma mark - 编码后数据处理
+
 /**
  处理sps、pps数据
 
@@ -188,17 +183,11 @@ void didCompressH264(void *outputCallbackRefCon, void *sourceFrameRefCon, OSStat
  @param pps pps数据
  */
 - (void)processSPS:(NSData *)sps PPS:(NSData *)pps {
-    NSLog(@"gotSpsPps %d %d", (int)[sps length], (int)[pps length]);
-    const char bytes[] = "\x00\x00\x00\x01";
-    size_t length = (sizeof bytes) - 1; //string literals have implicit trailing '\0'
-    NSData *header = [NSData dataWithBytes:bytes length:length];
-    
     NSMutableData *temp = [NSMutableData data];
-    [temp appendData:header];
+    [temp appendData:[self buildHeader]];
     [temp appendData:sps];
-    [temp appendData:header];
+    [temp appendData:[self buildHeader]];
     [temp appendData:pps];
-    
     [self.delegate encodedResult:[temp copy] error:nil];
 }
 
@@ -208,14 +197,22 @@ void didCompressH264(void *outputCallbackRefCon, void *sourceFrameRefCon, OSStat
  @param data 编码数据
  */
 - (void)processEncodedData:(NSData *)data {
-    NSLog(@"gotEncodedData %d", (int)[data length]);
-    const char bytes[] = "\x00\x00\x00\x01";
-    size_t length = (sizeof bytes) - 1; //string literals have implicit trailing '\0'
-    NSData *ByteHeader = [NSData dataWithBytes:bytes length:length];
     NSMutableData *temp = [NSMutableData data];
-    [temp appendData:ByteHeader];
+    [temp appendData:[self buildHeader]];
     [temp appendData:data];
     [self.delegate encodedResult:[temp copy] error:nil];
+}
+
+/**
+ 构造数据头部
+
+ @return 数据头部
+ */
+- (NSData *)buildHeader {
+    const static char bytes[] = "\x00\x00\x00\x01";
+    size_t length = sizeof(bytes) - 1; // 字符串结尾包含'\0'
+    NSData *byteHeader = [NSData dataWithBytes:bytes length:length];
+    return byteHeader;
 }
 
 @end
