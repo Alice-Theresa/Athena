@@ -101,10 +101,11 @@
 #pragma mark - private
 
 /**
- *  设置编码参数
+ *  创建编码参数
  */
 - (void)createEncoder:(CMSampleBufferRef)sampleBuffer {
-    AudioStreamBasicDescription pcmASBD = *CMAudioFormatDescriptionGetStreamBasicDescription((CMAudioFormatDescriptionRef)CMSampleBufferGetFormatDescription(sampleBuffer));
+    CMAudioFormatDescriptionRef AFD = CMSampleBufferGetFormatDescription(sampleBuffer);
+    AudioStreamBasicDescription pcmASBD = *CMAudioFormatDescriptionGetStreamBasicDescription(AFD);
     
     AudioStreamBasicDescription aacASBD = {0};
     aacASBD.mSampleRate       = pcmASBD.mSampleRate;
@@ -124,7 +125,7 @@
                                                 description,
                                                 &audioConverter);
     if (status != 0) {
-        NSLog(@"setup converter: %d", (int)status);
+        NSLog(@"create converter fail: %d", (int)status);
     }
 }
 
@@ -164,7 +165,7 @@
 }
 
 /**
- 回调函数
+ 回调函数，复制PCM数据到缓冲区
  */
 OSStatus inInputDataProc(AudioConverterRef inAudioConverter,
                          UInt32 *ioNumberDataPackets,
@@ -172,32 +173,15 @@ OSStatus inInputDataProc(AudioConverterRef inAudioConverter,
                          AudioStreamPacketDescription **outDataPacketDescription,
                          void *inUserData) {
     AACHardEncoder *encoder = (__bridge AACHardEncoder *)(inUserData);
-    UInt32 requestedPackets = *ioNumberDataPackets;
     
-    size_t copiedSamples = [encoder copyPCMSamplesIntoBuffer:ioData];
-    if (copiedSamples < requestedPackets) {
-        //PCM 缓冲区还没满
-        *ioNumberDataPackets = 0;
-        return -1;
-    }
+    //未考虑数据没有完全填充的情况
+    ioData->mBuffers[0].mData = encoder->pcmBuffer;
+    ioData->mBuffers[0].mDataByteSize = (int)encoder->pcmBufferSize;
+    encoder->pcmBuffer = NULL;
+    encoder->pcmBufferSize = 0;
     *ioNumberDataPackets = 1;
     
     return noErr;
-}
-
-/**
- 复制PCM数据到缓冲区
- */
-- (size_t)copyPCMSamplesIntoBuffer:(AudioBufferList *)ioData {
-    size_t originalBufferSize = pcmBufferSize;
-    if (!pcmBufferSize) {
-        return 0;
-    }
-    ioData->mBuffers[0].mData = pcmBuffer;
-    ioData->mBuffers[0].mDataByteSize = (int)pcmBufferSize;
-    pcmBuffer = NULL;
-    pcmBufferSize = 0;
-    return originalBufferSize;
 }
 
 /**
