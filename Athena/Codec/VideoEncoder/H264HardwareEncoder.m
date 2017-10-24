@@ -14,7 +14,7 @@
     VTCompressionSessionRef _encodeSesion;
 }
 
-//@property (nonatomic, assign) NSInteger frameID;
+@property (nonatomic, assign) NSInteger frameID;
 @property (nonatomic, strong) dispatch_queue_t encoderQueue;
 @property (nonatomic, strong) dispatch_queue_t callbackQueue;
 
@@ -26,7 +26,7 @@
     if (self = [super init]) {
         _encoderQueue  = encoderQueue;
         _callbackQueue = callbackQueue;
-//        _frameID = 0;
+        _frameID = 0;
     }
     return self;
 }
@@ -70,12 +70,12 @@
     
     
     //设置码率，均值，单位是bps
-    long bitRate = 500000;
+    long bitRate = 2000 * 1000 * 8;
     CFNumberRef bitRateRef = CFNumberCreate(kCFAllocatorDefault, kCFNumberSInt32Type, &bitRate);
     VTSessionSetProperty(_encodeSesion, kVTCompressionPropertyKey_AverageBitRate, bitRateRef);
     
     //设置码率，上限，单位是byte
-    long bitRateLimit = 800000;
+    long bitRateLimit = 3000 * 1000;
     CFNumberRef bitRateLimitRef = CFNumberCreate(kCFAllocatorDefault, kCFNumberSInt32Type, &bitRateLimit);
     VTSessionSetProperty(_encodeSesion, kVTCompressionPropertyKey_DataRateLimits, bitRateLimitRef);
     
@@ -100,8 +100,8 @@
         if (!_encodeSesion) {
             [self settingEncodeSession:imageBuffer];
         }
-        
-        CMTime pts = CMTimeMake(1, 30);
+        self.frameID++;
+        CMTime pts = CMTimeMake(self.frameID, 30);
         
         // 送入编码器编码
         OSStatus statusCode = VTCompressionSessionEncodeFrame(_encodeSesion, imageBuffer, pts, kCMTimeInvalid, NULL, NULL, NULL);

@@ -37,7 +37,7 @@
     previewLayer.videoGravity = AVLayerVideoGravityResizeAspectFill;
     [self.view.layer addSublayer:previewLayer];
     
-    NSString *fileName = [NSString stringWithFormat:@"%ld.h264", (NSInteger)[NSDate timeIntervalSinceReferenceDate]];
+    NSString *fileName = [NSString stringWithFormat:@"%ld.mp4", (NSInteger)[NSDate timeIntervalSinceReferenceDate]];
     NSString *videoFile = [[NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES) lastObject] stringByAppendingPathComponent:fileName];
     [[NSFileManager defaultManager] removeItemAtPath:videoFile error:nil];
     [[NSFileManager defaultManager] createFileAtPath:videoFile contents:nil attributes:nil];
