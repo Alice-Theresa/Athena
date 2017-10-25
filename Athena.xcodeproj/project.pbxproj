@@ -25,6 +25,7 @@
 		52AA25131F989C340084771B /* VideoEncodeViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 52AA25121F989C340084771B /* VideoEncodeViewController.m */; };
 		52AA25191F998ECF0084771B /* H264HardwareEncoder.m in Sources */ = {isa = PBXBuildFile; fileRef = 52AA25181F998ECF0084771B /* H264HardwareEncoder.m */; };
 		52B338571F7F9BE2003BEFFB /* AACHardEncoder.m in Sources */ = {isa = PBXBuildFile; fileRef = 52B338561F7F9BE2003BEFFB /* AACHardEncoder.m */; };
+		52DAD7BD1FA0722D00D355CE /* libx264.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 52DAD7BC1FA0722D00D355CE /* libx264.a */; };
 		765ED76B1F935ACA000CF16E /* libavutil.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 765ED6F21F935ACA000CF16E /* libavutil.a */; };
 		765ED76C1F935ACA000CF16E /* libavfilter.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 765ED6F31F935ACA000CF16E /* libavfilter.a */; };
 		765ED76D1F935ACA000CF16E /* libavcodec.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 765ED6F41F935ACA000CF16E /* libavcodec.a */; };
@@ -83,6 +84,9 @@
 		52AA251B1F99A32F0084771B /* H264EncoderDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = H264EncoderDelegate.h; sourceTree = "<group>"; };
 		52B338551F7F9BE2003BEFFB /* AACHardEncoder.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AACHardEncoder.h; sourceTree = "<group>"; };
 		52B338561F7F9BE2003BEFFB /* AACHardEncoder.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = AACHardEncoder.m; sourceTree = "<group>"; };
+		52DAD7B91FA0722D00D355CE /* x264.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = x264.h; sourceTree = "<group>"; };
+		52DAD7BA1FA0722D00D355CE /* x264_config.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = x264_config.h; sourceTree = "<group>"; };
+		52DAD7BC1FA0722D00D355CE /* libx264.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = libx264.a; sourceTree = "<group>"; };
 		765ED6F21F935ACA000CF16E /* libavutil.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = libavutil.a; sourceTree = "<group>"; };
 		765ED6F31F935ACA000CF16E /* libavfilter.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = libavfilter.a; sourceTree = "<group>"; };
 		765ED6F41F935ACA000CF16E /* libavcodec.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = libavcodec.a; sourceTree = "<group>"; };
@@ -215,6 +219,7 @@
 				765ED7861F938795000CF16E /* libz.1.2.8.tbd in Frameworks */,
 				765ED7841F93878B000CF16E /* libbz2.1.0.tbd in Frameworks */,
 				765ED7821F938781000CF16E /* libiconv.2.4.0.tbd in Frameworks */,
+				52DAD7BD1FA0722D00D355CE /* libx264.a in Frameworks */,
 				5290678D1F94BF94001A7BFA /* libfdk-aac.a in Frameworks */,
 				765ED7801F938773000CF16E /* VideoToolbox.framework in Frameworks */,
 				765ED77C1F938739000CF16E /* CoreMedia.framework in Frameworks */,
@@ -234,6 +239,7 @@
 		522136551F7F737500182B12 = {
 			isa = PBXGroup;
 			children = (
+				52DAD7B71FA0722D00D355CE /* fat-x264 */,
 				529067831F94BF8F001A7BFA /* fdk-aac-ios */,
 				765ED66E1F935A70000CF16E /* FFmpeg-iOS */,
 				522136601F7F737500182B12 /* Athena */,
@@ -410,6 +416,32 @@
 				529067A01F96F13B001A7BFA /* MainViewController.m */,
 			);
 			path = Main;
+			sourceTree = "<group>";
+		};
+		52DAD7B71FA0722D00D355CE /* fat-x264 */ = {
+			isa = PBXGroup;
+			children = (
+				52DAD7B81FA0722D00D355CE /* include */,
+				52DAD7BB1FA0722D00D355CE /* lib */,
+			);
+			path = "fat-x264";
+			sourceTree = "<group>";
+		};
+		52DAD7B81FA0722D00D355CE /* include */ = {
+			isa = PBXGroup;
+			children = (
+				52DAD7B91FA0722D00D355CE /* x264.h */,
+				52DAD7BA1FA0722D00D355CE /* x264_config.h */,
+			);
+			path = include;
+			sourceTree = "<group>";
+		};
+		52DAD7BB1FA0722D00D355CE /* lib */ = {
+			isa = PBXGroup;
+			children = (
+				52DAD7BC1FA0722D00D355CE /* libx264.a */,
+			);
+			path = lib;
 			sourceTree = "<group>";
 		};
 		765ED66E1F935A70000CF16E /* FFmpeg-iOS */ = {
@@ -839,6 +871,7 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_TEAM = RJX3H8KBAF;
+				ENABLE_BITCODE = NO;
 				HEADER_SEARCH_PATHS = "$(SRCROOT)/FFmpeg-iOS/include";
 				INFOPLIST_FILE = Athena/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
@@ -846,6 +879,7 @@
 					"$(inherited)",
 					"$(PROJECT_DIR)/FFmpeg-iOS/lib",
 					"$(PROJECT_DIR)/fdk-aac-ios/lib",
+					"$(PROJECT_DIR)/fat-x264/lib",
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = com.Theresa.Athena;
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -859,6 +893,7 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_TEAM = RJX3H8KBAF;
+				ENABLE_BITCODE = NO;
 				HEADER_SEARCH_PATHS = "$(SRCROOT)/FFmpeg-iOS/include";
 				INFOPLIST_FILE = Athena/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
@@ -866,6 +901,7 @@
 					"$(inherited)",
 					"$(PROJECT_DIR)/FFmpeg-iOS/lib",
 					"$(PROJECT_DIR)/fdk-aac-ios/lib",
+					"$(PROJECT_DIR)/fat-x264/lib",
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = com.Theresa.Athena;
 				PRODUCT_NAME = "$(TARGET_NAME)";
