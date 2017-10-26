@@ -17,22 +17,17 @@
  禁用初始化方法
  */
 + (instancetype)new NS_UNAVAILABLE;
-- (instancetype)init NS_UNAVAILABLE;
-
-/**
- 标准初始化方法
- 
- @param encoderQueue 编码队列
- @param callbackQueue 回调队列
- @return 编码器
- */
-- (instancetype)initWithEncoderQueue:(dispatch_queue_t)encoderQueue callbackQueue:(dispatch_queue_t)callbackQueue;
 
 /**
  使用编码器进行H264编码
  
- @param sampleBuffer 相机原始数据
+ @param imageBuffer 相机原始数据
  */
-- (void)encodeSampleBuffer:(CMSampleBufferRef)sampleBuffer;
-    
+- (void)encodeSampleBuffer:(CVImageBufferRef)imageBuffer;
+
+/**
+ 清理编码器
+ */
+- (void)teardown;
+
 @end

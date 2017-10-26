@@ -15,17 +15,13 @@
 }
 
 @property (nonatomic, assign) NSInteger frameID;
-@property (nonatomic, strong) dispatch_queue_t encoderQueue;
-@property (nonatomic, strong) dispatch_queue_t callbackQueue;
 
 @end
 
 @implementation H264HardwareEncoder
 
-- (instancetype)initWithEncoderQueue:(dispatch_queue_t)encoderQueue callbackQueue:(dispatch_queue_t)callbackQueue {
+- (instancetype)init {
     if (self = [super init]) {
-        _encoderQueue  = encoderQueue;
-        _callbackQueue = callbackQueue;
         _frameID = 0;
     }
     return self;
@@ -83,34 +79,28 @@
     VTCompressionSessionPrepareToEncodeFrames(_encodeSesion);
 }
 
-- (void)removeEncodeSession {
-    dispatch_async(self.encoderQueue, ^{
-        VTCompressionSessionCompleteFrames(_encodeSesion, kCMTimeInvalid);
-        VTCompressionSessionInvalidate(_encodeSesion);
-        CFRelease(_encodeSesion);
-        _encodeSesion = NULL;
-    });
+- (void)teardown {
+    VTCompressionSessionCompleteFrames(_encodeSesion, kCMTimeInvalid);
+    VTCompressionSessionInvalidate(_encodeSesion);
+    CFRelease(_encodeSesion);
+    _encodeSesion = NULL;
 }
 
-- (void)encodeSampleBuffer:(CMSampleBufferRef)sampleBuffer {
-    CFRetain(sampleBuffer);
-    dispatch_async(self.encoderQueue, ^{
-        CVImageBufferRef imageBuffer = (CVImageBufferRef)CMSampleBufferGetImageBuffer(sampleBuffer);
-        
-        if (!_encodeSesion) {
-            [self setupEncodeSession:imageBuffer];
-        }
-        self.frameID++;
-        CMTime pts = CMTimeMake(self.frameID, 30);
-        
-        // 送入编码器编码
-        OSStatus statusCode = VTCompressionSessionEncodeFrame(_encodeSesion, imageBuffer, pts, kCMTimeInvalid, NULL, NULL, NULL);
-        if (statusCode != noErr) {
-            NSError *error = [NSError errorWithDomain:@"编码失败" code:0 userInfo:nil];
-            [self.delegate encodedResult:nil error:error];
-        }
-        CFRelease(sampleBuffer);
-    });
+- (void)encodeSampleBuffer:(CVImageBufferRef)imageBuffer {
+    CVPixelBufferLockBaseAddress(imageBuffer, 0);
+    if (!_encodeSesion) {
+        [self setupEncodeSession:imageBuffer];
+    }
+    self.frameID++;
+    CMTime pts = CMTimeMake(self.frameID, 30);
+    
+    // 送入编码器编码
+    OSStatus statusCode = VTCompressionSessionEncodeFrame(_encodeSesion, imageBuffer, pts, kCMTimeInvalid, NULL, NULL, NULL);
+    if (statusCode != noErr) {
+        NSError *error = [NSError errorWithDomain:@"编码失败" code:0 userInfo:nil];
+        [self.delegate encodedResult:nil error:error];
+    }
+    CVPixelBufferUnlockBaseAddress(imageBuffer, 0);
 }
 
 /**

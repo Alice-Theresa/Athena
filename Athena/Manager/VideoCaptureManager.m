@@ -34,7 +34,7 @@
 - (instancetype)init {
     if (self = [super init]) {
         _captureSession = [[AVCaptureSession alloc] init];
-        _captureSession.sessionPreset = AVCaptureSessionPreset1920x1080;
+        _captureSession.sessionPreset = AVCaptureSessionPreset1280x720;
     }
     return self;
 }

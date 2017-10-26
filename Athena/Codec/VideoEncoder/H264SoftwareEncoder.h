@@ -14,7 +14,4 @@
     
 @property (nonatomic, weak) id<H264EncoderDelegate> delegate;
 
-- (void)encodeSampleBuffer:(CVPixelBufferRef)pixelBuffer;
-- (void)teardown;
-
 @end
