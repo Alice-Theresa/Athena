@@ -7,9 +7,12 @@
 //
 
 #import <Foundation/Foundation.h>
+#import "H264EncoderDelegate.h"
 
 @protocol H264EncoderInterface <NSObject>
 
+@property (nonatomic, weak) id<H264EncoderDelegate> delegate;
+    
 /**
  禁用初始化方法
  */
@@ -31,5 +34,5 @@
  @param sampleBuffer 相机原始数据
  */
 - (void)encodeSampleBuffer:(CMSampleBufferRef)sampleBuffer;
-
+    
 @end

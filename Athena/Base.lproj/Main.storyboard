@@ -115,7 +115,7 @@
                                     <segue destination="BYZ-38-t0r" kind="push" id="hco-LE-bhv"/>
                                 </connections>
                             </button>
-                            <button opaque="NO" contentMode="scaleToFill" ambiguous="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="niD-0a-swa">
+                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="niD-0a-swa">
                                 <rect key="frame" x="152.5" y="254" width="70" height="30"/>
                                 <state key="normal" title="H264编码"/>
                                 <connections>
@@ -126,6 +126,7 @@
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                         <constraints>
                             <constraint firstItem="9Bp-W7-AnX" firstAttribute="top" secondItem="uVT-sD-2N3" secondAttribute="top" constant="50" id="7MC-qg-Puv"/>
+                            <constraint firstItem="niD-0a-swa" firstAttribute="top" secondItem="9Bp-W7-AnX" secondAttribute="bottom" constant="110" id="RRx-bs-P63"/>
                             <constraint firstItem="9Bp-W7-AnX" firstAttribute="centerX" secondItem="uVT-sD-2N3" secondAttribute="centerX" id="SGO-VH-t73"/>
                             <constraint firstItem="niD-0a-swa" firstAttribute="centerX" secondItem="uVT-sD-2N3" secondAttribute="centerX" id="ybR-ki-kcu"/>
                         </constraints>
@@ -140,7 +141,6 @@
         <!--Video Encode View Controller-->
         <scene sceneID="rPe-Vo-Nrf">
             <objects>
-                <placeholder placeholderIdentifier="IBFirstResponder" id="0ZZ-Xh-jxM" userLabel="First Responder" sceneMemberID="firstResponder"/>
                 <viewController id="QxH-R6-BVe" customClass="VideoEncodeViewController" sceneMemberID="viewController">
                     <view key="view" contentMode="scaleToFill" id="dhE-FR-fNQ">
                         <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
@@ -150,6 +150,7 @@
                     </view>
                     <navigationItem key="navigationItem" id="SMs-SE-FQB"/>
                 </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="0ZZ-Xh-jxM" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
             <point key="canvasLocation" x="977" y="618"/>
         </scene>

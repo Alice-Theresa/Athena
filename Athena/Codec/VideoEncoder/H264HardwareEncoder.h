@@ -13,17 +13,5 @@
 @interface H264HardwareEncoder : NSObject <H264EncoderInterface>
 
 @property (nonatomic, weak) id<H264EncoderDelegate> delegate;
-
-/**
- 移除编码器
- */
-- (void)removeEncodeSession;
-
-/**
- 使用编码器进行H264编码
-
- @param sampleBuffer 相机原始数据
- */
-- (void)encodeSampleBuffer:(CMSampleBufferRef)sampleBuffer;
-
+    
 @end

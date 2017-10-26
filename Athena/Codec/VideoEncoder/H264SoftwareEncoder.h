@@ -7,7 +7,14 @@
 //
 
 #import <Foundation/Foundation.h>
+#import "H264EncoderInterface.h"
+#import "H264EncoderDelegate.h"
 
-@interface H264SoftwareEncoder : NSObject
+@interface H264SoftwareEncoder : NSObject <H264EncoderInterface>
+    
+@property (nonatomic, weak) id<H264EncoderDelegate> delegate;
+
+- (void)encodeSampleBuffer:(CVPixelBufferRef)pixelBuffer;
+- (void)teardown;
 
 @end

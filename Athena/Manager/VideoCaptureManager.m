@@ -51,7 +51,7 @@
     self.outputData = [[AVCaptureVideoDataOutput alloc] init];
     NSDictionary *settings = @{(__bridge id)kCVPixelBufferPixelFormatTypeKey : @(kCVPixelFormatType_420YpCbCr8BiPlanarFullRange)};
     self.outputData.videoSettings = settings;
-    [self.outputData setSampleBufferDelegate:delegate queue:[SharedQueue audioBuffer]];
+    [self.outputData setSampleBufferDelegate:delegate queue:[SharedQueue videoBuffer]];
     if ([self.captureSession canAddOutput:self.outputData]) {
         [self.captureSession addOutput:self.outputData];
     } else {

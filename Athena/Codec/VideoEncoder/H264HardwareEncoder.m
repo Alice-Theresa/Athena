@@ -36,7 +36,7 @@
 
  @param imageBuffer 图像数据
  */
-- (void)settingEncodeSession:(CVImageBufferRef)imageBuffer {
+- (void)setupEncodeSession:(CVImageBufferRef)imageBuffer {
     size_t width = CVPixelBufferGetWidth(imageBuffer);
     size_t height = CVPixelBufferGetHeight(imageBuffer);
     
@@ -98,7 +98,7 @@
         CVImageBufferRef imageBuffer = (CVImageBufferRef)CMSampleBufferGetImageBuffer(sampleBuffer);
         
         if (!_encodeSesion) {
-            [self settingEncodeSession:imageBuffer];
+            [self setupEncodeSession:imageBuffer];
         }
         self.frameID++;
         CMTime pts = CMTimeMake(self.frameID, 30);
