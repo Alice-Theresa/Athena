@@ -46,7 +46,7 @@
     codecContext->height        = frameHeight;
     codecContext->time_base.num = 1;
     codecContext->time_base.den = 30;
-    codecContext->bit_rate      = 1000 * 1000;
+    codecContext->bit_rate      = 1024 * 1000;
     codecContext->gop_size      = 60;
     codecContext->qmin          = 10;
     codecContext->qmax          = 51;
@@ -55,9 +55,9 @@
     
     AVDictionary *param = NULL;
     if(codecContext->codec_id == AV_CODEC_ID_H264) {
-        av_dict_set(&param, "preset", "fast", 0);
+        av_dict_set(&param, "preset", "slow", 0);
         av_dict_set(&param, "tune", "zerolatency", 0);
-//        av_dict_set(&param, "profile", "main", 0);
+        av_dict_set(&param, "profile", "main", 0);
     }
     
     codec = avcodec_find_encoder(codecContext->codec_id);
@@ -73,10 +73,14 @@
     frame->width = frameWidth;
     frame->height = frameHeight;
     frame->format = AV_PIX_FMT_YUV420P;
-//    av_image_fill_arrays();
-    avpicture_fill((AVPicture *)frame, NULL, codecContext->pix_fmt, codecContext->width, codecContext->height);
-    
-    int pictureSize = avpicture_get_size(codecContext->pix_fmt, codecContext->width, codecContext->height);
+    av_image_fill_arrays(frame->data,
+                         frame->linesize,
+                         NULL,
+                         codecContext->pix_fmt,
+                         codecContext->width,
+                         codecContext->height,
+                         1);
+    int pictureSize = av_image_get_buffer_size(codecContext->pix_fmt, codecContext->width, codecContext->height, 1);
     av_new_packet(&packet, pictureSize);
 }
     
@@ -113,16 +117,16 @@
     // PTS
     frame->pts = self.frameID;
     // Encode
-    int got_picture = 0;
     if (!codecContext) {
         CVPixelBufferUnlockBaseAddress(imageBuffer, 0);
         return;
     }
-    int ret = avcodec_encode_video2(codecContext, &packet, frame, &got_picture);
+    int ret = avcodec_send_frame(codecContext, frame);
+    ret = avcodec_receive_packet(codecContext, &packet);
     if(ret < 0) {
         NSLog(@"Failed to encode!");
     }
-    if (got_picture == 1) {
+    if(ret == 0) {
         NSLog(@"Succeed to encode frame: %ld\tsize:%5d", self.frameID, packet.size);
         self.frameID++;
         NSData *data = [NSData dataWithBytes:packet.data length:packet.size];
