@@ -80,9 +80,8 @@ https://github.com/depthlove/x264-iOS-build-script
 ## 编译ffmpeg
 
 ##### 下载ffmpeg编译脚本
-```
+
 https://github.com/kewlbear/FFmpeg-iOS-build-script
-```
 
 将刚才编译生成的两个文件夹放入脚本目录下
 
