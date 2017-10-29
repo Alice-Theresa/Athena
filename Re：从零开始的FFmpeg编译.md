@@ -3,7 +3,7 @@
 将fdk-aac、x264与FFmpeg一起编译到iOS平台上
 
 ## 准备
-##### 下载gas-preprocessor
+#### 下载gas-preprocessor
 
 https://github.com/libav/gas-preprocessor
 
@@ -14,29 +14,29 @@ https://github.com/libav/gas-preprocessor
 chmod 777 /usr/local/bin/gas-preprocessor.pl
 ```
 
-##### 安装yasm
+#### 安装yasm
 
 ```
 brew install yasm
 ```
 
-## 编译fdk-aac
-
-##### 安装automake libtool
+#### 安装automake libtool
 
 ```
 brew install automake libtool
 ```
 
-##### 下载fdk-aac编译脚本
+## 编译fdk-aac
+
+#### 下载fdk-aac编译脚本
 https://github.com/kewlbear/fdk-aac-build-script-for-iOS
 
-##### 下载fdk-aac
+#### 下载fdk-aac
 https://github.com/mstorsjo/fdk-aac
 
 下载后重命名文件夹为fdk-aac-0.1.5，并将文件夹放入编译脚本目录下
 
-##### 编译
+#### 编译
 
 进入fdk-aac-0.1.5文件夹并执行
 
@@ -58,10 +58,10 @@ https://github.com/mstorsjo/fdk-aac
 
 ## 编译x264
 
-##### 下载x264编译脚本
+#### 下载x264编译脚本
 https://github.com/depthlove/x264-iOS-build-script
 
-##### 编译
+#### 编译
 
 执行
 ```
@@ -79,13 +79,13 @@ https://github.com/depthlove/x264-iOS-build-script
 
 ## 编译ffmpeg
 
-##### 下载ffmpeg编译脚本
+#### 下载ffmpeg编译脚本
 
 https://github.com/kewlbear/FFmpeg-iOS-build-script
 
 将刚才编译生成的两个文件夹放入脚本目录下
 
-##### 修改build-ffmpeg.sh
+#### 修改build-ffmpeg.sh
 
 1. 将
 ```
@@ -111,6 +111,7 @@ if [ "$X264" ]
 then
 	CONFIGURE_FLAGS="$CONFIGURE_FLAGS --enable-gpl --enable-libx264"
 fi
+
 if [ "$FDK_AAC" ]
 then
 	CONFIGURE_FLAGS="$CONFIGURE_FLAGS --enable-libfdk-aac"
@@ -130,7 +131,7 @@ CFLAGS="$CFLAGS -mios-version-min=$DEPLOYMENT_TARGET -fembed-bitcode"
 CFLAGS="$CFLAGS -mios-version-min=$DEPLOYMENT_TARGET"
 ```
 
-##### 编译
+#### 编译
 
 执行
 ```
