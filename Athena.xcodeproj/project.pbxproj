@@ -229,9 +229,7 @@
 		522136551F7F737500182B12 = {
 			isa = PBXGroup;
 			children = (
-				52DAD7B71FA0722D00D355CE /* fat-x264 */,
-				529067831F94BF8F001A7BFA /* fdk-aac-ios */,
-				765ED66E1F935A70000CF16E /* FFmpeg-iOS */,
+				52A170D81FE3A81200E3FDA0 /* 3rd */,
 				522136601F7F737500182B12 /* Athena */,
 				5221365F1F7F737500182B12 /* Products */,
 				765ED7781F938729000CF16E /* Frameworks */,
@@ -321,6 +319,16 @@
 				52AA251C1F99A5690084771B /* Encoder */,
 			);
 			path = UI;
+			sourceTree = "<group>";
+		};
+		52A170D81FE3A81200E3FDA0 /* 3rd */ = {
+			isa = PBXGroup;
+			children = (
+				52DAD7B71FA0722D00D355CE /* fat-x264 */,
+				529067831F94BF8F001A7BFA /* fdk-aac-ios */,
+				765ED66E1F935A70000CF16E /* FFmpeg-iOS */,
+			);
+			path = 3rd;
 			sourceTree = "<group>";
 		};
 		52AA250C1F987DED0084771B /* VideoEncoder */ = {
@@ -827,14 +835,14 @@
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_TEAM = RJX3H8KBAF;
 				ENABLE_BITCODE = NO;
-				HEADER_SEARCH_PATHS = "$(SRCROOT)/FFmpeg-iOS/include";
+				HEADER_SEARCH_PATHS = "$(SRCROOT)/3rd/FFmpeg-iOS/include";
 				INFOPLIST_FILE = Athena/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
-					"$(PROJECT_DIR)/FFmpeg-iOS/lib",
-					"$(PROJECT_DIR)/fdk-aac-ios/lib",
-					"$(PROJECT_DIR)/fat-x264/lib",
+					"$(PROJECT_DIR)/3rd/FFmpeg-iOS/lib",
+					"$(PROJECT_DIR)/3rd/fdk-aac-ios/lib",
+					"$(PROJECT_DIR)/3rd/fat-x264/lib",
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = com.Theresa.Athena;
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -849,14 +857,14 @@
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_TEAM = RJX3H8KBAF;
 				ENABLE_BITCODE = NO;
-				HEADER_SEARCH_PATHS = "$(SRCROOT)/FFmpeg-iOS/include";
+				HEADER_SEARCH_PATHS = "$(SRCROOT)/3rd/FFmpeg-iOS/include";
 				INFOPLIST_FILE = Athena/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
-					"$(PROJECT_DIR)/FFmpeg-iOS/lib",
-					"$(PROJECT_DIR)/fdk-aac-ios/lib",
-					"$(PROJECT_DIR)/fat-x264/lib",
+					"$(PROJECT_DIR)/3rd/FFmpeg-iOS/lib",
+					"$(PROJECT_DIR)/3rd/fdk-aac-ios/lib",
+					"$(PROJECT_DIR)/3rd/fat-x264/lib",
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = com.Theresa.Athena;
 				PRODUCT_NAME = "$(TARGET_NAME)";
