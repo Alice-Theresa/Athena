@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="14313.18" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES">
+    <device id="retina4_7" orientation="portrait">
+        <adaptation id="fullscreen"/>
+    </device>
+    <dependencies>
+        <deployment identifier="iOS"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="14283.14"/>
+        <capability name="Safe area layout guides" minToolsVersion="9.0"/>
+        <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
+    </dependencies>
+    <objects>
+        <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner" customClass="AudioEncodeViewController">
+            <connections>
+                <outlet property="encoderSwitch" destination="C4V-ej-3nV" id="7cP-05-pjt"/>
+                <outlet property="view" destination="iN0-l3-epB" id="dlt-hE-BVM"/>
+            </connections>
+        </placeholder>
+        <placeholder placeholderIdentifier="IBFirstResponder" id="-2" customClass="UIResponder"/>
+        <view contentMode="scaleToFill" id="iN0-l3-epB">
+            <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
+            <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+            <subviews>
+                <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="DJT-Pn-F7M">
+                    <rect key="frame" x="0.0" y="20" width="375" height="128"/>
+                    <subviews>
+                        <switch opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" contentHorizontalAlignment="center" contentVerticalAlignment="center" translatesAutoresizingMaskIntoConstraints="NO" id="aAS-hB-QDN">
+                            <rect key="frame" x="286" y="25" width="51" height="31"/>
+                            <connections>
+                                <action selector="recordingOrNot:" destination="-1" eventType="valueChanged" id="tHa-dU-KwQ"/>
+                            </connections>
+                        </switch>
+                        <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="开始录音" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="o4e-6T-3qq">
+                            <rect key="frame" x="30" y="30" width="69.5" height="21"/>
+                            <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                            <nil key="textColor"/>
+                            <nil key="highlightedColor"/>
+                        </label>
+                        <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="硬编" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="oQo-KX-QD6">
+                            <rect key="frame" x="242" y="82" width="35" height="21"/>
+                            <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                            <nil key="textColor"/>
+                            <nil key="highlightedColor"/>
+                        </label>
+                        <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="软编" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="hFp-xF-i3K">
+                            <rect key="frame" x="98" y="82" width="35" height="21"/>
+                            <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                            <nil key="textColor"/>
+                            <nil key="highlightedColor"/>
+                        </label>
+                        <switch opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" contentHorizontalAlignment="center" contentVerticalAlignment="center" on="YES" translatesAutoresizingMaskIntoConstraints="NO" id="C4V-ej-3nV">
+                            <rect key="frame" x="163" y="77" width="51" height="31"/>
+                            <connections>
+                                <action selector="switchEncoder:" destination="-1" eventType="valueChanged" id="pdc-D6-yfi"/>
+                            </connections>
+                        </switch>
+                    </subviews>
+                    <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                    <constraints>
+                        <constraint firstItem="oQo-KX-QD6" firstAttribute="leading" secondItem="C4V-ej-3nV" secondAttribute="trailing" constant="30" id="409-1z-LLG"/>
+                        <constraint firstItem="C4V-ej-3nV" firstAttribute="leading" secondItem="hFp-xF-i3K" secondAttribute="trailing" constant="30" id="DST-bu-luC"/>
+                        <constraint firstItem="o4e-6T-3qq" firstAttribute="top" secondItem="DJT-Pn-F7M" secondAttribute="top" constant="30" id="Qjq-JO-JFn"/>
+                        <constraint firstItem="oQo-KX-QD6" firstAttribute="centerY" secondItem="hFp-xF-i3K" secondAttribute="centerY" id="SFP-hP-Wbe"/>
+                        <constraint firstAttribute="bottom" secondItem="C4V-ej-3nV" secondAttribute="bottom" constant="20" id="Wx7-m2-7uH"/>
+                        <constraint firstAttribute="height" constant="128" id="cN0-it-xQQ"/>
+                        <constraint firstItem="o4e-6T-3qq" firstAttribute="leading" secondItem="DJT-Pn-F7M" secondAttribute="leading" constant="30" id="dKg-lp-wwQ"/>
+                        <constraint firstItem="C4V-ej-3nV" firstAttribute="centerY" secondItem="hFp-xF-i3K" secondAttribute="centerY" id="ilS-3T-WNG"/>
+                        <constraint firstAttribute="trailing" secondItem="aAS-hB-QDN" secondAttribute="trailing" constant="40" id="k3p-Vf-DkL"/>
+                        <constraint firstItem="aAS-hB-QDN" firstAttribute="centerY" secondItem="o4e-6T-3qq" secondAttribute="centerY" id="mag-da-oIz"/>
+                        <constraint firstItem="C4V-ej-3nV" firstAttribute="centerX" secondItem="DJT-Pn-F7M" secondAttribute="centerX" id="xOK-hK-HoG"/>
+                    </constraints>
+                </view>
+            </subviews>
+            <color key="backgroundColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+            <constraints>
+                <constraint firstItem="DJT-Pn-F7M" firstAttribute="top" secondItem="vUN-kp-3ea" secondAttribute="top" id="BOD-eP-u49"/>
+                <constraint firstItem="DJT-Pn-F7M" firstAttribute="leading" secondItem="vUN-kp-3ea" secondAttribute="leading" id="IsM-Hb-TpI"/>
+                <constraint firstAttribute="trailing" secondItem="DJT-Pn-F7M" secondAttribute="trailing" id="eZy-w1-kOd"/>
+            </constraints>
+            <viewLayoutGuide key="safeArea" id="vUN-kp-3ea"/>
+        </view>
+    </objects>
+</document>
