@@ -22,11 +22,11 @@
 
 - (void)setup {
     MainModel *model1 = [[MainModel alloc] init];
-    model1.codecName = @"AAC编码";
+    model1.codecName = @"AAC解码";
     model1.vcName = @"AudioDecodeViewController";
     
     MainModel *model2 = [[MainModel alloc] init];
-    model2.codecName = @"AAC解码";
+    model2.codecName = @"AAC编码";
     model2.vcName = @"AudioEncodeViewController";
     
     MainModel *model3 = [[MainModel alloc] init];

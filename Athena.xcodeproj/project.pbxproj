@@ -7,6 +7,8 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		5202621C21606DB800F1033B /* AudioDecodeViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 5202621A21606DB800F1033B /* AudioDecodeViewController.m */; };
+		5202621D21606DB800F1033B /* AudioDecodeViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 5202621B21606DB800F1033B /* AudioDecodeViewController.xib */; };
 		522136631F7F737500182B12 /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 522136621F7F737500182B12 /* AppDelegate.m */; };
 		522136661F7F737500182B12 /* AudioEncodeViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 522136651F7F737500182B12 /* AudioEncodeViewController.m */; };
 		522136691F7F737500182B12 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 522136671F7F737500182B12 /* Main.storyboard */; };
@@ -23,9 +25,10 @@
 		52B338571F7F9BE2003BEFFB /* AACHardEncoder.m in Sources */ = {isa = PBXBuildFile; fileRef = 52B338561F7F9BE2003BEFFB /* AACHardEncoder.m */; };
 		52DAD7BD1FA0722D00D355CE /* libx264.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 52DAD7BC1FA0722D00D355CE /* libx264.a */; };
 		52DAD7C01FA07EA000D355CE /* H264SoftwareEncoder.m in Sources */ = {isa = PBXBuildFile; fileRef = 52DAD7BF1FA07EA000D355CE /* H264SoftwareEncoder.m */; };
+		52E04394215E270B003CB1C5 /* AudioSoftDecoder.m in Sources */ = {isa = PBXBuildFile; fileRef = 52E04393215E270B003CB1C5 /* AudioSoftDecoder.m */; };
+		52E04397215E2988003CB1C5 /* AudioPlayerManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 52E04396215E2988003CB1C5 /* AudioPlayerManager.m */; };
 		52E10330215E04DD007783E6 /* MainViewModel.m in Sources */ = {isa = PBXBuildFile; fileRef = 52E1032F215E04DD007783E6 /* MainViewModel.m */; };
 		52E10333215E072D007783E6 /* MainModel.m in Sources */ = {isa = PBXBuildFile; fileRef = 52E10332215E072D007783E6 /* MainModel.m */; };
-		52E10336215E07CB007783E6 /* AudioDecodeViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 52E10335215E07CB007783E6 /* AudioDecodeViewController.m */; };
 		52E1033A215E095F007783E6 /* AudioEncodeViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 52E10339215E095F007783E6 /* AudioEncodeViewController.xib */; };
 		765ED76B1F935ACA000CF16E /* libavutil.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 765ED6F21F935ACA000CF16E /* libavutil.a */; };
 		765ED76C1F935ACA000CF16E /* libavfilter.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 765ED6F31F935ACA000CF16E /* libavfilter.a */; };
@@ -43,6 +46,9 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		5202621921606DB800F1033B /* AudioDecodeViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AudioDecodeViewController.h; sourceTree = "<group>"; };
+		5202621A21606DB800F1033B /* AudioDecodeViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = AudioDecodeViewController.m; sourceTree = "<group>"; };
+		5202621B21606DB800F1033B /* AudioDecodeViewController.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = AudioDecodeViewController.xib; sourceTree = "<group>"; };
 		5221365E1F7F737500182B12 /* Athena.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Athena.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		522136611F7F737500182B12 /* AppDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AppDelegate.h; sourceTree = "<group>"; };
 		522136621F7F737500182B12 /* AppDelegate.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = AppDelegate.m; sourceTree = "<group>"; };
@@ -81,12 +87,14 @@
 		52DAD7BC1FA0722D00D355CE /* libx264.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = libx264.a; sourceTree = "<group>"; };
 		52DAD7BE1FA07EA000D355CE /* H264SoftwareEncoder.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = H264SoftwareEncoder.h; sourceTree = "<group>"; };
 		52DAD7BF1FA07EA000D355CE /* H264SoftwareEncoder.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = H264SoftwareEncoder.m; sourceTree = "<group>"; };
+		52E04392215E270B003CB1C5 /* AudioSoftDecoder.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AudioSoftDecoder.h; sourceTree = "<group>"; };
+		52E04393215E270B003CB1C5 /* AudioSoftDecoder.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = AudioSoftDecoder.m; sourceTree = "<group>"; };
+		52E04395215E2988003CB1C5 /* AudioPlayerManager.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AudioPlayerManager.h; sourceTree = "<group>"; };
+		52E04396215E2988003CB1C5 /* AudioPlayerManager.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = AudioPlayerManager.m; sourceTree = "<group>"; };
 		52E1032E215E04DD007783E6 /* MainViewModel.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = MainViewModel.h; sourceTree = "<group>"; };
 		52E1032F215E04DD007783E6 /* MainViewModel.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = MainViewModel.m; sourceTree = "<group>"; };
 		52E10331215E072D007783E6 /* MainModel.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = MainModel.h; sourceTree = "<group>"; };
 		52E10332215E072D007783E6 /* MainModel.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = MainModel.m; sourceTree = "<group>"; };
-		52E10334215E07CB007783E6 /* AudioDecodeViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AudioDecodeViewController.h; sourceTree = "<group>"; };
-		52E10335215E07CB007783E6 /* AudioDecodeViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = AudioDecodeViewController.m; sourceTree = "<group>"; };
 		52E10339215E095F007783E6 /* AudioEncodeViewController.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = AudioEncodeViewController.xib; sourceTree = "<group>"; };
 		765ED6F21F935ACA000CF16E /* libavutil.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = libavutil.a; sourceTree = "<group>"; };
 		765ED6F31F935ACA000CF16E /* libavfilter.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = libavfilter.a; sourceTree = "<group>"; };
@@ -372,6 +380,8 @@
 				52AA250F1F98951F0084771B /* VideoCaptureManager.m */,
 				522136771F7F738F00182B12 /* AudioCaptureManager.h */,
 				522136781F7F738F00182B12 /* AudioCaptureManager.m */,
+				52E04395215E2988003CB1C5 /* AudioPlayerManager.h */,
+				52E04396215E2988003CB1C5 /* AudioPlayerManager.m */,
 			);
 			path = Manager;
 			sourceTree = "<group>";
@@ -384,8 +394,9 @@
 				522136641F7F737500182B12 /* AudioEncodeViewController.h */,
 				522136651F7F737500182B12 /* AudioEncodeViewController.m */,
 				52E10339215E095F007783E6 /* AudioEncodeViewController.xib */,
-				52E10334215E07CB007783E6 /* AudioDecodeViewController.h */,
-				52E10335215E07CB007783E6 /* AudioDecodeViewController.m */,
+				5202621921606DB800F1033B /* AudioDecodeViewController.h */,
+				5202621A21606DB800F1033B /* AudioDecodeViewController.m */,
+				5202621B21606DB800F1033B /* AudioDecodeViewController.xib */,
 			);
 			path = Encoder;
 			sourceTree = "<group>";
@@ -432,6 +443,8 @@
 		52E1032D215E034E007783E6 /* AudioDecoder */ = {
 			isa = PBXGroup;
 			children = (
+				52E04392215E270B003CB1C5 /* AudioSoftDecoder.h */,
+				52E04393215E270B003CB1C5 /* AudioSoftDecoder.m */,
 			);
 			path = AudioDecoder;
 			sourceTree = "<group>";
@@ -701,6 +714,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				5221366E1F7F737500182B12 /* LaunchScreen.storyboard in Resources */,
+				5202621D21606DB800F1033B /* AudioDecodeViewController.xib in Resources */,
 				52E1033A215E095F007783E6 /* AudioEncodeViewController.xib in Resources */,
 				5221366B1F7F737500182B12 /* Assets.xcassets in Resources */,
 				522136691F7F737500182B12 /* Main.storyboard in Resources */,
@@ -715,7 +729,9 @@
 			buildActionMask = 2147483647;
 			files = (
 				522136661F7F737500182B12 /* AudioEncodeViewController.m in Sources */,
+				52E04394215E270B003CB1C5 /* AudioSoftDecoder.m in Sources */,
 				529067971F95A48A001A7BFA /* SharedQueue.m in Sources */,
+				5202621C21606DB800F1033B /* AudioDecodeViewController.m in Sources */,
 				52E10330215E04DD007783E6 /* MainViewModel.m in Sources */,
 				52AA25131F989C340084771B /* VideoEncodeViewController.m in Sources */,
 				522136711F7F737500182B12 /* main.m in Sources */,
@@ -726,8 +742,8 @@
 				52AA25101F98951F0084771B /* VideoCaptureManager.m in Sources */,
 				52B338571F7F9BE2003BEFFB /* AACHardEncoder.m in Sources */,
 				522136631F7F737500182B12 /* AppDelegate.m in Sources */,
+				52E04397215E2988003CB1C5 /* AudioPlayerManager.m in Sources */,
 				52AA25191F998ECF0084771B /* H264HardwareEncoder.m in Sources */,
-				52E10336215E07CB007783E6 /* AudioDecodeViewController.m in Sources */,
 				52DAD7C01FA07EA000D355CE /* H264SoftwareEncoder.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
