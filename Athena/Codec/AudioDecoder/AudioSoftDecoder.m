@@ -10,8 +10,6 @@
 #define OUTPUT_BUS 0
 #define MAX_AUDIO_FRAME_SIZE 192000
 #define OUT_PUT_CHANNELS 2
-#define STMAX(a, b)  (((a) > (b)) ? (a) : (b))
-#define STMIN(a, b)  (((a) < (b)) ? (a) : (b))
 
 #include <libavutil/opt.h>
 #include <libavcodec/avcodec.h>
@@ -26,69 +24,44 @@
 
 const uint32_t CONST_BUFFER_SIZE = 0x10000;
 
-
 @interface AudioSoftDecoder () {
-    AudioUnit audioUnit;
-    AudioBufferList *buffList;
-    NSInputStream *inputSteam;
     
     AVCodecContext *codecContext;
     AVFormatContext *avFormatContext;
     AVCodec *codec;
     AVPacket packet;
     AVFrame *frame;
-    uint8_t *frameBuf;
-    long length;
-    long oneSecBytes;
     int stream_index;
-    float timeBase;
-    int packetBufferSize;
     
-    char *pcmBuffer;
-    size_t pcmBufferSize;
-    
-    short* _audioBuffer;
     SwrContext *swrContext;
-    void * _swrBuffer;
-    
     uint8_t *out_buffer;
     int64_t in_channel_layout;
-    int index;
-    
-    NSMutableData *temp;
-    int index2;
 }
+
+@property (nonatomic, assign) AudioUnit audioUnit;
+
+@property (nonatomic, strong) NSMutableData *temp;
+@property (nonatomic, strong) NSInputStream *inputSteam;
 
 @end
 
 @implementation AudioSoftDecoder
 
-- (instancetype)init
-{
-    self = [super init];
-    if (self) {
-        temp = [NSMutableData data];
+- (instancetype)init {
+    if (self = [super init]) {
+        _temp = [NSMutableData data];
     }
     return self;
 }
 
 - (void)play {
-//    [self initFFMpeg];
+    [self initFFMpeg];
     [self initPlayer];
-    AudioOutputUnitStart(audioUnit);
-
+    AudioOutputUnitStart(self.audioUnit);
 }
 
-
 - (void)initFFMpeg {
-    NSString *fileName = @"abc.pcm";
-    NSString *audioFile = [[NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES) lastObject] stringByAppendingPathComponent:fileName];
-    [[NSFileManager defaultManager] removeItemAtPath:audioFile error:nil];
-    [[NSFileManager defaultManager] createFileAtPath:audioFile contents:nil attributes:nil];
-    NSFileHandle *fileHandle = [NSFileHandle fileHandleForWritingAtPath:audioFile];
-    
     av_register_all();
-    avcodec_register_all();
     avFormatContext = avformat_alloc_context();
     
     NSString *url = [[[NSBundle mainBundle] bundlePath] stringByAppendingPathComponent:@"abc.mp3"];
@@ -115,7 +88,7 @@ const uint32_t CONST_BUFFER_SIZE = 0x10000;
     
 
     codecContext = avcodec_alloc_context3(codec);
-    int ret = avcodec_parameters_to_context(codecContext, audioStream->codecpar);
+    avcodec_parameters_to_context(codecContext, audioStream->codecpar);
     
     //Out Audio Param
     uint64_t out_channel_layout=AV_CH_LAYOUT_STEREO;
@@ -153,27 +126,18 @@ const uint32_t CONST_BUFFER_SIZE = 0x10000;
             swr_convert(swrContext, &out_buffer, MAX_AUDIO_FRAME_SIZE,(const uint8_t **)frame->data , frame->nb_samples);
             
             NSData *myData = [[NSData alloc] initWithBytes:out_buffer length:out_buffer_size];
-            [fileHandle writeData:myData];
-            @synchronized (self) {
-                [temp appendData:myData];
-            }
-            
-            printf("index:%5d\t pts:%lld\t packet size:%d\n", index, packet.pts, packet.size);
-            index++;
+            [self.temp appendData:myData];
         }
     }
-    [fileHandle closeFile];
 }
 
 - (void)initPlayer {
     // open pcm stream
-    NSURL *url = [[NSBundle mainBundle] URLForResource:@"abc" withExtension:@"pcm"];
-    inputSteam = [NSInputStream inputStreamWithURL:url];
-    if (!inputSteam) {
-        NSLog(@"打开文件失败 %@", url);
-    }
-    else {
-        [inputSteam open];
+    self.inputSteam = [NSInputStream inputStreamWithData:self.temp];
+    if (!self.inputSteam) {
+        NSLog(@"打开文件失败");
+    } else {
+        [self.inputSteam open];
     }
     
     OSStatus status = noErr;
@@ -186,19 +150,12 @@ const uint32_t CONST_BUFFER_SIZE = 0x10000;
     audioDesc.componentFlagsMask = 0;
     
     AudioComponent inputComponent = AudioComponentFindNext(NULL, &audioDesc);
-    AudioComponentInstanceNew(inputComponent, &audioUnit);
-    
-    // buffer
-    buffList = (AudioBufferList *)malloc(sizeof(AudioBufferList));
-    buffList->mNumberBuffers = 1;
-    buffList->mBuffers[0].mNumberChannels = 2;
-    buffList->mBuffers[0].mDataByteSize = CONST_BUFFER_SIZE;
-    buffList->mBuffers[0].mData = malloc(CONST_BUFFER_SIZE);
+    AudioComponentInstanceNew(inputComponent, &_audioUnit);
     
     //audio property
     UInt32 flag = 1;
     if (flag) {
-        status = AudioUnitSetProperty(audioUnit,
+        status = AudioUnitSetProperty(self.audioUnit,
                                       kAudioOutputUnitProperty_EnableIO,
                                       kAudioUnitScope_Output,
                                       OUTPUT_BUS,
@@ -222,7 +179,7 @@ const uint32_t CONST_BUFFER_SIZE = 0x10000;
     outputFormat.mBitsPerChannel   = 16; // 位深
     [self printAudioStreamBasicDescription:outputFormat];
     
-    status = AudioUnitSetProperty(audioUnit,
+    status = AudioUnitSetProperty(self.audioUnit,
                                   kAudioUnitProperty_StreamFormat,
                                   kAudioUnitScope_Input,
                                   OUTPUT_BUS,
@@ -237,7 +194,7 @@ const uint32_t CONST_BUFFER_SIZE = 0x10000;
     AURenderCallbackStruct playCallback;
     playCallback.inputProc = PlayCallback;
     playCallback.inputProcRefCon = (__bridge void *)self;
-    AudioUnitSetProperty(audioUnit,
+    AudioUnitSetProperty(self.audioUnit,
                          kAudioUnitProperty_SetRenderCallback,
                          kAudioUnitScope_Input,
                          OUTPUT_BUS,
@@ -245,7 +202,7 @@ const uint32_t CONST_BUFFER_SIZE = 0x10000;
                          sizeof(playCallback));
     
     
-    OSStatus result = AudioUnitInitialize(audioUnit);
+    OSStatus result = AudioUnitInitialize(self.audioUnit);
     NSLog(@"result %d", result);
 }
 
@@ -257,10 +214,16 @@ static OSStatus PlayCallback(void *inRefCon,
                              UInt32 inBusNumber,
                              UInt32 inNumberFrames,
                              AudioBufferList *ioData) {
-    AudioSoftDecoder *player = (__bridge AudioSoftDecoder *)inRefCon;
+    for (int iBuffer = 0; iBuffer < ioData->mNumberBuffers; iBuffer++) {
+        memset(ioData->mBuffers[iBuffer].mData, 0, ioData->mBuffers[iBuffer].mDataByteSize);
+    }
     
-    ioData->mBuffers[0].mDataByteSize = (UInt32)[player->inputSteam read:ioData->mBuffers[0].mData maxLength:(NSInteger)ioData->mBuffers[0].mDataByteSize];
-    NSLog(@"out size: %d", ioData->mBuffers[0].mDataByteSize);
+    AudioSoftDecoder *player = (__bridge AudioSoftDecoder *)inRefCon;
+//    AudioBufferList buffer = *[player.queue dequeue];
+//    memcpy(ioData->mBuffers[0].mData, buffer.mBuffers[0].mData, buffer.mBuffers[0].mDataByteSize);
+    
+    ioData->mBuffers[0].mDataByteSize = (UInt32)[player.inputSteam read:ioData->mBuffers[0].mData maxLength:(NSInteger)ioData->mBuffers[0].mDataByteSize];
+//    NSLog(@"out size: %d", ioData->mBuffers[0].mDataByteSize);
 
     if (ioData->mBuffers[0].mDataByteSize <= 0) {
         dispatch_async(dispatch_get_main_queue(), ^{
@@ -272,33 +235,20 @@ static OSStatus PlayCallback(void *inRefCon,
 
 
 - (void)stop {
-    AudioOutputUnitStop(audioUnit);
-    if (buffList != NULL) {
-        if (buffList->mBuffers[0].mData) {
-            free(buffList->mBuffers[0].mData);
-            buffList->mBuffers[0].mData = NULL;
-        }
-        free(buffList);
-        buffList = NULL;
-    }
+    AudioOutputUnitStop(self.audioUnit);
     
     if (self.delegate && [self.delegate respondsToSelector:@selector(onPlayToEnd:)]) {
         __strong typeof (AudioSoftDecoder) *player = self;
         [self.delegate onPlayToEnd:player];
     }
     
-    [inputSteam close];
+    [self.inputSteam close];
 }
 
 - (void)dealloc {
-    AudioOutputUnitStop(audioUnit);
-    AudioUnitUninitialize(audioUnit);
-    AudioComponentInstanceDispose(audioUnit);
-    
-    if (buffList != NULL) {
-        free(buffList);
-        buffList = NULL;
-    }
+    AudioOutputUnitStop(self.audioUnit);
+    AudioUnitUninitialize(self.audioUnit);
+    AudioComponentInstanceDispose(self.audioUnit);
 }
 
 - (void)printAudioStreamBasicDescription:(AudioStreamBasicDescription)asbd {
