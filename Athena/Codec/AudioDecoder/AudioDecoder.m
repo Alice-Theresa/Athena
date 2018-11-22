@@ -1,5 +1,5 @@
 //
-//  AudioSoftDecoder.m
+//  AudioDecoder.m
 //  Athena
 //
 //  Created by Theresa on 2018/9/28.
@@ -20,11 +20,11 @@
 
 #import <AVFoundation/AVFoundation.h>
 #import <AudioUnit/AudioUnit.h>
-#import "AudioSoftDecoder.h"
+#import "AudioDecoder.h"
 
 const uint32_t CONST_BUFFER_SIZE = 0x10000;
 
-@interface AudioSoftDecoder () {
+@interface AudioDecoder () {
     
     AVCodecContext *codecContext;
     AVFormatContext *avFormatContext;
@@ -45,7 +45,7 @@ const uint32_t CONST_BUFFER_SIZE = 0x10000;
 
 @end
 
-@implementation AudioSoftDecoder
+@implementation AudioDecoder
 
 - (instancetype)init {
     if (self = [super init]) {
@@ -218,12 +218,10 @@ static OSStatus PlayCallback(void *inRefCon,
         memset(ioData->mBuffers[iBuffer].mData, 0, ioData->mBuffers[iBuffer].mDataByteSize);
     }
     
-    AudioSoftDecoder *player = (__bridge AudioSoftDecoder *)inRefCon;
-//    AudioBufferList buffer = *[player.queue dequeue];
-//    memcpy(ioData->mBuffers[0].mData, buffer.mBuffers[0].mData, buffer.mBuffers[0].mDataByteSize);
+    AudioDecoder *player = (__bridge AudioDecoder *)inRefCon;
     
     ioData->mBuffers[0].mDataByteSize = (UInt32)[player.inputSteam read:ioData->mBuffers[0].mData maxLength:(NSInteger)ioData->mBuffers[0].mDataByteSize];
-//    NSLog(@"out size: %d", ioData->mBuffers[0].mDataByteSize);
+    NSLog(@"out size: %d", ioData->mBuffers[0].mDataByteSize);
 
     if (ioData->mBuffers[0].mDataByteSize <= 0) {
         dispatch_async(dispatch_get_main_queue(), ^{
@@ -238,7 +236,7 @@ static OSStatus PlayCallback(void *inRefCon,
     AudioOutputUnitStop(self.audioUnit);
     
     if (self.delegate && [self.delegate respondsToSelector:@selector(onPlayToEnd:)]) {
-        __strong typeof (AudioSoftDecoder) *player = self;
+        __strong typeof (AudioDecoder) *player = self;
         [self.delegate onPlayToEnd:player];
     }
     

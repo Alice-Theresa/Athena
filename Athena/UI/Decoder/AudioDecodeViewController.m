@@ -7,13 +7,13 @@
 //
 
 #import "AudioDecodeViewController.h"
-#import "AudioSoftDecoder.h"
+#import "AudioDecoder.h"
 #import "AudioPlayerManager.h"
 
 @interface AudioDecodeViewController () <AudioPlayerDelegate>
 
 @property (weak, nonatomic) IBOutlet UIButton *playButton;
-@property (nonatomic, strong) AudioSoftDecoder *decoder;
+@property (nonatomic, strong) AudioDecoder *decoder;
 
 @end
 
@@ -27,12 +27,12 @@
 
 - (IBAction)start:(id)sender {
     self.playButton.hidden = YES;
-    self.decoder = [[AudioSoftDecoder alloc] init];
+    self.decoder = [[AudioDecoder alloc] init];
     self.decoder.delegate = self;
     [self.decoder play];
 }
 
-- (void)onPlayToEnd:(AudioSoftDecoder *)decoder {
+- (void)onPlayToEnd:(AudioDecoder *)decoder {
     self.decoder = nil;
     self.playButton.hidden = NO;
 }

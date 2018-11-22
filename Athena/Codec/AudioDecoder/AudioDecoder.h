@@ -1,5 +1,5 @@
 //
-//  AudioSoftDecoder.h
+//  AudioDecoder.h
 //  Athena
 //
 //  Created by Theresa on 2018/9/28.
@@ -8,15 +8,15 @@
 
 #import <Foundation/Foundation.h>
 
-@class AudioSoftDecoder;
+@class AudioDecoder;
 
 @protocol AudioPlayerDelegate <NSObject>
 
-- (void)onPlayToEnd:(AudioSoftDecoder *)decoder;
+- (void)onPlayToEnd:(AudioDecoder *)decoder;
 
 @end
 
-@interface AudioSoftDecoder : NSObject
+@interface AudioDecoder : NSObject
 
 @property (nonatomic, weak) id<AudioPlayerDelegate> delegate;
 

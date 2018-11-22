@@ -27,7 +27,7 @@
 		52B338571F7F9BE2003BEFFB /* AACHardEncoder.m in Sources */ = {isa = PBXBuildFile; fileRef = 52B338561F7F9BE2003BEFFB /* AACHardEncoder.m */; };
 		52DAD7BD1FA0722D00D355CE /* libx264.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 52DAD7BC1FA0722D00D355CE /* libx264.a */; };
 		52DAD7C01FA07EA000D355CE /* H264SoftwareEncoder.m in Sources */ = {isa = PBXBuildFile; fileRef = 52DAD7BF1FA07EA000D355CE /* H264SoftwareEncoder.m */; };
-		52E04394215E270B003CB1C5 /* AudioSoftDecoder.m in Sources */ = {isa = PBXBuildFile; fileRef = 52E04393215E270B003CB1C5 /* AudioSoftDecoder.m */; };
+		52E04394215E270B003CB1C5 /* AudioDecoder.m in Sources */ = {isa = PBXBuildFile; fileRef = 52E04393215E270B003CB1C5 /* AudioDecoder.m */; };
 		52E04397215E2988003CB1C5 /* AudioPlayerManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 52E04396215E2988003CB1C5 /* AudioPlayerManager.m */; };
 		52E10330215E04DD007783E6 /* MainViewModel.m in Sources */ = {isa = PBXBuildFile; fileRef = 52E1032F215E04DD007783E6 /* MainViewModel.m */; };
 		52E10333215E072D007783E6 /* MainModel.m in Sources */ = {isa = PBXBuildFile; fileRef = 52E10332215E072D007783E6 /* MainModel.m */; };
@@ -91,8 +91,8 @@
 		52DAD7BC1FA0722D00D355CE /* libx264.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = libx264.a; sourceTree = "<group>"; };
 		52DAD7BE1FA07EA000D355CE /* H264SoftwareEncoder.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = H264SoftwareEncoder.h; sourceTree = "<group>"; };
 		52DAD7BF1FA07EA000D355CE /* H264SoftwareEncoder.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = H264SoftwareEncoder.m; sourceTree = "<group>"; };
-		52E04392215E270B003CB1C5 /* AudioSoftDecoder.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AudioSoftDecoder.h; sourceTree = "<group>"; };
-		52E04393215E270B003CB1C5 /* AudioSoftDecoder.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = AudioSoftDecoder.m; sourceTree = "<group>"; };
+		52E04392215E270B003CB1C5 /* AudioDecoder.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AudioDecoder.h; sourceTree = "<group>"; };
+		52E04393215E270B003CB1C5 /* AudioDecoder.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = AudioDecoder.m; sourceTree = "<group>"; };
 		52E04395215E2988003CB1C5 /* AudioPlayerManager.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AudioPlayerManager.h; sourceTree = "<group>"; };
 		52E04396215E2988003CB1C5 /* AudioPlayerManager.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = AudioPlayerManager.m; sourceTree = "<group>"; };
 		52E1032E215E04DD007783E6 /* MainViewModel.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = MainViewModel.h; sourceTree = "<group>"; };
@@ -249,6 +249,16 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		521AB6DE21A699CB005E2697 /* Decoder */ = {
+			isa = PBXGroup;
+			children = (
+				5202621921606DB800F1033B /* AudioDecodeViewController.h */,
+				5202621A21606DB800F1033B /* AudioDecodeViewController.m */,
+				5202621B21606DB800F1033B /* AudioDecodeViewController.xib */,
+			);
+			path = Decoder;
+			sourceTree = "<group>";
+		};
 		522136551F7F737500182B12 = {
 			isa = PBXGroup;
 			children = (
@@ -340,6 +350,7 @@
 		5290679E1F96F0E2001A7BFA /* UI */ = {
 			isa = PBXGroup;
 			children = (
+				521AB6DE21A699CB005E2697 /* Decoder */,
 				52AA251E1F99A5850084771B /* Main */,
 				52AA251C1F99A5690084771B /* Encoder */,
 			);
@@ -400,9 +411,6 @@
 				522136641F7F737500182B12 /* AudioEncodeViewController.h */,
 				522136651F7F737500182B12 /* AudioEncodeViewController.m */,
 				52E10339215E095F007783E6 /* AudioEncodeViewController.xib */,
-				5202621921606DB800F1033B /* AudioDecodeViewController.h */,
-				5202621A21606DB800F1033B /* AudioDecodeViewController.m */,
-				5202621B21606DB800F1033B /* AudioDecodeViewController.xib */,
 			);
 			path = Encoder;
 			sourceTree = "<group>";
@@ -449,8 +457,8 @@
 		52E1032D215E034E007783E6 /* AudioDecoder */ = {
 			isa = PBXGroup;
 			children = (
-				52E04392215E270B003CB1C5 /* AudioSoftDecoder.h */,
-				52E04393215E270B003CB1C5 /* AudioSoftDecoder.m */,
+				52E04392215E270B003CB1C5 /* AudioDecoder.h */,
+				52E04393215E270B003CB1C5 /* AudioDecoder.m */,
 			);
 			path = AudioDecoder;
 			sourceTree = "<group>";
@@ -737,7 +745,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				522136661F7F737500182B12 /* AudioEncodeViewController.m in Sources */,
-				52E04394215E270B003CB1C5 /* AudioSoftDecoder.m in Sources */,
+				52E04394215E270B003CB1C5 /* AudioDecoder.m in Sources */,
 				529067971F95A48A001A7BFA /* SharedQueue.m in Sources */,
 				5202621C21606DB800F1033B /* AudioDecodeViewController.m in Sources */,
 				52E10330215E04DD007783E6 /* MainViewModel.m in Sources */,
