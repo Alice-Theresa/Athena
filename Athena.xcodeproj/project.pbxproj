@@ -10,6 +10,8 @@
 		5202621C21606DB800F1033B /* AudioDecodeViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 5202621A21606DB800F1033B /* AudioDecodeViewController.m */; };
 		5202621D21606DB800F1033B /* AudioDecodeViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 5202621B21606DB800F1033B /* AudioDecodeViewController.xib */; };
 		520B6E0421785BCF00813756 /* abc.mp3 in Resources */ = {isa = PBXBuildFile; fileRef = 520B6E0321785BCF00813756 /* abc.mp3 */; };
+		5210136621CCE62A003D98F5 /* AAPLEAGLLayer.m in Sources */ = {isa = PBXBuildFile; fileRef = 5210136321CCE62A003D98F5 /* AAPLEAGLLayer.m */; };
+		5210136921CCE681003D98F5 /* mtv.h264 in Resources */ = {isa = PBXBuildFile; fileRef = 5210136821CCE681003D98F5 /* mtv.h264 */; };
 		522136631F7F737500182B12 /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 522136621F7F737500182B12 /* AppDelegate.m */; };
 		522136661F7F737500182B12 /* AudioEncodeViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 522136651F7F737500182B12 /* AudioEncodeViewController.m */; };
 		522136691F7F737500182B12 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 522136671F7F737500182B12 /* Main.storyboard */; };
@@ -17,6 +19,7 @@
 		5221366E1F7F737500182B12 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 5221366C1F7F737500182B12 /* LaunchScreen.storyboard */; };
 		522136711F7F737500182B12 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 522136701F7F737500182B12 /* main.m */; };
 		522136791F7F738F00182B12 /* AudioCaptureManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 522136781F7F738F00182B12 /* AudioCaptureManager.m */; };
+		52384F7E21CCD2EF004018EF /* VideoDecodeViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 52384F7D21CCD2EF004018EF /* VideoDecodeViewController.m */; };
 		5290678D1F94BF94001A7BFA /* libfdk-aac.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 5290678C1F94BF8F001A7BFA /* libfdk-aac.a */; };
 		529067971F95A48A001A7BFA /* SharedQueue.m in Sources */ = {isa = PBXBuildFile; fileRef = 529067961F95A48A001A7BFA /* SharedQueue.m */; };
 		529067A11F96F13B001A7BFA /* MainViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 529067A01F96F13B001A7BFA /* MainViewController.m */; };
@@ -52,6 +55,9 @@
 		5202621A21606DB800F1033B /* AudioDecodeViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = AudioDecodeViewController.m; sourceTree = "<group>"; };
 		5202621B21606DB800F1033B /* AudioDecodeViewController.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = AudioDecodeViewController.xib; sourceTree = "<group>"; };
 		520B6E0321785BCF00813756 /* abc.mp3 */ = {isa = PBXFileReference; lastKnownFileType = audio.mp3; path = abc.mp3; sourceTree = "<group>"; };
+		5210136321CCE62A003D98F5 /* AAPLEAGLLayer.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AAPLEAGLLayer.m; sourceTree = "<group>"; };
+		5210136521CCE62A003D98F5 /* AAPLEAGLLayer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AAPLEAGLLayer.h; sourceTree = "<group>"; };
+		5210136821CCE681003D98F5 /* mtv.h264 */ = {isa = PBXFileReference; lastKnownFileType = file; path = mtv.h264; sourceTree = "<group>"; };
 		5221365E1F7F737500182B12 /* Athena.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Athena.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		522136611F7F737500182B12 /* AppDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AppDelegate.h; sourceTree = "<group>"; };
 		522136621F7F737500182B12 /* AppDelegate.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = AppDelegate.m; sourceTree = "<group>"; };
@@ -64,6 +70,8 @@
 		522136701F7F737500182B12 /* main.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
 		522136771F7F738F00182B12 /* AudioCaptureManager.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AudioCaptureManager.h; sourceTree = "<group>"; };
 		522136781F7F738F00182B12 /* AudioCaptureManager.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = AudioCaptureManager.m; sourceTree = "<group>"; };
+		52384F7C21CCD2EF004018EF /* VideoDecodeViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = VideoDecodeViewController.h; sourceTree = "<group>"; };
+		52384F7D21CCD2EF004018EF /* VideoDecodeViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = VideoDecodeViewController.m; sourceTree = "<group>"; };
 		529067861F94BF8F001A7BFA /* aacdecoder_lib.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = aacdecoder_lib.h; sourceTree = "<group>"; };
 		529067871F94BF8F001A7BFA /* aacenc_lib.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = aacenc_lib.h; sourceTree = "<group>"; };
 		529067881F94BF8F001A7BFA /* FDK_audio.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = FDK_audio.h; sourceTree = "<group>"; };
@@ -249,12 +257,24 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		5210136A21CCEB51003D98F5 /* Util */ = {
+			isa = PBXGroup;
+			children = (
+				5210136521CCE62A003D98F5 /* AAPLEAGLLayer.h */,
+				5210136321CCE62A003D98F5 /* AAPLEAGLLayer.m */,
+			);
+			path = Util;
+			sourceTree = "<group>";
+		};
 		521AB6DE21A699CB005E2697 /* Decoder */ = {
 			isa = PBXGroup;
 			children = (
+				5210136A21CCEB51003D98F5 /* Util */,
 				5202621921606DB800F1033B /* AudioDecodeViewController.h */,
 				5202621A21606DB800F1033B /* AudioDecodeViewController.m */,
 				5202621B21606DB800F1033B /* AudioDecodeViewController.xib */,
+				52384F7C21CCD2EF004018EF /* VideoDecodeViewController.h */,
+				52384F7D21CCD2EF004018EF /* VideoDecodeViewController.m */,
 			);
 			path = Decoder;
 			sourceTree = "<group>";
@@ -289,6 +309,7 @@
 				522136621F7F737500182B12 /* AppDelegate.m */,
 				520B6E0321785BCF00813756 /* abc.mp3 */,
 				52A17EA1217431A2003A07CE /* abc.pcm */,
+				5210136821CCE681003D98F5 /* mtv.h264 */,
 				522136671F7F737500182B12 /* Main.storyboard */,
 				5221366A1F7F737500182B12 /* Assets.xcassets */,
 				5221366C1F7F737500182B12 /* LaunchScreen.storyboard */,
@@ -296,6 +317,13 @@
 				522136701F7F737500182B12 /* main.m */,
 			);
 			path = Athena;
+			sourceTree = "<group>";
+		};
+		52384F7B21CCD123004018EF /* VideoDecoder */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			path = VideoDecoder;
 			sourceTree = "<group>";
 		};
 		529067831F94BF8F001A7BFA /* fdk-aac-ios */ = {
@@ -383,6 +411,7 @@
 		52AA25141F98A0300084771B /* Codec */ = {
 			isa = PBXGroup;
 			children = (
+				52384F7B21CCD123004018EF /* VideoDecoder */,
 				52E1032D215E034E007783E6 /* AudioDecoder */,
 				52AA250C1F987DED0084771B /* VideoEncoder */,
 				529067941F95A090001A7BFA /* AudioEncoder */,
@@ -728,6 +757,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				5221366E1F7F737500182B12 /* LaunchScreen.storyboard in Resources */,
+				5210136921CCE681003D98F5 /* mtv.h264 in Resources */,
 				5202621D21606DB800F1033B /* AudioDecodeViewController.xib in Resources */,
 				52E1033A215E095F007783E6 /* AudioEncodeViewController.xib in Resources */,
 				52A17EA2217431A2003A07CE /* abc.pcm in Resources */,
@@ -744,6 +774,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				52384F7E21CCD2EF004018EF /* VideoDecodeViewController.m in Sources */,
 				522136661F7F737500182B12 /* AudioEncodeViewController.m in Sources */,
 				52E04394215E270B003CB1C5 /* AudioDecoder.m in Sources */,
 				529067971F95A48A001A7BFA /* SharedQueue.m in Sources */,
@@ -757,6 +788,7 @@
 				522136791F7F738F00182B12 /* AudioCaptureManager.m in Sources */,
 				52AA25101F98951F0084771B /* VideoCaptureManager.m in Sources */,
 				52B338571F7F9BE2003BEFFB /* AACHardEncoder.m in Sources */,
+				5210136621CCE62A003D98F5 /* AAPLEAGLLayer.m in Sources */,
 				522136631F7F737500182B12 /* AppDelegate.m in Sources */,
 				52E04397215E2988003CB1C5 /* AudioPlayerManager.m in Sources */,
 				52AA25191F998ECF0084771B /* H264HardwareEncoder.m in Sources */,

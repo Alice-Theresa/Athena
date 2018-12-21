@@ -127,7 +127,7 @@
         NSLog(@"Failed to encode!");
     }
     if(ret == 0) {
-        NSLog(@"Succeed to encode frame: %ld\tsize:%5d", self.frameID, packet.size);
+        NSLog(@"Succeed to encode frame: %ld\tsize:%5d", (long)self.frameID, packet.size);
         self.frameID++;
         NSData *data = [NSData dataWithBytes:packet.data length:packet.size];
         [self.delegate encodedResult:data error:nil];

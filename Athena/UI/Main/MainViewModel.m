@@ -33,7 +33,11 @@
     model3.codecName = @"H264编码";
     model3.vcName = @"VideoEncodeViewController";
     
-    self.codecNames = @[ model1, model2, model3 ];
+    MainModel *model4 = [[MainModel alloc] init];
+    model4.codecName = @"H264解码";
+    model4.vcName = @"VideoDecodeViewController";
+    
+    self.codecNames = @[ model1, model2, model3, model4 ];
 }
 
 @end
