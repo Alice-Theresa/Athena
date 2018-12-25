@@ -64,4 +64,13 @@
     return queue;
 }
 
++ (dispatch_queue_t)videoDecode {
+    static dispatch_queue_t queue;
+    static dispatch_once_t onceToken;
+    dispatch_once(&onceToken, ^{
+        queue = dispatch_queue_create("com.video.decode.queue", DISPATCH_QUEUE_SERIAL);
+    });
+    return queue;
+}
+
 @end

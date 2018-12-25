@@ -18,4 +18,6 @@
 + (dispatch_queue_t)videoBuffer;
 + (dispatch_queue_t)videoCallback;
 
++ (dispatch_queue_t)videoDecode;
+
 @end
