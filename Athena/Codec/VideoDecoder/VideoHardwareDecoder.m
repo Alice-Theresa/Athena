@@ -9,14 +9,14 @@
 #import <VideoToolbox/VideoToolbox.h>
 #import "VideoHardwareDecoder.h"
 #import "SharedQueue.h"
+#import "VideoDecodePreprocessor.h"
+#import "SCPacketQueue.h"
 
 @interface VideoHardwareDecoder ()
 
-@property (nonatomic, strong) NSInputStream *inputStream;
+@property (nonatomic, strong) VideoDecodePreprocessor *processor;
 
 @end
-
-const uint8_t lyStartCode[4] = {0, 0, 0, 1};
 
 static void didDecompress(void *decompressionOutputRefCon,
                           void *sourceFrameRefCon,
@@ -30,104 +30,14 @@ static void didDecompress(void *decompressionOutputRefCon,
 }
 
 @implementation VideoHardwareDecoder {
-    uint8_t *_sps;
-    NSInteger _spsSize;
-    uint8_t *_pps;
-    NSInteger _ppsSize;
     VTDecompressionSessionRef _deocderSession;
     CMVideoFormatDescriptionRef _decoderFormatDescription;
     
     uint8_t* packetBuffer;
     long packetSize;
-    uint8_t* inputBuffer;
-    long inputSize;
-    long inputMaxSize;
 }
 
 - (void)dealloc {
-    [self clearH264Deocder];
-}
-
-#pragma mark - public
-
-- (instancetype)initWithStream:(NSInputStream *)stream {
-    if (self = [super init]) {
-        inputSize = 0;
-        inputMaxSize = 640 * 480 * 3 * 4;
-        inputBuffer = malloc(inputMaxSize);
-        _inputStream = stream;
-    }
-    return self;
-}
-
-- (void)startDecode {
-    dispatch_async([SharedQueue videoDecode], ^{
-        [self.inputStream open];
-    });
-}
-
-- (void)stopDecode {
-    dispatch_async([SharedQueue videoDecode], ^{
-        [self cancelStream];
-    });
-}
-
-- (void)decodeFrame {
-    dispatch_async([SharedQueue videoDecode], ^{
-        [self readPacket];
-        if(packetBuffer == NULL || packetSize == 0) {
-            [self cancelStream];
-            return;
-        }
-        uint32_t nalSize = (uint32_t)(packetSize - 4);
-        uint32_t *pNalSize = (uint32_t *)packetBuffer;
-        *pNalSize = CFSwapInt32HostToBig(nalSize);
-        CVPixelBufferRef pixelBuffer = NULL;
-        int nalType = packetBuffer[4] & 0x1F;
-        switch (nalType) {
-            case 0x05:
-                NSLog(@"Nal type is IDR frame");
-                if([self initH264Decoder]) {
-                    pixelBuffer = [self decode];
-                }
-                break;
-            case 0x07:
-                NSLog(@"Nal type is SPS");
-                _spsSize = packetSize - 4;
-                _sps = malloc(_spsSize);
-                memcpy(_sps, packetBuffer + 4, _spsSize);
-                break;
-            case 0x08:
-                NSLog(@"Nal type is PPS");
-                _ppsSize = packetSize - 4;
-                _pps = malloc(_ppsSize);
-                memcpy(_pps, packetBuffer + 4, _ppsSize);
-                break;
-            default:
-                NSLog(@"Nal type is B/P frame");
-                pixelBuffer = [self decode];
-                break;
-        }
-        if(pixelBuffer) {
-            [self.delegate fetch:pixelBuffer];
-            CVPixelBufferRelease(pixelBuffer);
-        }
-        NSLog(@"Read Nalu size %ld", packetSize);
-    });
-}
-
-#pragma mark - privacy
-
-- (void)cancelStream {
-    [self.inputStream close];
-    self.inputStream = nil;
-    if (inputBuffer) {
-        free(inputBuffer);
-        inputBuffer = NULL;
-    }
-}
-
-- (void)clearH264Deocder {
     if(_deocderSession) {
         VTDecompressionSessionInvalidate(_deocderSession);
         CFRelease(_deocderSession);
@@ -137,87 +47,87 @@ static void didDecompress(void *decompressionOutputRefCon,
         CFRelease(_decoderFormatDescription);
         _decoderFormatDescription = NULL;
     }
-    free(_sps);
-    free(_pps);
-    _spsSize = _ppsSize = 0;
 }
 
-- (void)readPacket {
-    if (packetSize && packetBuffer) {
-        packetSize = 0;
-        free(packetBuffer);
-        packetBuffer = NULL;
+#pragma mark - public
+
+- (instancetype)init {
+    if (self = [super init]) {
+        _processor = [[VideoDecodePreprocessor alloc] init];
     }
-    if (inputSize < inputMaxSize && self.inputStream.hasBytesAvailable) {
-        inputSize += [self.inputStream read:inputBuffer + inputSize maxLength:inputMaxSize - inputSize];
-    }
-    if (memcmp(inputBuffer, lyStartCode, 4) == 0) {
-        if (inputSize > 4) { // 除了开始码还有内容
-            uint8_t *pStart = inputBuffer + 4;
-            uint8_t *pEnd = inputBuffer + inputSize;
-            while (pStart != pEnd) { //这里使用一种简略的方式来获取这一帧的长度：通过查找下一个0x00000001来确定。
-                if(memcmp(pStart - 3, lyStartCode, 4) == 0) {
-                    packetSize = pStart - inputBuffer - 3;
-                    if (packetBuffer) {
-                        free(packetBuffer);
-                        packetBuffer = NULL;
-                    }
-                    packetBuffer = malloc(packetSize);
-                    memcpy(packetBuffer, inputBuffer, packetSize); //复制packet内容到新的缓冲区
-                    memmove(inputBuffer, inputBuffer + packetSize, inputSize - packetSize); //把缓冲区前移
-                    inputSize -= packetSize;
-                    break;
-                } else {
-                    ++pStart;
-                }
-            }
-        }
-    }
+    return self;
 }
+
+- (void)decodeFrame {
+    dispatch_async([SharedQueue videoDecode], ^{
+        CVPixelBufferRef pixelBuffer = NULL;
+        if([self initH264Decoder]) {
+            pixelBuffer = [self decode];
+        }
+        if(pixelBuffer) {
+            [self.delegate fetch:pixelBuffer];
+            CVPixelBufferRelease(pixelBuffer);
+        }
+        
+    });
+}
+
+#pragma mark - privacy
+
 
 - (BOOL)initH264Decoder {
     if(_deocderSession) {
         return YES;
     }
-    const uint8_t* const parameterSetPointers[2] = { _sps, _pps };
-    const size_t parameterSetSizes[2] = { _spsSize, _ppsSize };
-    OSStatus status = CMVideoFormatDescriptionCreateFromH264ParameterSets(kCFAllocatorDefault, 2, parameterSetPointers,
-                                                                          parameterSetSizes, 4,  &_decoderFormatDescription);
-    if(status == noErr) {
-        CFDictionaryRef attrs = NULL;
-        const void *keys[] = { kCVPixelBufferPixelFormatTypeKey };
-        uint32_t v = kCVPixelFormatType_420YpCbCr8BiPlanarFullRange;
-        const void *values[] = { CFNumberCreate(NULL, kCFNumberSInt32Type, &v) };
-        attrs = CFDictionaryCreate(NULL, keys, values, 1, NULL, NULL);
+    AVCodecContext *codecContext = [self.processor fetchCodecContext];
+    uint8_t *extradata = codecContext->extradata;
+    int extradata_size = codecContext->extradata_size;
+    
+    if (extradata_size < 7 || extradata == NULL) {
+        return NO;
+    }
+    if (extradata[0] != 1) {
+        return NO;
+    } else {
+        _decoderFormatDescription = CreateFormatDescription(kCMVideoCodecType_H264, codecContext->width, codecContext->height, extradata, extradata_size);
+        if (_decoderFormatDescription == NULL) {
+            NSLog(@"create decoder format description failed");
+            return NO;
+        }
+        
+        CFMutableDictionaryRef destinationPixelBufferAttributes = CFDictionaryCreateMutable(NULL, 0, &kCFTypeDictionaryKeyCallBacks, &kCFTypeDictionaryValueCallBacks);
+        cf_dict_set_int32(destinationPixelBufferAttributes, kCVPixelBufferPixelFormatTypeKey, kCVPixelFormatType_420YpCbCr8BiPlanarVideoRange);
+        cf_dict_set_int32(destinationPixelBufferAttributes, kCVPixelBufferWidthKey, codecContext->width);
+        cf_dict_set_int32(destinationPixelBufferAttributes, kCVPixelBufferHeightKey, codecContext->height);
         
         VTDecompressionOutputCallbackRecord callBackRecord;
         callBackRecord.decompressionOutputCallback = didDecompress;
-        callBackRecord.decompressionOutputRefCon = NULL;
+        callBackRecord.decompressionOutputRefCon = (__bridge void *)self;
         
-        status = VTDecompressionSessionCreate(kCFAllocatorDefault, _decoderFormatDescription, NULL,
-                                              attrs, &callBackRecord, &_deocderSession);
-        CFRelease(attrs);
-    } else {
-        NSLog(@"IOS8VT: reset decoder session failed status=%d", status);
-        return NO;
+        OSStatus status = VTDecompressionSessionCreate(kCFAllocatorDefault, _decoderFormatDescription, NULL,
+                                                       destinationPixelBufferAttributes, &callBackRecord, &_deocderSession);
+        if(status != noErr) {
+            NSLog(@"Create Decompression Session failed - Code= %d", status);
+            return NO;
+        } else {
+            return YES;
+        }
     }
-    return YES;
 }
 
 - (CVPixelBufferRef)decode {
     CVPixelBufferRef outputPixelBuffer = NULL;
     CMBlockBufferRef blockBuffer = NULL;
+    AVPacket packet = [[SCPacketQueue shared] getPacket];
+    packetBuffer = packet.data;
+    packetSize = packet.size;
     OSStatus status  = CMBlockBufferCreateWithMemoryBlock(kCFAllocatorDefault, (void*)packetBuffer, packetSize, kCFAllocatorNull,
-                                                          NULL, 0, packetSize, 0, &blockBuffer);
+                                                          NULL, 0, packetSize, FALSE, &blockBuffer);
     if(status == kCMBlockBufferNoErr) {
         CMSampleBufferRef sampleBuffer = NULL;
-        const size_t sampleSizeArray[] = {packetSize};
-        status = CMSampleBufferCreateReady(kCFAllocatorDefault, blockBuffer, _decoderFormatDescription,
-                                           1, 0, NULL, 1, sampleSizeArray, &sampleBuffer);
+        status = CMSampleBufferCreate(NULL, blockBuffer, TRUE, 0, 0, _decoderFormatDescription, 1, 0, NULL, 0, NULL, &sampleBuffer);
         if (status == kCMBlockBufferNoErr && sampleBuffer) {
-            VTDecodeFrameFlags flags = 0;
-            VTDecodeInfoFlags flagOut = 0;
-            OSStatus decodeStatus = VTDecompressionSessionDecodeFrame(_deocderSession, sampleBuffer, flags, &outputPixelBuffer, &flagOut);
+            OSStatus decodeStatus = VTDecompressionSessionDecodeFrame(_deocderSession, sampleBuffer, 0, &outputPixelBuffer, NULL);
             if(decodeStatus == kVTInvalidSessionErr) {
                 NSLog(@"IOS8VT: Invalid session, reset decoder session");
             } else if(decodeStatus == kVTVideoDecoderBadDataErr) {
@@ -225,11 +135,81 @@ static void didDecompress(void *decompressionOutputRefCon,
             } else if(decodeStatus != noErr) {
                 NSLog(@"IOS8VT: decode failed status=%d", decodeStatus);
             }
+            NSLog(@"Read Nalu size %ld", packetSize);
             CFRelease(sampleBuffer);
         }
         CFRelease(blockBuffer);
     }
     return outputPixelBuffer;
+}
+
+static CMFormatDescriptionRef CreateFormatDescription(CMVideoCodecType codec_type, int width, int height, const uint8_t * extradata, int extradata_size)
+{
+    CMFormatDescriptionRef format_description = NULL;
+    OSStatus status;
+    
+    CFMutableDictionaryRef par = CFDictionaryCreateMutable(NULL, 0, &kCFTypeDictionaryKeyCallBacks, &kCFTypeDictionaryValueCallBacks);
+    CFMutableDictionaryRef atoms = CFDictionaryCreateMutable(NULL, 0, &kCFTypeDictionaryKeyCallBacks, &kCFTypeDictionaryValueCallBacks);
+    CFMutableDictionaryRef extensions = CFDictionaryCreateMutable(NULL, 0, &kCFTypeDictionaryKeyCallBacks, &kCFTypeDictionaryValueCallBacks);
+    
+    // CVPixelAspectRatio
+    cf_dict_set_int32(par, CFSTR("HorizontalSpacing"), 0);
+    cf_dict_set_int32(par, CFSTR("VerticalSpacing"), 0);
+    
+    // SampleDescriptionExtensionAtoms
+    cf_dict_set_data(atoms, CFSTR("avcC"), (uint8_t *)extradata, extradata_size);
+    
+    // Extensions
+    cf_dict_set_string(extensions, CFSTR ("CVImageBufferChromaLocationBottomField"), "left");
+    cf_dict_set_string(extensions, CFSTR ("CVImageBufferChromaLocationTopField"), "left");
+    cf_dict_set_boolean(extensions, CFSTR("FullRangeVideo"), FALSE);
+    cf_dict_set_object(extensions, CFSTR ("CVPixelAspectRatio"), (CFTypeRef *)par);
+    cf_dict_set_object(extensions, CFSTR ("SampleDescriptionExtensionAtoms"), (CFTypeRef *)atoms);
+    
+    status = CMVideoFormatDescriptionCreate(NULL, codec_type, width, height, extensions, &format_description);
+    
+    CFRelease(extensions);
+    CFRelease(atoms);
+    CFRelease(par);
+    
+    if (status != noErr) {
+        return NULL;
+    }
+    return format_description;
+}
+
+static void cf_dict_set_data(CFMutableDictionaryRef dict, CFStringRef key, uint8_t * value, uint64_t length)
+{
+    CFDataRef data;
+    data = CFDataCreate(NULL, value, (CFIndex)length);
+    CFDictionarySetValue(dict, key, data);
+    CFRelease(data);
+}
+
+static void cf_dict_set_int32(CFMutableDictionaryRef dict, CFStringRef key, int32_t value)
+{
+    CFNumberRef number;
+    number = CFNumberCreate(NULL, kCFNumberSInt32Type, &value);
+    CFDictionarySetValue(dict, key, number);
+    CFRelease(number);
+}
+
+static void cf_dict_set_string(CFMutableDictionaryRef dict, CFStringRef key, const char * value)
+{
+    CFStringRef string;
+    string = CFStringCreateWithCString(NULL, value, kCFStringEncodingASCII);
+    CFDictionarySetValue(dict, key, string);
+    CFRelease(string);
+}
+
+static void cf_dict_set_boolean(CFMutableDictionaryRef dict, CFStringRef key, BOOL value)
+{
+    CFDictionarySetValue(dict, key, value ? kCFBooleanTrue: kCFBooleanFalse);
+}
+
+static void cf_dict_set_object(CFMutableDictionaryRef dict, CFStringRef key, CFTypeRef *value)
+{
+    CFDictionarySetValue(dict, key, value);
 }
 
 @end

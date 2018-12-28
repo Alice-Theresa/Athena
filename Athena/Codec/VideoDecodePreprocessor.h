@@ -7,10 +7,14 @@
 //
 
 #import <Foundation/Foundation.h>
+#import "avformat.h"
 
 NS_ASSUME_NONNULL_BEGIN
 
 @interface VideoDecodePreprocessor : NSObject
+
+- (AVPacket)readFrame;
+- (AVCodecContext *)fetchCodecContext;
 
 @end
 

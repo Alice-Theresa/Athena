@@ -12,6 +12,8 @@
 		520B6E0421785BCF00813756 /* abc.mp3 in Resources */ = {isa = PBXBuildFile; fileRef = 520B6E0321785BCF00813756 /* abc.mp3 */; };
 		5210136621CCE62A003D98F5 /* AAPLEAGLLayer.m in Sources */ = {isa = PBXBuildFile; fileRef = 5210136321CCE62A003D98F5 /* AAPLEAGLLayer.m */; };
 		5210136921CCE681003D98F5 /* mtv.h264 in Resources */ = {isa = PBXBuildFile; fileRef = 5210136821CCE681003D98F5 /* mtv.h264 */; };
+		521B7E6121D4C9AC00F5B689 /* test.mp4 in Resources */ = {isa = PBXBuildFile; fileRef = 521B7E6021D4C9AC00F5B689 /* test.mp4 */; };
+		521B7E6421D4CBD100F5B689 /* SCPacketQueue.m in Sources */ = {isa = PBXBuildFile; fileRef = 521B7E6321D4CBD100F5B689 /* SCPacketQueue.m */; };
 		522136631F7F737500182B12 /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 522136621F7F737500182B12 /* AppDelegate.m */; };
 		522136661F7F737500182B12 /* AudioEncodeViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 522136651F7F737500182B12 /* AudioEncodeViewController.m */; };
 		522136691F7F737500182B12 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 522136671F7F737500182B12 /* Main.storyboard */; };
@@ -19,6 +21,7 @@
 		5221366E1F7F737500182B12 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 5221366C1F7F737500182B12 /* LaunchScreen.storyboard */; };
 		522136711F7F737500182B12 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 522136701F7F737500182B12 /* main.m */; };
 		522136791F7F738F00182B12 /* AudioCaptureManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 522136781F7F738F00182B12 /* AudioCaptureManager.m */; };
+		522E04E521D37C4C0061B029 /* vid.mp4 in Resources */ = {isa = PBXBuildFile; fileRef = 522E04E421D37C4C0061B029 /* vid.mp4 */; };
 		52384F7E21CCD2EF004018EF /* VideoDecodeViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 52384F7D21CCD2EF004018EF /* VideoDecodeViewController.m */; };
 		526F498021D0DE110023E6C3 /* VideoHardwareDecoder.m in Sources */ = {isa = PBXBuildFile; fileRef = 526F497F21D0DE110023E6C3 /* VideoHardwareDecoder.m */; };
 		526F498921D213D10023E6C3 /* VideoDecodePreprocessor.m in Sources */ = {isa = PBXBuildFile; fileRef = 526F498821D213D10023E6C3 /* VideoDecodePreprocessor.m */; };
@@ -60,6 +63,9 @@
 		5210136321CCE62A003D98F5 /* AAPLEAGLLayer.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AAPLEAGLLayer.m; sourceTree = "<group>"; };
 		5210136521CCE62A003D98F5 /* AAPLEAGLLayer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AAPLEAGLLayer.h; sourceTree = "<group>"; };
 		5210136821CCE681003D98F5 /* mtv.h264 */ = {isa = PBXFileReference; lastKnownFileType = file; path = mtv.h264; sourceTree = "<group>"; };
+		521B7E6021D4C9AC00F5B689 /* test.mp4 */ = {isa = PBXFileReference; lastKnownFileType = file; path = test.mp4; sourceTree = "<group>"; };
+		521B7E6221D4CBD100F5B689 /* SCPacketQueue.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SCPacketQueue.h; sourceTree = "<group>"; };
+		521B7E6321D4CBD100F5B689 /* SCPacketQueue.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = SCPacketQueue.m; sourceTree = "<group>"; };
 		5221365E1F7F737500182B12 /* Athena.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Athena.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		522136611F7F737500182B12 /* AppDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AppDelegate.h; sourceTree = "<group>"; };
 		522136621F7F737500182B12 /* AppDelegate.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = AppDelegate.m; sourceTree = "<group>"; };
@@ -72,6 +78,7 @@
 		522136701F7F737500182B12 /* main.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
 		522136771F7F738F00182B12 /* AudioCaptureManager.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AudioCaptureManager.h; sourceTree = "<group>"; };
 		522136781F7F738F00182B12 /* AudioCaptureManager.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = AudioCaptureManager.m; sourceTree = "<group>"; };
+		522E04E421D37C4C0061B029 /* vid.mp4 */ = {isa = PBXFileReference; lastKnownFileType = file; path = vid.mp4; sourceTree = "<group>"; };
 		52384F7C21CCD2EF004018EF /* VideoDecodeViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = VideoDecodeViewController.h; sourceTree = "<group>"; };
 		52384F7D21CCD2EF004018EF /* VideoDecodeViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = VideoDecodeViewController.m; sourceTree = "<group>"; };
 		526F497E21D0DE110023E6C3 /* VideoHardwareDecoder.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = VideoHardwareDecoder.h; sourceTree = "<group>"; };
@@ -315,6 +322,8 @@
 				522136621F7F737500182B12 /* AppDelegate.m */,
 				520B6E0321785BCF00813756 /* abc.mp3 */,
 				52A17EA1217431A2003A07CE /* abc.pcm */,
+				522E04E421D37C4C0061B029 /* vid.mp4 */,
+				521B7E6021D4C9AC00F5B689 /* test.mp4 */,
 				5210136821CCE681003D98F5 /* mtv.h264 */,
 				522136671F7F737500182B12 /* Main.storyboard */,
 				5221366A1F7F737500182B12 /* Assets.xcassets */,
@@ -425,6 +434,8 @@
 				529067941F95A090001A7BFA /* AudioEncoder */,
 				526F498721D213D10023E6C3 /* VideoDecodePreprocessor.h */,
 				526F498821D213D10023E6C3 /* VideoDecodePreprocessor.m */,
+				521B7E6221D4CBD100F5B689 /* SCPacketQueue.h */,
+				521B7E6321D4CBD100F5B689 /* SCPacketQueue.m */,
 			);
 			path = Codec;
 			sourceTree = "<group>";
@@ -768,8 +779,10 @@
 			files = (
 				5221366E1F7F737500182B12 /* LaunchScreen.storyboard in Resources */,
 				5210136921CCE681003D98F5 /* mtv.h264 in Resources */,
+				522E04E521D37C4C0061B029 /* vid.mp4 in Resources */,
 				5202621D21606DB800F1033B /* AudioDecodeViewController.xib in Resources */,
 				52E1033A215E095F007783E6 /* AudioEncodeViewController.xib in Resources */,
+				521B7E6121D4C9AC00F5B689 /* test.mp4 in Resources */,
 				52A17EA2217431A2003A07CE /* abc.pcm in Resources */,
 				5221366B1F7F737500182B12 /* Assets.xcassets in Resources */,
 				522136691F7F737500182B12 /* Main.storyboard in Resources */,
@@ -793,6 +806,7 @@
 				52AA25131F989C340084771B /* VideoEncodeViewController.m in Sources */,
 				522136711F7F737500182B12 /* main.m in Sources */,
 				529067A11F96F13B001A7BFA /* MainViewController.m in Sources */,
+				521B7E6421D4CBD100F5B689 /* SCPacketQueue.m in Sources */,
 				52E10333215E072D007783E6 /* MainModel.m in Sources */,
 				765ED7741F935CDB000CF16E /* AACSoftEncoder.m in Sources */,
 				522136791F7F738F00182B12 /* AudioCaptureManager.m in Sources */,

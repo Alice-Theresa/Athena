@@ -27,10 +27,8 @@
     self.glLayer = [[AAPLEAGLLayer alloc] initWithFrame:self.view.bounds];
     [self.view.layer addSublayer:self.glLayer];
     
-    self.decoder = [[VideoHardwareDecoder alloc] initWithStream:[[NSInputStream alloc] initWithFileAtPath:[[NSBundle mainBundle] pathForResource:@"mtv" ofType:@"h264"]]];
+    self.decoder = [[VideoHardwareDecoder alloc] init];
     self.decoder.delegate = self;
-
-    [self.decoder startDecode];
     
     self.mDispalyLink = [CADisplayLink displayLinkWithTarget:self selector:@selector(updateFrame)];
     self.mDispalyLink.frameInterval = 2;
@@ -41,7 +39,6 @@
 - (void)viewWillDisappear:(BOOL)animated {
     [super viewDidDisappear:animated];
     [self.mDispalyLink setPaused:YES];
-    [self.decoder stopDecode];
 }
 
 - (void)updateFrame {

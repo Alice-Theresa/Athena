@@ -20,12 +20,6 @@ NS_ASSUME_NONNULL_BEGIN
 
 @property (nonatomic, weak) id<VideoDecoderDelegate> delegate;
 
-- (instancetype)init NS_UNAVAILABLE;
-
-- (instancetype)initWithStream:(NSInputStream *)stream;
-
-- (void)startDecode;
-- (void)stopDecode;
 - (void)decodeFrame;
 
 @end
