@@ -1,5 +1,5 @@
 //
-//  VideoDecodePreprocessor.h
+//  SCFormatContext.h
 //  Athena
 //
 //  Created by Theresa on 2018/12/25.
@@ -11,7 +11,7 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-@interface VideoDecodePreprocessor : NSObject
+@interface SCFormatContext : NSObject
 
 - (AVPacket)readFrame;
 - (AVCodecContext *)fetchCodecContext;

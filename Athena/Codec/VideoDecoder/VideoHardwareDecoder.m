@@ -9,12 +9,12 @@
 #import <VideoToolbox/VideoToolbox.h>
 #import "VideoHardwareDecoder.h"
 #import "SharedQueue.h"
-#import "VideoDecodePreprocessor.h"
+#import "SCFormatContext.h"
 #import "SCPacketQueue.h"
 
 @interface VideoHardwareDecoder ()
 
-@property (nonatomic, strong) VideoDecodePreprocessor *processor;
+@property (nonatomic, strong) SCFormatContext *processor;
 
 @end
 
@@ -53,7 +53,7 @@ static void didDecompress(void *decompressionOutputRefCon,
 
 - (instancetype)init {
     if (self = [super init]) {
-        _processor = [[VideoDecodePreprocessor alloc] init];
+        _processor = [[SCFormatContext alloc] init];
     }
     return self;
 }
