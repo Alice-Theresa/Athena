@@ -8,17 +8,16 @@
 
 #import <Foundation/Foundation.h>
 
+@class SCVideoFrame;
+@class SCFormatContext;
+
 NS_ASSUME_NONNULL_BEGIN
-
-@protocol VideoDecoderDelegate <NSObject>
-
-- (void)fetch:(CVPixelBufferRef)buffer;
-
-@end
 
 @interface SCHardwareDecoder : NSObject
 
-@property (nonatomic, weak) id<VideoDecoderDelegate> delegate;
+- (instancetype)init NS_UNAVAILABLE;
+- (instancetype)initWithFormatContext:(SCFormatContext *)formatContext;
+- (SCVideoFrame *)decode;
 
 @end
 

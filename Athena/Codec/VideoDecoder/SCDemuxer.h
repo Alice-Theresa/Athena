@@ -1,5 +1,5 @@
 //
-//  SCSplitter.h
+//  SCDemuxer.h
 //  Athena
 //
 //  Created by Theresa on 2018/12/29.
@@ -8,9 +8,14 @@
 
 #import <Foundation/Foundation.h>
 
+@class SCFormatContext;
+
 NS_ASSUME_NONNULL_BEGIN
 
-@interface SCSplitter : NSObject
+@interface SCDemuxer : NSObject
+
+- (instancetype)init;
+- (void)startOperation;
 
 @end
 

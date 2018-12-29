@@ -15,8 +15,8 @@ NS_ASSUME_NONNULL_BEGIN
 
 @property (nonatomic, assign) int videoIndex;
 
-- (AVPacket)readFrame;
 - (AVCodecContext *)fetchCodecContext;
+- (int)readFrame:(AVPacket *)packet;
 
 @end
 

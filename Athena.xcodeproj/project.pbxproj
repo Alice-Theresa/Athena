@@ -12,7 +12,7 @@
 		520B6E0421785BCF00813756 /* abc.mp3 in Resources */ = {isa = PBXBuildFile; fileRef = 520B6E0321785BCF00813756 /* abc.mp3 */; };
 		5210136621CCE62A003D98F5 /* AAPLEAGLLayer.m in Sources */ = {isa = PBXBuildFile; fileRef = 5210136321CCE62A003D98F5 /* AAPLEAGLLayer.m */; };
 		521B7E6121D4C9AC00F5B689 /* test.mp4 in Resources */ = {isa = PBXBuildFile; fileRef = 521B7E6021D4C9AC00F5B689 /* test.mp4 */; };
-		521B7E7C21D7602900F5B689 /* SCSplitter.m in Sources */ = {isa = PBXBuildFile; fileRef = 521B7E7A21D7602800F5B689 /* SCSplitter.m */; };
+		521B7E7C21D7602900F5B689 /* SCDemuxer.m in Sources */ = {isa = PBXBuildFile; fileRef = 521B7E7A21D7602800F5B689 /* SCDemuxer.m */; };
 		521B7E8321D7604D00F5B689 /* SCVideoFrameQueue.m in Sources */ = {isa = PBXBuildFile; fileRef = 521B7E7D21D7604C00F5B689 /* SCVideoFrameQueue.m */; };
 		521B7E8421D7604D00F5B689 /* SCPacketQueue.m in Sources */ = {isa = PBXBuildFile; fileRef = 521B7E7F21D7604C00F5B689 /* SCPacketQueue.m */; };
 		521B7E8521D7604D00F5B689 /* SCVideoFrame.m in Sources */ = {isa = PBXBuildFile; fileRef = 521B7E8221D7604D00F5B689 /* SCVideoFrame.m */; };
@@ -65,8 +65,8 @@
 		5210136321CCE62A003D98F5 /* AAPLEAGLLayer.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AAPLEAGLLayer.m; sourceTree = "<group>"; };
 		5210136521CCE62A003D98F5 /* AAPLEAGLLayer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AAPLEAGLLayer.h; sourceTree = "<group>"; };
 		521B7E6021D4C9AC00F5B689 /* test.mp4 */ = {isa = PBXFileReference; lastKnownFileType = file; path = test.mp4; sourceTree = "<group>"; };
-		521B7E7A21D7602800F5B689 /* SCSplitter.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SCSplitter.m; sourceTree = "<group>"; };
-		521B7E7B21D7602800F5B689 /* SCSplitter.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SCSplitter.h; sourceTree = "<group>"; };
+		521B7E7A21D7602800F5B689 /* SCDemuxer.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SCDemuxer.m; sourceTree = "<group>"; };
+		521B7E7B21D7602800F5B689 /* SCDemuxer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SCDemuxer.h; sourceTree = "<group>"; };
 		521B7E7D21D7604C00F5B689 /* SCVideoFrameQueue.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SCVideoFrameQueue.m; sourceTree = "<group>"; };
 		521B7E7E21D7604C00F5B689 /* SCVideoFrame.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SCVideoFrame.h; sourceTree = "<group>"; };
 		521B7E7F21D7604C00F5B689 /* SCPacketQueue.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SCPacketQueue.m; sourceTree = "<group>"; };
@@ -347,8 +347,8 @@
 				526F497F21D0DE110023E6C3 /* SCHardwareDecoder.m */,
 				526F498721D213D10023E6C3 /* SCFormatContext.h */,
 				526F498821D213D10023E6C3 /* SCFormatContext.m */,
-				521B7E7B21D7602800F5B689 /* SCSplitter.h */,
-				521B7E7A21D7602800F5B689 /* SCSplitter.m */,
+				521B7E7B21D7602800F5B689 /* SCDemuxer.h */,
+				521B7E7A21D7602800F5B689 /* SCDemuxer.m */,
 				521B7E8021D7604C00F5B689 /* SCPacketQueue.h */,
 				521B7E7F21D7604C00F5B689 /* SCPacketQueue.m */,
 				521B7E7E21D7604C00F5B689 /* SCVideoFrame.h */,
@@ -821,7 +821,7 @@
 				52E10333215E072D007783E6 /* MainModel.m in Sources */,
 				765ED7741F935CDB000CF16E /* AACSoftEncoder.m in Sources */,
 				522136791F7F738F00182B12 /* AudioCaptureManager.m in Sources */,
-				521B7E7C21D7602900F5B689 /* SCSplitter.m in Sources */,
+				521B7E7C21D7602900F5B689 /* SCDemuxer.m in Sources */,
 				52AA25101F98951F0084771B /* VideoCaptureManager.m in Sources */,
 				52B338571F7F9BE2003BEFFB /* AACHardEncoder.m in Sources */,
 				526F498021D0DE110023E6C3 /* SCHardwareDecoder.m in Sources */,

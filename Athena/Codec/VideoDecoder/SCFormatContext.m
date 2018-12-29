@@ -9,12 +9,15 @@
 #import "SCFormatContext.h"
 #import "SCPacketQueue.h"
 
-@implementation SCFormatContext {
+@interface SCFormatContext () {
     AVCodecContext *codecContext;
     AVFormatContext *formatContext;
     AVCodec *codec;
-    AVFrame *frame;
 }
+
+@end
+
+@implementation SCFormatContext
 
 - (AVCodecContext *)fetchCodecContext {
     return codecContext;
@@ -24,9 +27,6 @@
     if (self = [super init]) {
         _videoIndex = -1;
         [self setupDecoder];
-        for (int i = 0; i < 1000; i++) {
-            [[SCPacketQueue shared] putPacket:[self readFrame]];
-        }
     }
     return self;
 }
@@ -70,11 +70,8 @@
     
 }
 
-- (AVPacket)readFrame {
-    AVPacket packet;
-    av_init_packet(&packet);
-    int res = av_read_frame(self->formatContext, &packet);
-    return packet;
+- (int)readFrame:(AVPacket *)packet {
+    return av_read_frame(self->formatContext, packet);
 }
 
 @end

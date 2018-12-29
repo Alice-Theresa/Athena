@@ -16,8 +16,6 @@
 
 @interface SCHardwareDecoder ()
 
-@property (nonatomic, strong) SCFormatContext *formatContext;
-
 @end
 
 static void didDecompress(void *decompressionOutputRefCon,
@@ -53,24 +51,20 @@ static void didDecompress(void *decompressionOutputRefCon,
 
 #pragma mark - public
 
-- (instancetype)init {
+- (instancetype)initWithFormatContext:(SCFormatContext *)formatContext {
     if (self = [super init]) {
-        _formatContext = [[SCFormatContext alloc] init];
-        [self initH264Decoder];
-        for (int i = 0; i < 1000; i++) {
-            [[SCVideoFrameQueue shared] putFrame:[self decode]];
-        }
+        [self initDecoderWithFormatContext:formatContext];
     }
     return self;
 }
 
 #pragma mark - privacy
 
-- (BOOL)initH264Decoder {
+- (BOOL)initDecoderWithFormatContext:(SCFormatContext *)formatContext {
     if(_deocderSession) {
         return YES;
     }
-    AVCodecContext *codecContext = [self.formatContext fetchCodecContext];
+    AVCodecContext *codecContext = [formatContext fetchCodecContext];
     uint8_t *extradata = codecContext->extradata;
     int extradata_size = codecContext->extradata_size;
     
@@ -110,9 +104,6 @@ static void didDecompress(void *decompressionOutputRefCon,
     CVPixelBufferRef outputPixelBuffer = NULL;
     CMBlockBufferRef blockBuffer = NULL;
     AVPacket packet = [[SCPacketQueue shared] getPacket];
-    if (packet.stream_index != self.formatContext.videoIndex) {
-        return nil;
-    }
     packetBuffer = packet.data;
     packetSize = packet.size;
     OSStatus status = CMBlockBufferCreateWithMemoryBlock(kCFAllocatorDefault, (void*)packetBuffer, packetSize, kCFAllocatorNull,
