@@ -13,7 +13,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface SCFormatContext : NSObject
 
-@property (nonatomic, assign) int videoindex;
+@property (nonatomic, assign) int videoIndex;
 
 - (AVPacket)readFrame;
 - (AVCodecContext *)fetchCodecContext;

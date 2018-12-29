@@ -9,14 +9,14 @@
 #import "VideoDecodeViewController.h"
 #import "AAPLEAGLLayer.h"
 #import <VideoToolbox/VideoToolbox.h>
-#import "VideoHardwareDecoder.h"
-#import "SCFrameQueue.h"
+#import "SCHardwareDecoder.h"
+#import "SCVideoFrameQueue.h"
 #import "SCVideoFrame.h"
 
 @interface VideoDecodeViewController () <VideoDecoderDelegate>
 
 @property (nonatomic, strong) AAPLEAGLLayer *glLayer;
-@property (nonatomic, strong) VideoHardwareDecoder *decoder;
+@property (nonatomic, strong) SCHardwareDecoder *decoder;
 @property (nonatomic, strong) CADisplayLink *mDispalyLink;
 
 @end
@@ -29,7 +29,7 @@
     self.glLayer = [[AAPLEAGLLayer alloc] initWithFrame:self.view.bounds];
     [self.view.layer addSublayer:self.glLayer];
     
-    self.decoder = [[VideoHardwareDecoder alloc] init];
+    self.decoder = [[SCHardwareDecoder alloc] init];
     self.decoder.delegate = self;
     
     self.mDispalyLink = [CADisplayLink displayLinkWithTarget:self selector:@selector(updateFrame)];
@@ -44,8 +44,7 @@
 }
 
 - (void)updateFrame {
-//    [self.decoder decodeFrame];
-    _glLayer.pixelBuffer = [[SCFrameQueue shared] getFrame].pixelBuffer;
+    _glLayer.pixelBuffer = [[SCVideoFrameQueue shared] getFrame].pixelBuffer;
 }
 
 - (void)fetch:(CVPixelBufferRef)buffer {

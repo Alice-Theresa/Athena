@@ -1,28 +1,28 @@
 //
-//  SCFrameQueue.m
+//  SCVideoFrameQueue.m
 //  Athena
 //
 //  Created by Theresa on 2018/12/28.
 //  Copyright © 2018 Theresa. All rights reserved.
 //
 
-#import "SCFrameQueue.h"
+#import "SCVideoFrameQueue.h"
 #import "SCVideoFrame.h"
 
-@interface SCFrameQueue ()
+@interface SCVideoFrameQueue ()
 
 @property (nonatomic, strong) NSCondition *condition;
 @property (nonatomic, strong) NSMutableArray <SCVideoFrame *> *frames;
 
 @end
 
-@implementation SCFrameQueue
+@implementation SCVideoFrameQueue
 
 + (instancetype)shared {
-    static SCFrameQueue *queue;
+    static SCVideoFrameQueue *queue;
     static dispatch_once_t onceToken;
     dispatch_once(&onceToken, ^{
-        queue = [[SCFrameQueue alloc] init];
+        queue = [[SCVideoFrameQueue alloc] init];
     });
     return queue;
 }

@@ -16,7 +16,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 @end
 
-@interface VideoHardwareDecoder : NSObject
+@interface SCHardwareDecoder : NSObject
 
 @property (nonatomic, weak) id<VideoDecoderDelegate> delegate;
 

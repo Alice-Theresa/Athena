@@ -14,7 +14,6 @@
     AVFormatContext *formatContext;
     AVCodec *codec;
     AVFrame *frame;
-    
 }
 
 - (AVCodecContext *)fetchCodecContext {
@@ -23,7 +22,7 @@
 
 - (instancetype)init {
     if (self = [super init]) {
-        _videoindex = -1;
+        _videoIndex = -1;
         [self setupDecoder];
         for (int i = 0; i < 1000; i++) {
             [[SCPacketQueue shared] putPacket:[self readFrame]];
@@ -37,7 +36,7 @@
     avformat_network_init();
     formatContext = avformat_alloc_context();
 
-    NSString *path = [[[NSBundle mainBundle] resourcePath] stringByAppendingPathComponent:@"vid.mp4"];
+    NSString *path = [[[NSBundle mainBundle] resourcePath] stringByAppendingPathComponent:@"test.mp4"];
     
     if(avformat_open_input(&formatContext, [path UTF8String], NULL, NULL) != 0){
         printf("Couldn't open input stream.\n");
@@ -50,15 +49,15 @@
     
     for(int i = 0; i < formatContext->nb_streams; i++)
         if(formatContext->streams[i]->codecpar->codec_type==AVMEDIA_TYPE_VIDEO){
-            self.videoindex = i;
+            self.videoIndex = i;
             break;
         }
-    if(self.videoindex == -1){
+    if(self.videoIndex == -1){
         printf("Couldn't find a video stream.\n");
         return;
     }
     
-    codecContext = formatContext->streams[self.videoindex]->codec;
+    codecContext = formatContext->streams[self.videoIndex]->codec;
     codec = avcodec_find_decoder(codecContext->codec_id);
     if(codec == NULL){
         printf("Couldn't find Codec.\n");

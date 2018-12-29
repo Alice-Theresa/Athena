@@ -7,14 +7,14 @@
 //
 
 #import <VideoToolbox/VideoToolbox.h>
-#import "VideoHardwareDecoder.h"
+#import "SCHardwareDecoder.h"
 #import "SharedQueue.h"
 #import "SCFormatContext.h"
 #import "SCPacketQueue.h"
-#import "SCFrameQueue.h"
+#import "SCVideoFrameQueue.h"
 #import "SCVideoFrame.h"
 
-@interface VideoHardwareDecoder ()
+@interface SCHardwareDecoder ()
 
 @property (nonatomic, strong) SCFormatContext *formatContext;
 
@@ -31,7 +31,7 @@ static void didDecompress(void *decompressionOutputRefCon,
     *outputPixelBuffer = CVPixelBufferRetain(pixelBuffer);
 }
 
-@implementation VideoHardwareDecoder {
+@implementation SCHardwareDecoder {
     VTDecompressionSessionRef _deocderSession;
     CMVideoFormatDescriptionRef _decoderFormatDescription;
     
@@ -58,7 +58,7 @@ static void didDecompress(void *decompressionOutputRefCon,
         _formatContext = [[SCFormatContext alloc] init];
         [self initH264Decoder];
         for (int i = 0; i < 1000; i++) {
-            [[SCFrameQueue shared] putFrame:[self decode]];
+            [[SCVideoFrameQueue shared] putFrame:[self decode]];
         }
     }
     return self;
@@ -110,7 +110,7 @@ static void didDecompress(void *decompressionOutputRefCon,
     CVPixelBufferRef outputPixelBuffer = NULL;
     CMBlockBufferRef blockBuffer = NULL;
     AVPacket packet = [[SCPacketQueue shared] getPacket];
-    if (packet.stream_index != self.formatContext.videoindex) {
+    if (packet.stream_index != self.formatContext.videoIndex) {
         return nil;
     }
     packetBuffer = packet.data;

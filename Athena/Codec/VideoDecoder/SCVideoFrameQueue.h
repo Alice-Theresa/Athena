@@ -1,5 +1,5 @@
 //
-//  SCFrameQueue.h
+//  SCVideoFrameQueue.h
 //  Athena
 //
 //  Created by Theresa on 2018/12/28.
@@ -12,7 +12,7 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-@interface SCFrameQueue : NSObject
+@interface SCVideoFrameQueue : NSObject
 
 + (instancetype)shared;
 - (void)putFrame:(SCVideoFrame *)frame;
