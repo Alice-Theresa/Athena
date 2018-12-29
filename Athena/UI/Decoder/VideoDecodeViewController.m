@@ -10,6 +10,8 @@
 #import "AAPLEAGLLayer.h"
 #import <VideoToolbox/VideoToolbox.h>
 #import "VideoHardwareDecoder.h"
+#import "SCFrameQueue.h"
+#import "SCVideoFrame.h"
 
 @interface VideoDecodeViewController () <VideoDecoderDelegate>
 
@@ -42,7 +44,8 @@
 }
 
 - (void)updateFrame {
-    [self.decoder decodeFrame];
+//    [self.decoder decodeFrame];
+    _glLayer.pixelBuffer = [[SCFrameQueue shared] getFrame].pixelBuffer;
 }
 
 - (void)fetch:(CVPixelBufferRef)buffer {

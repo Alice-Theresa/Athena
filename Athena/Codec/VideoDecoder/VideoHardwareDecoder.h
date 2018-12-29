@@ -20,8 +20,6 @@ NS_ASSUME_NONNULL_BEGIN
 
 @property (nonatomic, weak) id<VideoDecoderDelegate> delegate;
 
-- (void)decodeFrame;
-
 @end
 
 NS_ASSUME_NONNULL_END

@@ -11,10 +11,12 @@
 #import "SharedQueue.h"
 #import "SCFormatContext.h"
 #import "SCPacketQueue.h"
+#import "SCFrameQueue.h"
+#import "SCVideoFrame.h"
 
 @interface VideoHardwareDecoder ()
 
-@property (nonatomic, strong) SCFormatContext *processor;
+@property (nonatomic, strong) SCFormatContext *formatContext;
 
 @end
 
@@ -53,33 +55,22 @@ static void didDecompress(void *decompressionOutputRefCon,
 
 - (instancetype)init {
     if (self = [super init]) {
-        _processor = [[SCFormatContext alloc] init];
+        _formatContext = [[SCFormatContext alloc] init];
+        [self initH264Decoder];
+        for (int i = 0; i < 1000; i++) {
+            [[SCFrameQueue shared] putFrame:[self decode]];
+        }
     }
     return self;
 }
 
-- (void)decodeFrame {
-    dispatch_async([SharedQueue videoDecode], ^{
-        CVPixelBufferRef pixelBuffer = NULL;
-        if([self initH264Decoder]) {
-            pixelBuffer = [self decode];
-        }
-        if(pixelBuffer) {
-            [self.delegate fetch:pixelBuffer];
-            CVPixelBufferRelease(pixelBuffer);
-        }
-        
-    });
-}
-
 #pragma mark - privacy
-
 
 - (BOOL)initH264Decoder {
     if(_deocderSession) {
         return YES;
     }
-    AVCodecContext *codecContext = [self.processor fetchCodecContext];
+    AVCodecContext *codecContext = [self.formatContext fetchCodecContext];
     uint8_t *extradata = codecContext->extradata;
     int extradata_size = codecContext->extradata_size;
     
@@ -115,13 +106,16 @@ static void didDecompress(void *decompressionOutputRefCon,
     }
 }
 
-- (CVPixelBufferRef)decode {
+- (SCVideoFrame *)decode {
     CVPixelBufferRef outputPixelBuffer = NULL;
     CMBlockBufferRef blockBuffer = NULL;
     AVPacket packet = [[SCPacketQueue shared] getPacket];
+    if (packet.stream_index != self.formatContext.videoindex) {
+        return nil;
+    }
     packetBuffer = packet.data;
     packetSize = packet.size;
-    OSStatus status  = CMBlockBufferCreateWithMemoryBlock(kCFAllocatorDefault, (void*)packetBuffer, packetSize, kCFAllocatorNull,
+    OSStatus status = CMBlockBufferCreateWithMemoryBlock(kCFAllocatorDefault, (void*)packetBuffer, packetSize, kCFAllocatorNull,
                                                           NULL, 0, packetSize, FALSE, &blockBuffer);
     if(status == kCMBlockBufferNoErr) {
         CMSampleBufferRef sampleBuffer = NULL;
@@ -140,7 +134,9 @@ static void didDecompress(void *decompressionOutputRefCon,
         }
         CFRelease(blockBuffer);
     }
-    return outputPixelBuffer;
+    SCVideoFrame *videoFrame = [[SCVideoFrame alloc] initWithAVPixelBuffer:outputPixelBuffer];
+    videoFrame.position = packet.pts;
+    return videoFrame;
 }
 
 static CMFormatDescriptionRef CreateFormatDescription(CMVideoCodecType codec_type, int width, int height, const uint8_t * extradata, int extradata_size)
