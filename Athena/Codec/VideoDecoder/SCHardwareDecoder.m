@@ -14,7 +14,10 @@
 #import "SCVideoFrameQueue.h"
 #import "SCVideoFrame.h"
 
-@interface SCHardwareDecoder ()
+@interface SCHardwareDecoder () {
+    VTDecompressionSessionRef _deocderSession;
+    CMVideoFormatDescriptionRef _decoderFormatDescription;
+}
 
 @end
 
@@ -29,13 +32,7 @@ static void didDecompress(void *decompressionOutputRefCon,
     *outputPixelBuffer = CVPixelBufferRetain(pixelBuffer);
 }
 
-@implementation SCHardwareDecoder {
-    VTDecompressionSessionRef _deocderSession;
-    CMVideoFormatDescriptionRef _decoderFormatDescription;
-    
-    uint8_t* packetBuffer;
-    long packetSize;
-}
+@implementation SCHardwareDecoder
 
 - (void)dealloc {
     if(_deocderSession) {
@@ -49,16 +46,12 @@ static void didDecompress(void *decompressionOutputRefCon,
     }
 }
 
-#pragma mark - public
-
 - (instancetype)initWithFormatContext:(SCFormatContext *)formatContext {
     if (self = [super init]) {
         [self initDecoderWithFormatContext:formatContext];
     }
     return self;
 }
-
-#pragma mark - privacy
 
 - (BOOL)initDecoderWithFormatContext:(SCFormatContext *)formatContext {
     if(_deocderSession) {
@@ -104,10 +97,8 @@ static void didDecompress(void *decompressionOutputRefCon,
     CVPixelBufferRef outputPixelBuffer = NULL;
     CMBlockBufferRef blockBuffer = NULL;
     AVPacket packet = [[SCPacketQueue shared] getPacket];
-    packetBuffer = packet.data;
-    packetSize = packet.size;
-    OSStatus status = CMBlockBufferCreateWithMemoryBlock(kCFAllocatorDefault, (void*)packetBuffer, packetSize, kCFAllocatorNull,
-                                                          NULL, 0, packetSize, FALSE, &blockBuffer);
+    OSStatus status = CMBlockBufferCreateWithMemoryBlock(kCFAllocatorDefault, (void*)packet.data, packet.size, kCFAllocatorNull,
+                                                          NULL, 0, packet.size, FALSE, &blockBuffer);
     if(status == kCMBlockBufferNoErr) {
         CMSampleBufferRef sampleBuffer = NULL;
         status = CMSampleBufferCreate(NULL, blockBuffer, TRUE, 0, 0, _decoderFormatDescription, 1, 0, NULL, 0, NULL, &sampleBuffer);
@@ -120,7 +111,7 @@ static void didDecompress(void *decompressionOutputRefCon,
             } else if(decodeStatus != noErr) {
                 NSLog(@"IOS8VT: decode failed status=%d", decodeStatus);
             }
-            NSLog(@"Read Nalu size %ld", packetSize);
+            NSLog(@"Read Nalu size %ld", packet.size);
             CFRelease(sampleBuffer);
         }
         CFRelease(blockBuffer);

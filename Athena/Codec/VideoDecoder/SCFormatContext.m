@@ -10,10 +10,12 @@
 #import "SCPacketQueue.h"
 
 @interface SCFormatContext () {
-    AVCodecContext *codecContext;
     AVFormatContext *formatContext;
-    AVCodec *codec;
+    AVCodecContext *codecContext;
+//    AVCodec *codec;
 }
+
+@property (nonatomic, assign, readwrite) int videoIndex;
 
 @end
 
@@ -58,15 +60,15 @@
     }
     
     codecContext = formatContext->streams[self.videoIndex]->codec;
-    codec = avcodec_find_decoder(codecContext->codec_id);
-    if(codec == NULL){
-        printf("Couldn't find Codec.\n");
-        return;
-    }
-    if(avcodec_open2(codecContext, codec, NULL) < 0){
-        printf("Couldn't open codec.\n");
-        return;
-    }
+//    codec = avcodec_find_decoder(codecContext->codec_id);
+//    if(codec == NULL){
+//        printf("Couldn't find Codec.\n");
+//        return;
+//    }
+//    if(avcodec_open2(codecContext, codec, NULL) < 0){
+//        printf("Couldn't open codec.\n");
+//        return;
+//    }
     
 }
 
