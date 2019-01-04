@@ -16,6 +16,7 @@
 }
 
 @property (nonatomic, assign, readwrite) int videoIndex;
+@property (nonatomic, assign, readwrite) NSTimeInterval videoTimebase;
 
 @end
 
@@ -38,7 +39,7 @@
     avformat_network_init();
     formatContext = avformat_alloc_context();
 
-    NSString *path = [[[NSBundle mainBundle] resourcePath] stringByAppendingPathComponent:@"test.mp4"];
+    NSString *path = [[[NSBundle mainBundle] resourcePath] stringByAppendingPathComponent:@"vid.mp4"];
     
     if(avformat_open_input(&formatContext, [path UTF8String], NULL, NULL) != 0){
         printf("Couldn't open input stream.\n");
@@ -70,10 +71,21 @@
 //        return;
 //    }
     
+    [self settingTimeBase];
 }
 
 - (int)readFrame:(AVPacket *)packet {
     return av_read_frame(self->formatContext, packet);
 }
+
+- (void)settingTimeBase {
+    AVStream *stream = formatContext->streams[self.videoIndex];
+    if (stream->time_base.den > 0 && stream->time_base.num > 0) {
+        self.videoTimebase = av_q2d(stream->time_base);
+    } else {
+        NSAssert(NO, @"no time base");
+    }
+}
+
 
 @end

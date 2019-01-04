@@ -11,6 +11,7 @@
 
 @interface SCVideoFrameQueue ()
 
+@property (nonatomic, assign, readwrite) NSInteger count;
 @property (nonatomic, strong) NSCondition *condition;
 @property (nonatomic, strong) NSMutableArray <SCVideoFrame *> *frames;
 
@@ -55,6 +56,7 @@
         [self.frames addObject:frame];
         added = YES;
     }
+    self.count++;
     [self.condition unlock];
 }
 
@@ -68,6 +70,7 @@
     frame = self.frames.firstObject;
     [self.frames removeObjectAtIndex:0];
     [self.condition unlock];
+    self.count--;
     return frame;
 }
 

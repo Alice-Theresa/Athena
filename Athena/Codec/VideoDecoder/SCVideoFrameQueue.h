@@ -14,6 +14,8 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface SCVideoFrameQueue : NSObject
 
+@property (nonatomic, assign, readonly) NSInteger count;
+
 + (instancetype)shared;
 - (void)putFrame:(SCVideoFrame *)frame;
 - (SCVideoFrame *)getFrame;

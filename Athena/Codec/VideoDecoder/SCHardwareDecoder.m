@@ -17,6 +17,7 @@
 @interface SCHardwareDecoder () {
     VTDecompressionSessionRef _deocderSession;
     CMVideoFormatDescriptionRef _decoderFormatDescription;
+    SCFormatContext *context;
 }
 
 @end
@@ -57,6 +58,7 @@ static void didDecompress(void *decompressionOutputRefCon,
     if(_deocderSession) {
         return YES;
     }
+    context = formatContext;
     AVCodecContext *codecContext = [formatContext fetchCodecContext];
     uint8_t *extradata = codecContext->extradata;
     int extradata_size = codecContext->extradata_size;
@@ -117,7 +119,7 @@ static void didDecompress(void *decompressionOutputRefCon,
         CFRelease(blockBuffer);
     }
     SCVideoFrame *videoFrame = [[SCVideoFrame alloc] initWithAVPixelBuffer:outputPixelBuffer];
-    videoFrame.position = packet.pts;
+    videoFrame.position = packet.pts * context.videoTimebase;
     return videoFrame;
 }
 

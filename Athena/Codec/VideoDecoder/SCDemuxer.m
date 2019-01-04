@@ -50,7 +50,11 @@
                         [[SCPacketQueue shared] putPacket:packet];
                     });
                 }
+               
                 dispatch_async(self.videoFrameQueue, ^{
+                    if ([SCVideoFrameQueue shared].count > 10) {
+                        [NSThread sleepForTimeInterval:0.03];
+                    }
                     [[SCVideoFrameQueue shared] putFrame:[self.decoder decode]];
                 });
             }
