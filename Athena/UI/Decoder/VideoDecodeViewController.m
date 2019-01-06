@@ -32,7 +32,7 @@
     [self.view.layer addSublayer:self.glLayer];
     
     self.decoder = [[SCDemuxer alloc] init];
-    [self.decoder startOperation];
+    [self.decoder open];
     
     self.mDispalyLink = [CADisplayLink displayLinkWithTarget:self selector:@selector(updateFrame)];
     self.mDispalyLink.frameInterval = 2;
@@ -40,9 +40,10 @@
 
 }
 
-- (void)viewWillDisappear:(BOOL)animated {
+- (void)viewDidDisappear:(BOOL)animated {
     [super viewDidDisappear:animated];
     [self.mDispalyLink setPaused:YES];
+    [self.decoder stop];
 }
 
 - (void)updateFrame {

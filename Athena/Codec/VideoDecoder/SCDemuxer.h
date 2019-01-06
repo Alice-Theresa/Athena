@@ -15,7 +15,14 @@ NS_ASSUME_NONNULL_BEGIN
 @interface SCDemuxer : NSObject
 
 - (instancetype)init;
-- (void)startOperation;
+
+
+- (void)open;
+
+- (void)pause;
+- (void)resume;
+
+- (void)stop;
 
 @end
 

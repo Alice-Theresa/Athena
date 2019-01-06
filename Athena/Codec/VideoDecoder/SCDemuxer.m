@@ -18,8 +18,9 @@
 @property (nonatomic, strong) SCFormatContext *context;
 @property (nonatomic, strong) SCHardwareDecoder *decoder;
 
-@property (nonatomic, strong) dispatch_queue_t packetQueue;
-@property (nonatomic, strong) dispatch_queue_t videoFrameQueue;
+@property (nonatomic, strong) NSInvocationOperation *readPacketOperation;
+@property (nonatomic, strong) NSInvocationOperation *decodeOperation;
+@property (nonatomic, strong) NSOperationQueue *controlQueue;
 
 @end
 
@@ -29,37 +30,63 @@
     if (self = [super init]) {
         _context = [[SCFormatContext alloc] init];
         _decoder = [[SCHardwareDecoder alloc] initWithFormatContext:_context];
-        _packetQueue = dispatch_queue_create("com.video.packet.queue", DISPATCH_QUEUE_SERIAL);
-        _videoFrameQueue = dispatch_queue_create("com.video.frame.queue", DISPATCH_QUEUE_SERIAL);
+        
+        
     }
     return self;
 }
 
-- (void)startOperation {
-    dispatch_async(dispatch_get_global_queue(0, 0), ^{
-        while (1) {
-            AVPacket packet;
-            av_init_packet(&packet);
-            int result = [self.context readFrame:&packet];
-            if (result < 0) {
-                NSLog(@"read packet error");
-                break;
-            } else {
-                if (packet.stream_index == self.context.videoIndex) {
-                    dispatch_async(self.packetQueue, ^{
-                        [[SCPacketQueue shared] putPacket:packet];
-                    });
-                }
-               
-                dispatch_async(self.videoFrameQueue, ^{
-                    if ([SCVideoFrameQueue shared].count > 10) {
-                        [NSThread sleepForTimeInterval:0.03];
-                    }
-                    [[SCVideoFrameQueue shared] putFrame:[self.decoder decode]];
-                });
+- (void)open {
+    self.readPacketOperation = [[NSInvocationOperation alloc] initWithTarget:self selector:@selector(readPacket) object:nil];
+    self.readPacketOperation.queuePriority = NSOperationQueuePriorityVeryHigh;
+    self.readPacketOperation.qualityOfService = NSQualityOfServiceUserInteractive;
+    
+    self.decodeOperation = [[NSInvocationOperation alloc] initWithTarget:self selector:@selector(decodeFrame) object:nil];
+    self.decodeOperation.queuePriority = NSOperationQueuePriorityVeryHigh;
+    self.decodeOperation.qualityOfService = NSQualityOfServiceUserInteractive;
+    
+    self.controlQueue = [[NSOperationQueue alloc] init];
+    self.controlQueue.qualityOfService = NSQualityOfServiceUserInteractive;
+    [self.controlQueue addOperation:self.readPacketOperation];
+    [self.controlQueue addOperation:self.decodeOperation];
+}
+
+- (void)readPacket {
+    while (YES) {
+        AVPacket packet;
+        av_init_packet(&packet);
+        int result = [self.context readFrame:&packet];
+        if (result < 0) {
+            NSLog(@"read packet error");
+            break;
+        } else {
+            if (packet.stream_index == self.context.videoIndex) {
+                [[SCPacketQueue shared] putPacket:packet];
             }
         }
-    });
+    }
+}
+
+- (void)decodeFrame {
+    while (YES) {
+        if ([SCVideoFrameQueue shared].count > 10) {
+            [NSThread sleepForTimeInterval:0.03];
+        }
+        [[SCVideoFrameQueue shared] putFrame:[self.decoder decode]];
+    }
+}
+
+- (void)pause {
+    self.controlQueue.suspended = YES;
+}
+
+- (void)resume {
+    self.controlQueue.suspended = NO;
+}
+
+- (void)stop {
+    [self.readPacketOperation cancel];
+    [self.decodeOperation cancel];
 }
 
 @end
