@@ -54,5 +54,10 @@
     return packet;
 }
 
+- (void)flush {
+    [self.condition lock];
+    [self.packets removeAllObjects];
+    [self.condition unlock];
+}
 
 @end

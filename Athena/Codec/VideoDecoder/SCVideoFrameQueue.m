@@ -74,4 +74,11 @@
     return frame;
 }
 
+- (void)flush {
+    [self.condition lock];
+    [self.frames removeAllObjects];
+    self.count = 0;
+    [self.condition unlock];
+}
+
 @end

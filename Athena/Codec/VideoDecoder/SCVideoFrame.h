@@ -14,6 +14,7 @@ NS_ASSUME_NONNULL_BEGIN
 @interface SCVideoFrame : NSObject
 
 @property (nonatomic, assign) NSTimeInterval position;
+@property (nonatomic, assign) NSTimeInterval duration;
 @property (nonatomic, assign, readonly) CVPixelBufferRef pixelBuffer;
 
 - (instancetype)initWithAVPixelBuffer:(CVPixelBufferRef)pixelBuffer;

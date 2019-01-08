@@ -30,6 +30,7 @@
 		52AA25101F98951F0084771B /* VideoCaptureManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 52AA250F1F98951F0084771B /* VideoCaptureManager.m */; };
 		52AA25131F989C340084771B /* VideoEncodeViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 52AA25121F989C340084771B /* VideoEncodeViewController.m */; };
 		52AA25191F998ECF0084771B /* H264HardwareEncoder.m in Sources */ = {isa = PBXBuildFile; fileRef = 52AA25181F998ECF0084771B /* H264HardwareEncoder.m */; };
+		52ACC2CD21E358D900ABB193 /* SCSoftwareDecoder.m in Sources */ = {isa = PBXBuildFile; fileRef = 52ACC2CC21E358D900ABB193 /* SCSoftwareDecoder.m */; };
 		52B338571F7F9BE2003BEFFB /* AACHardEncoder.m in Sources */ = {isa = PBXBuildFile; fileRef = 52B338561F7F9BE2003BEFFB /* AACHardEncoder.m */; };
 		52DAD7BD1FA0722D00D355CE /* libx264.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 52DAD7BC1FA0722D00D355CE /* libx264.a */; };
 		52DAD7C01FA07EA000D355CE /* H264SoftwareEncoder.m in Sources */ = {isa = PBXBuildFile; fileRef = 52DAD7BF1FA07EA000D355CE /* H264SoftwareEncoder.m */; };
@@ -105,6 +106,8 @@
 		52AA25181F998ECF0084771B /* H264HardwareEncoder.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = H264HardwareEncoder.m; sourceTree = "<group>"; };
 		52AA251A1F999FAE0084771B /* H264EncoderInterface.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = H264EncoderInterface.h; sourceTree = "<group>"; };
 		52AA251B1F99A32F0084771B /* H264EncoderDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = H264EncoderDelegate.h; sourceTree = "<group>"; };
+		52ACC2CB21E358D900ABB193 /* SCSoftwareDecoder.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SCSoftwareDecoder.h; sourceTree = "<group>"; };
+		52ACC2CC21E358D900ABB193 /* SCSoftwareDecoder.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = SCSoftwareDecoder.m; sourceTree = "<group>"; };
 		52B338551F7F9BE2003BEFFB /* AACHardEncoder.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AACHardEncoder.h; sourceTree = "<group>"; };
 		52B338561F7F9BE2003BEFFB /* AACHardEncoder.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = AACHardEncoder.m; sourceTree = "<group>"; };
 		52DAD7B91FA0722D00D355CE /* x264.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = x264.h; sourceTree = "<group>"; };
@@ -336,6 +339,8 @@
 			children = (
 				526F497E21D0DE110023E6C3 /* SCHardwareDecoder.h */,
 				526F497F21D0DE110023E6C3 /* SCHardwareDecoder.m */,
+				52ACC2CB21E358D900ABB193 /* SCSoftwareDecoder.h */,
+				52ACC2CC21E358D900ABB193 /* SCSoftwareDecoder.m */,
 				526F498721D213D10023E6C3 /* SCFormatContext.h */,
 				526F498821D213D10023E6C3 /* SCFormatContext.m */,
 				521B7E7B21D7602800F5B689 /* SCDemuxer.h */,
@@ -807,6 +812,7 @@
 				522136711F7F737500182B12 /* main.m in Sources */,
 				529067A11F96F13B001A7BFA /* MainViewController.m in Sources */,
 				52E10333215E072D007783E6 /* MainModel.m in Sources */,
+				52ACC2CD21E358D900ABB193 /* SCSoftwareDecoder.m in Sources */,
 				765ED7741F935CDB000CF16E /* AACSoftEncoder.m in Sources */,
 				522136791F7F738F00182B12 /* AudioCaptureManager.m in Sources */,
 				521B7E7C21D7602900F5B689 /* SCDemuxer.m in Sources */,

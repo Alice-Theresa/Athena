@@ -20,6 +20,8 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)putFrame:(SCVideoFrame *)frame;
 - (SCVideoFrame *)getFrame;
 
+- (void)flush;
+
 @end
 
 NS_ASSUME_NONNULL_END

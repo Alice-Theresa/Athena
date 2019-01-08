@@ -52,7 +52,7 @@
 }
 
 - (void)readPacket {
-    while (YES) {
+    while (!self.controlQueue.isSuspended) {
         AVPacket packet;
         av_init_packet(&packet);
         int result = [self.context readFrame:&packet];
@@ -68,7 +68,7 @@
 }
 
 - (void)decodeFrame {
-    while (YES) {
+    while (!self.controlQueue.isSuspended) {
         if ([SCVideoFrameQueue shared].count > 10) {
             [NSThread sleepForTimeInterval:0.03];
         }
@@ -85,8 +85,11 @@
 }
 
 - (void)stop {
+    self.controlQueue.suspended = YES;
     [self.readPacketOperation cancel];
     [self.decodeOperation cancel];
+    [[SCVideoFrameQueue shared] flush];
+    [[SCPacketQueue shared] flush];
 }
 
 @end

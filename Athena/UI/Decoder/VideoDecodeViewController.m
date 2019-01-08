@@ -20,6 +20,7 @@
 @property (nonatomic, strong) AAPLEAGLLayer *glLayer;
 @property (nonatomic, strong) SCDemuxer *decoder;
 @property (nonatomic, strong) CADisplayLink *mDispalyLink;
+@property (nonatomic, assign) NSTimeInterval interval;
 
 @end
 
@@ -35,7 +36,6 @@
     [self.decoder open];
     
     self.mDispalyLink = [CADisplayLink displayLinkWithTarget:self selector:@selector(updateFrame)];
-    self.mDispalyLink.frameInterval = 2;
     [self.mDispalyLink addToRunLoop:[NSRunLoop currentRunLoop] forMode:NSDefaultRunLoopMode];
 
 }
@@ -47,7 +47,13 @@
 }
 
 - (void)updateFrame {
-    _glLayer.pixelBuffer = [[SCVideoFrameQueue shared] getFrame].pixelBuffer;
+    NSTimeInterval currentTime = [NSDate date].timeIntervalSince1970;
+    if (currentTime > self.interval) {
+        SCVideoFrame *frame = [[SCVideoFrameQueue shared] getFrame];
+        self.interval = frame.duration + currentTime;
+        _glLayer.pixelBuffer = frame.pixelBuffer;
+    }
+    
 }
 
 @end

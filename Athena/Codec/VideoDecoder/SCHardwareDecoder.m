@@ -120,6 +120,7 @@ static void didDecompress(void *decompressionOutputRefCon,
     }
     SCVideoFrame *videoFrame = [[SCVideoFrame alloc] initWithAVPixelBuffer:outputPixelBuffer];
     videoFrame.position = packet.pts * context.videoTimebase;
+    videoFrame.duration = packet.duration * context.videoTimebase;
     return videoFrame;
 }
 

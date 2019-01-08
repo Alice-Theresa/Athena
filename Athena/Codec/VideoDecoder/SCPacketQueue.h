@@ -16,6 +16,7 @@ NS_ASSUME_NONNULL_BEGIN
 + (instancetype)shared;
 - (void)putPacket:(AVPacket)packet;
 - (AVPacket)getPacket;
+- (void)flush;
 
 @end
 
