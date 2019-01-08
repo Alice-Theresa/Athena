@@ -1,9 +1,15 @@
 # Athena
-iOS 音视频编码
 
-      | 视频   | 音频
-----  |------ |----
-软编码 | ✓     | ✓
-硬编码 | ✓     | ✓
-软解码 |       |  
-硬解码 |       |  
+encoding
+
+         | video | audio
+-------- |------ |----
+software | ✓     | ✓
+hardware | ✓     | ✓
+
+player
+
+         | video | audio
+-------- |------ |----
+software |       | 
+hardware | ✓     | 
