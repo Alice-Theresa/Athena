@@ -14,6 +14,7 @@ NS_ASSUME_NONNULL_BEGIN
 @interface SCFormatContext : NSObject
 
 @property (nonatomic, assign, readonly) int videoIndex;
+@property (nonatomic, assign, readonly) int audioIndex;
 @property (nonatomic, assign, readonly) NSTimeInterval videoTimebase;
 
 - (AVCodecContext *)fetchCodecContext;

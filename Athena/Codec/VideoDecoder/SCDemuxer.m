@@ -16,7 +16,7 @@
 @interface SCDemuxer ()
 
 @property (nonatomic, strong) SCFormatContext *context;
-@property (nonatomic, strong) SCHardwareDecoder *decoder;
+@property (nonatomic, strong) SCHardwareDecoder *videoDecoder;
 
 @property (nonatomic, strong) NSInvocationOperation *readPacketOperation;
 @property (nonatomic, strong) NSInvocationOperation *decodeOperation;
@@ -29,7 +29,7 @@
 - (instancetype)init {
     if (self = [super init]) {
         _context = [[SCFormatContext alloc] init];
-        _decoder = [[SCHardwareDecoder alloc] initWithFormatContext:_context];
+        _videoDecoder = [[SCHardwareDecoder alloc] initWithFormatContext:_context];
         
         
     }
@@ -41,7 +41,7 @@
     self.readPacketOperation.queuePriority = NSOperationQueuePriorityVeryHigh;
     self.readPacketOperation.qualityOfService = NSQualityOfServiceUserInteractive;
     
-    self.decodeOperation = [[NSInvocationOperation alloc] initWithTarget:self selector:@selector(decodeFrame) object:nil];
+    self.decodeOperation = [[NSInvocationOperation alloc] initWithTarget:self selector:@selector(decodeVideoFrame) object:nil];
     self.decodeOperation.queuePriority = NSOperationQueuePriorityVeryHigh;
     self.decodeOperation.qualityOfService = NSQualityOfServiceUserInteractive;
     
@@ -62,17 +62,19 @@
         } else {
             if (packet.stream_index == self.context.videoIndex) {
                 [[SCPacketQueue shared] putPacket:packet];
+            } else if (packet.stream_index == self.context.audioIndex) {
+                
             }
         }
     }
 }
 
-- (void)decodeFrame {
+- (void)decodeVideoFrame {
     while (!self.controlQueue.isSuspended) {
         if ([SCVideoFrameQueue shared].count > 10) {
             [NSThread sleepForTimeInterval:0.03];
         }
-        [[SCVideoFrameQueue shared] putFrame:[self.decoder decode]];
+        [[SCVideoFrameQueue shared] putFrame:[self.videoDecoder decode]];
     }
 }
 

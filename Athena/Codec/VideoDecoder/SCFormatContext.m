@@ -16,6 +16,7 @@
 }
 
 @property (nonatomic, assign, readwrite) int videoIndex;
+@property (nonatomic, assign, readwrite) int audioIndex;
 @property (nonatomic, assign, readwrite) NSTimeInterval videoTimebase;
 
 @end
@@ -29,6 +30,7 @@
 - (instancetype)init {
     if (self = [super init]) {
         _videoIndex = -1;
+        _audioIndex = -1;
         [self setupDecoder];
     }
     return self;
@@ -50,12 +52,15 @@
         return;
     }
     
-    for(int i = 0; i < formatContext->nb_streams; i++)
-        if(formatContext->streams[i]->codecpar->codec_type==AVMEDIA_TYPE_VIDEO){
+    for(int i = 0; i < formatContext->nb_streams; i++) {
+        if (formatContext->streams[i]->codecpar->codec_type == AVMEDIA_TYPE_VIDEO) {
             self.videoIndex = i;
+        } else if (formatContext->streams[i]->codecpar->codec_type == AVMEDIA_TYPE_AUDIO) {
+            self.audioIndex = i;  // maybe multi audio track
             break;
         }
-    if(self.videoIndex == -1){
+    }
+    if (self.videoIndex == -1) {
         printf("Couldn't find a video stream.\n");
         return;
     }
