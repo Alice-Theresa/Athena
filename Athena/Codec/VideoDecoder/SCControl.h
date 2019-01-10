@@ -1,5 +1,5 @@
 //
-//  SCDemuxer.h
+//  SCControl.h
 //  Athena
 //
 //  Created by Theresa on 2018/12/29.
@@ -9,13 +9,14 @@
 #import <Foundation/Foundation.h>
 
 @class SCFormatContext;
+@class SCFrameQueue;
 
 NS_ASSUME_NONNULL_BEGIN
 
-@interface SCDemuxer : NSObject
+@interface SCControl : NSObject
 
-- (instancetype)init;
-
+@property (nonatomic, strong) SCFrameQueue *videoFrameQueue;
+@property (nonatomic, strong) SCFrameQueue *audioFrameQueue;
 
 - (void)open;
 

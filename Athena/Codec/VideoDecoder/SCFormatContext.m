@@ -11,21 +11,19 @@
 
 @interface SCFormatContext () {
     AVFormatContext *formatContext;
-    AVCodecContext *codecContext;
-//    AVCodec *codec;
+    AVCodec *codec;
 }
 
 @property (nonatomic, assign, readwrite) int videoIndex;
 @property (nonatomic, assign, readwrite) int audioIndex;
 @property (nonatomic, assign, readwrite) NSTimeInterval videoTimebase;
+@property (nonatomic, assign, readwrite) NSTimeInterval audioTimebase;
+
+
 
 @end
 
 @implementation SCFormatContext
-
-- (AVCodecContext *)fetchCodecContext {
-    return codecContext;
-}
 
 - (instancetype)init {
     if (self = [super init]) {
@@ -41,7 +39,7 @@
     avformat_network_init();
     formatContext = avformat_alloc_context();
 
-    NSString *path = [[[NSBundle mainBundle] resourcePath] stringByAppendingPathComponent:@"vid.mp4"];
+    NSString *path = [[[NSBundle mainBundle] resourcePath] stringByAppendingPathComponent:@"Aimer - I beg you.mkv"];
     
     if(avformat_open_input(&formatContext, [path UTF8String], NULL, NULL) != 0){
         printf("Couldn't open input stream.\n");
@@ -52,7 +50,7 @@
         return;
     }
     
-    for(int i = 0; i < formatContext->nb_streams; i++) {
+    for (int i = 0; i < formatContext->nb_streams; i++) {
         if (formatContext->streams[i]->codecpar->codec_type == AVMEDIA_TYPE_VIDEO) {
             self.videoIndex = i;
         } else if (formatContext->streams[i]->codecpar->codec_type == AVMEDIA_TYPE_AUDIO) {
@@ -65,16 +63,17 @@
         return;
     }
     
-    codecContext = formatContext->streams[self.videoIndex]->codec;
-//    codec = avcodec_find_decoder(codecContext->codec_id);
-//    if(codec == NULL){
-//        printf("Couldn't find Codec.\n");
-//        return;
-//    }
-//    if(avcodec_open2(codecContext, codec, NULL) < 0){
-//        printf("Couldn't open codec.\n");
-//        return;
-//    }
+    _videoCodecContext = formatContext->streams[self.videoIndex]->codec;
+    _audioCodecContext = formatContext->streams[self.audioIndex]->codec;
+    codec = avcodec_find_decoder(self.audioCodecContext->codec_id);
+    if(codec == NULL){
+        printf("Couldn't find Codec.\n");
+        return;
+    }
+    if(avcodec_open2(self.audioCodecContext, codec, NULL) < 0){
+        printf("Couldn't open codec.\n");
+        return;
+    }
     
     [self settingTimeBase];
 }
@@ -87,6 +86,13 @@
     AVStream *stream = formatContext->streams[self.videoIndex];
     if (stream->time_base.den > 0 && stream->time_base.num > 0) {
         self.videoTimebase = av_q2d(stream->time_base);
+    } else {
+        NSAssert(NO, @"no time base");
+    }
+    
+    AVStream *audioStream = formatContext->streams[self.audioIndex];
+    if (audioStream->time_base.den > 0 && audioStream->time_base.num > 0) {
+        self.audioTimebase = av_q2d(audioStream->time_base);
     } else {
         NSAssert(NO, @"no time base");
     }

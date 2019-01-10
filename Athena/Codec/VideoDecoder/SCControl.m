@@ -1,5 +1,5 @@
 //
-//  SCDemuxer.m
+//  SCControl.m
 //  Athena
 //
 //  Created by Theresa on 2018/12/29.
@@ -8,30 +8,43 @@
 
 #import <libavformat/avformat.h>
 #import "SCFormatContext.h"
-#import "SCDemuxer.h"
+#import "SCAudioManager.h"
+#import "SCControl.h"
 #import "SCPacketQueue.h"
-#import "SCVideoFrameQueue.h"
+#import "SCFrameQueue.h"
+
+#import "SCFrame.h"
+#import "SCVideoFrame.h"
+#import "SCAudioFrame.h"
+
+#import "SCAudioDecoder.h"
 #import "SCHardwareDecoder.h"
 
-@interface SCDemuxer ()
+@interface SCControl () <SCAudioManagerDelegate>
 
 @property (nonatomic, strong) SCFormatContext *context;
 @property (nonatomic, strong) SCHardwareDecoder *videoDecoder;
+@property (nonatomic, strong) SCAudioDecoder *audioDecoder;
 
 @property (nonatomic, strong) NSInvocationOperation *readPacketOperation;
 @property (nonatomic, strong) NSInvocationOperation *decodeOperation;
 @property (nonatomic, strong) NSOperationQueue *controlQueue;
 
+@property (nonatomic, strong) SCAudioFrame *currentAudioFrame;
+
 @end
 
-@implementation SCDemuxer
+@implementation SCControl
 
 - (instancetype)init {
     if (self = [super init]) {
         _context = [[SCFormatContext alloc] init];
+        _videoFrameQueue = [[SCFrameQueue alloc] init];
+        _audioFrameQueue = [[SCFrameQueue alloc] init];
+        
         _videoDecoder = [[SCHardwareDecoder alloc] initWithFormatContext:_context];
-        
-        
+        _audioDecoder = [[SCAudioDecoder alloc] initWithFormatContext:_context audioFrameQueue:_audioFrameQueue];
+        [SCAudioManager shared].delegate = self;
     }
     return self;
 }
@@ -49,6 +62,9 @@
     self.controlQueue.qualityOfService = NSQualityOfServiceUserInteractive;
     [self.controlQueue addOperation:self.readPacketOperation];
     [self.controlQueue addOperation:self.decodeOperation];
+    
+    [[SCAudioManager shared] play];
+    
 }
 
 - (void)readPacket {
@@ -63,7 +79,7 @@
             if (packet.stream_index == self.context.videoIndex) {
                 [[SCPacketQueue shared] putPacket:packet];
             } else if (packet.stream_index == self.context.audioIndex) {
-                
+                [self.audioDecoder synchronizedDecode:packet];
             }
         }
     }
@@ -71,10 +87,10 @@
 
 - (void)decodeVideoFrame {
     while (!self.controlQueue.isSuspended) {
-        if ([SCVideoFrameQueue shared].count > 10) {
+        if (self.videoFrameQueue.count > 10) {
             [NSThread sleepForTimeInterval:0.03];
         }
-        [[SCVideoFrameQueue shared] putFrame:[self.videoDecoder decode]];
+        [self.videoFrameQueue enqueueAndSort:[self.videoDecoder decode]];
     }
 }
 
@@ -90,8 +106,42 @@
     self.controlQueue.suspended = YES;
     [self.readPacketOperation cancel];
     [self.decodeOperation cancel];
-    [[SCVideoFrameQueue shared] flush];
+    [self.videoFrameQueue flush];
     [[SCPacketQueue shared] flush];
+}
+
+- (void)fetchoutputData:(float *)outputData numberOfFrames:(UInt32)numberOfFrames numberOfChannels:(UInt32)numberOfChannels {
+    
+    @autoreleasepool
+    {
+        while (numberOfFrames > 0)
+        {
+            if (!self.currentAudioFrame) {
+                self.currentAudioFrame = [self.audioFrameQueue dequeueFrame];
+            }
+            if (!self.currentAudioFrame) {
+                memset(outputData, 0, numberOfFrames * numberOfChannels * sizeof(float));
+                return;
+            }
+            
+            const Byte * bytes = (Byte *)self.currentAudioFrame->samples + self.currentAudioFrame->output_offset;
+            const NSUInteger bytesLeft = self.currentAudioFrame->length - self.currentAudioFrame->output_offset;
+            const NSUInteger frameSizeOf = numberOfChannels * sizeof(float);
+            const NSUInteger bytesToCopy = MIN(numberOfFrames * frameSizeOf, bytesLeft);
+            const NSUInteger framesToCopy = bytesToCopy / frameSizeOf;
+            
+            memcpy(outputData, bytes, bytesToCopy);
+            numberOfFrames -= framesToCopy;
+            outputData += framesToCopy * numberOfChannels;
+            
+            if (bytesToCopy < bytesLeft) {
+                self.currentAudioFrame->output_offset += bytesToCopy;
+            } else {
+                self.currentAudioFrame = nil;
+            }
+        }
+    }
+    
 }
 
 @end

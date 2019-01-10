@@ -10,15 +10,18 @@
 #import "AAPLEAGLLayer.h"
 #import <VideoToolbox/VideoToolbox.h>
 #import "SCHardwareDecoder.h"
-#import "SCVideoFrameQueue.h"
+#import "SCFrameQueue.h"
 #import "SCVideoFrame.h"
 #import "SCFormatContext.h"
-#import "SCDemuxer.h"
+#import "SCControl.h"
+#import "SCFrame.h"
 
-@interface VideoDecodeViewController ()
+#import "SCAudioFrame.h"
+
+@interface VideoDecodeViewController () 
 
 @property (nonatomic, strong) AAPLEAGLLayer *glLayer;
-@property (nonatomic, strong) SCDemuxer *decoder;
+@property (nonatomic, strong) SCControl *decoder;
 @property (nonatomic, strong) CADisplayLink *mDispalyLink;
 @property (nonatomic, assign) NSTimeInterval interval;
 
@@ -32,7 +35,7 @@
     self.glLayer = [[AAPLEAGLLayer alloc] initWithFrame:self.view.bounds];
     [self.view.layer addSublayer:self.glLayer];
     
-    self.decoder = [[SCDemuxer alloc] init];
+    self.decoder = [[SCControl alloc] init];
     [self.decoder open];
     
     self.mDispalyLink = [CADisplayLink displayLinkWithTarget:self selector:@selector(updateFrame)];
@@ -49,7 +52,7 @@
 - (void)updateFrame {
     NSTimeInterval currentTime = [NSDate date].timeIntervalSince1970;
     if (currentTime > self.interval) {
-        SCVideoFrame *frame = [[SCVideoFrameQueue shared] getFrame];
+        SCVideoFrame *frame = [self.decoder.videoFrameQueue dequeueFrame];
         self.interval = frame.duration + currentTime;
         _glLayer.pixelBuffer = frame.pixelBuffer;
     }

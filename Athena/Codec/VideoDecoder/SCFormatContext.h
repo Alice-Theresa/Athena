@@ -7,7 +7,7 @@
 //
 
 #import <Foundation/Foundation.h>
-#import "avformat.h"
+#import <libavformat/avformat.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -16,8 +16,11 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, assign, readonly) int videoIndex;
 @property (nonatomic, assign, readonly) int audioIndex;
 @property (nonatomic, assign, readonly) NSTimeInterval videoTimebase;
+@property (nonatomic, assign, readonly) NSTimeInterval audioTimebase;
 
-- (AVCodecContext *)fetchCodecContext;
+@property (nonatomic, assign) AVCodecContext *videoCodecContext;
+@property (nonatomic, assign) AVCodecContext *audioCodecContext;
+
 - (int)readFrame:(AVPacket *)packet;
 
 @end

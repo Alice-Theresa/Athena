@@ -7,14 +7,12 @@
 //
 
 #import <AVFoundation/AVFoundation.h>
-#import <Foundation/Foundation.h>
+#import "SCFrame.h"
 
 NS_ASSUME_NONNULL_BEGIN
 
-@interface SCVideoFrame : NSObject
+@interface SCVideoFrame : SCFrame
 
-@property (nonatomic, assign) NSTimeInterval position;
-@property (nonatomic, assign) NSTimeInterval duration;
 @property (nonatomic, assign, readonly) CVPixelBufferRef pixelBuffer;
 
 - (instancetype)initWithAVPixelBuffer:(CVPixelBufferRef)pixelBuffer;

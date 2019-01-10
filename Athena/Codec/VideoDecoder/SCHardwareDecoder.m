@@ -11,7 +11,7 @@
 #import "SharedQueue.h"
 #import "SCFormatContext.h"
 #import "SCPacketQueue.h"
-#import "SCVideoFrameQueue.h"
+#import "SCFrameQueue.h"
 #import "SCVideoFrame.h"
 
 @interface SCHardwareDecoder () {
@@ -59,7 +59,7 @@ static void didDecompress(void *decompressionOutputRefCon,
         return YES;
     }
     context = formatContext;
-    AVCodecContext *codecContext = [formatContext fetchCodecContext];
+    AVCodecContext *codecContext = formatContext.videoCodecContext;
     uint8_t *extradata = codecContext->extradata;
     int extradata_size = codecContext->extradata_size;
     

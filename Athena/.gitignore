@@ -32,6 +32,7 @@ xcuserdata/
 *.pcm
 *.h264
 *.mp4
+*.mkv
 
 # CocoaPods
 #
