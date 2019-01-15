@@ -87,7 +87,7 @@ static void didDecompress(void *decompressionOutputRefCon,
         OSStatus status = VTDecompressionSessionCreate(kCFAllocatorDefault, _decoderFormatDescription, NULL,
                                                        destinationPixelBufferAttributes, &callBackRecord, &_deocderSession);
         if(status != noErr) {
-            NSLog(@"Create Decompression Session failed - Code= %d", status);
+            NSLog(@"Create Decompression Session failed - Code= %ld", status);
             return NO;
         } else {
             return YES;
@@ -109,11 +109,11 @@ static void didDecompress(void *decompressionOutputRefCon,
             if(decodeStatus == kVTInvalidSessionErr) {
                 NSLog(@"IOS8VT: Invalid session, reset decoder session");
             } else if(decodeStatus == kVTVideoDecoderBadDataErr) {
-                NSLog(@"IOS8VT: decode failed status=%d(Bad data)", decodeStatus);
+                NSLog(@"IOS8VT: decode failed status=%ld(Bad data)", decodeStatus);
             } else if(decodeStatus != noErr) {
-                NSLog(@"IOS8VT: decode failed status=%d", decodeStatus);
+                NSLog(@"IOS8VT: decode failed status=%ld", decodeStatus);
             }
-            NSLog(@"Read Nalu size %ld", packet.size);
+            NSLog(@"Read Nalu size %d", packet.size);
             CFRelease(sampleBuffer);
         }
         CFRelease(blockBuffer);

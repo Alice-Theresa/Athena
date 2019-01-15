@@ -6,10 +6,7 @@
 //  Copyright © 2019 Theresa. All rights reserved.
 //
 
-#define INPUT_BUS 1
 #define OUTPUT_BUS 0
-#define MAX_AUDIO_FRAME_SIZE 192000
-#define OUT_PUT_CHANNELS 2
 
 #import <Accelerate/Accelerate.h>
 #import <AVFoundation/AVFoundation.h>
@@ -60,7 +57,7 @@
     AudioComponentInstanceNew(inputComponent, &_audioUnit);
     
     //audio property
-    UInt32 flag = 1;
+   /* UInt32 flag = 1;
     if (flag) {
         status = AudioUnitSetProperty(self.audioUnit,
                                       kAudioOutputUnitProperty_EnableIO,
@@ -71,7 +68,7 @@
     }
     if (status) {
         NSLog(@"AudioUnitSetProperty error with status:%d", status);
-    }
+    }*/
     
     // format
     AudioStreamBasicDescription outputFormat;

@@ -35,7 +35,7 @@
     
     MainModel *model4 = [[MainModel alloc] init];
     model4.codecName = @"H264解码";
-    model4.vcName = @"VideoDecodeViewController";
+    model4.vcName = @"SCPlayerViewController";
     
     self.codecNames = @[ model1, model2, model3, model4 ];
 }

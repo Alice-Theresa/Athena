@@ -11,7 +11,8 @@
 
 @interface SCFormatContext () {
     AVFormatContext *formatContext;
-    AVCodec *codec;
+    AVCodec *videoCodec;
+    AVCodec *audioCodec;
 }
 
 @property (nonatomic, assign, readwrite) int videoIndex;
@@ -65,12 +66,14 @@
     
     _videoCodecContext = formatContext->streams[self.videoIndex]->codec;
     _audioCodecContext = formatContext->streams[self.audioIndex]->codec;
-    codec = avcodec_find_decoder(self.audioCodecContext->codec_id);
-    if(codec == NULL){
+    
+    videoCodec = avcodec_find_decoder(self.videoCodecContext->codec_id);
+    audioCodec = avcodec_find_decoder(self.audioCodecContext->codec_id);
+    if(audioCodec == NULL || videoCodec == NULL) {
         printf("Couldn't find Codec.\n");
         return;
     }
-    if(avcodec_open2(self.audioCodecContext, codec, NULL) < 0){
+    if(avcodec_open2(self.audioCodecContext, audioCodec, NULL) < 0 || avcodec_open2(self.videoCodecContext, videoCodec, NULL) < 0) {
         printf("Couldn't open codec.\n");
         return;
     }

@@ -107,17 +107,16 @@
     [self.readPacketOperation cancel];
     [self.decodeOperation cancel];
     [self.videoFrameQueue flush];
+    [self.audioFrameQueue flush];
     [[SCPacketQueue shared] flush];
+    [[SCAudioManager shared] stop];
 }
 
 - (void)fetchoutputData:(float *)outputData numberOfFrames:(UInt32)numberOfFrames numberOfChannels:(UInt32)numberOfChannels {
-    
-    @autoreleasepool
-    {
-        while (numberOfFrames > 0)
-        {
+    @autoreleasepool {
+        while (numberOfFrames > 0) {
             if (!self.currentAudioFrame) {
-                self.currentAudioFrame = [self.audioFrameQueue dequeueFrame];
+                self.currentAudioFrame = (SCAudioFrame *)[self.audioFrameQueue dequeueFrame];
             }
             if (!self.currentAudioFrame) {
                 memset(outputData, 0, numberOfFrames * numberOfChannels * sizeof(float));

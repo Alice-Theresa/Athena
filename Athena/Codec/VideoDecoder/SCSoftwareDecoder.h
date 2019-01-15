@@ -8,9 +8,15 @@
 
 #import <Foundation/Foundation.h>
 
+@class SCVideoFrame;
+@class SCFormatContext;
+
 NS_ASSUME_NONNULL_BEGIN
 
 @interface SCSoftwareDecoder : NSObject
+
+- (instancetype)initWithFormatContext:(SCFormatContext *)formatContext;
+- (SCVideoFrame *)decode;
 
 @end
 
