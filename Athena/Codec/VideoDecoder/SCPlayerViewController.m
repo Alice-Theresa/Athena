@@ -33,12 +33,16 @@
     [self.controler open];
 }
 
+- (void)viewDidDisappear:(BOOL)animated {
+    [super viewDidDisappear:animated];
+    [self.controler stop];
+}
+
 - (MTKView *)mtkView {
     if (!_mtkView) {
         _mtkView = [[MTKView alloc] initWithFrame:self.view.bounds device:[SCMetalManager shared].device];
         _mtkView.depthStencilPixelFormat = MTLPixelFormatInvalid;
         _mtkView.framebufferOnly = false;
-//        _mtkView.paused = true;
         _mtkView.delegate = self;
         _mtkView.colorPixelFormat = MTLPixelFormatBGRA8Unorm;
     }
@@ -48,30 +52,18 @@
 - (void)drawInMTKView:(MTKView *)view {
     
     NSTimeInterval currentTime = [NSDate date].timeIntervalSince1970;
-//    if (currentTime > self.interval) {
+    if (currentTime > self.interval) {
         SCVideoFrame *frame = [self.controler.videoFrameQueue dequeueFrame];
         self.interval = frame.duration + currentTime;
-        
-    
-        CVMetalTextureRef texture;
-        CVMetalTextureCacheCreateTextureFromImage(kCFAllocatorDefault,
-                                                  _textureCache,
-                                                  frame.pixelBuffer,
-                                                  nil,
-                                                  MTLPixelFormatBGRA8Unorm,
-                                                  CVPixelBufferGetWidthOfPlane(frame.pixelBuffer, 0),
-                                                  CVPixelBufferGetHeightOfPlane(frame.pixelBuffer, 0),
-                                                  0,
-                                                  &texture);
-//        MTKTextureLoader *loader = [[MTKTextureLoader alloc] initWithDevice:[SCMetalManager shared].device];
-//        NSError *error;
-//        id<MTLTexture> text = [loader newTextureWithCGImage:[UIImage imageNamed:@"test.jpg"].CGImage options:nil error:&error];
-        [[SCMetalManager shared] renderTexture:CVMetalTextureGetTexture(texture) drawIn:view];
-//    }
+        [[SCMetalManager shared] renderPixelBuffer:frame.pixelBuffer drawIn:view];
+    } else {
+        NSLog(@"pass");
+    }
 }
 
 - (void)mtkView:(MTKView *)view drawableSizeWillChange:(CGSize)size {
     
 }
+
 
 @end

@@ -77,6 +77,7 @@
 		5214035821EDCD0A00CAF190 /* SCMetalManager.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = SCMetalManager.m; sourceTree = "<group>"; };
 		5214035A21EDCE9E00CAF190 /* Mapping.metal */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.metal; path = Mapping.metal; sourceTree = "<group>"; };
 		5214035C21EDE3F000CAF190 /* test.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; path = test.jpg; sourceTree = "<group>"; };
+		5214036021EF28A400CAF190 /* SCShaderType.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SCShaderType.h; sourceTree = "<group>"; };
 		5218B39E21E5CE3F00D9115D /* SCAudioDecoder.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SCAudioDecoder.h; sourceTree = "<group>"; };
 		5218B39F21E5CE3F00D9115D /* SCAudioDecoder.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = SCAudioDecoder.m; sourceTree = "<group>"; };
 		521B7E7A21D7602800F5B689 /* SCControl.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SCControl.m; sourceTree = "<group>"; };
@@ -389,6 +390,7 @@
 				5214035521EDCC6000CAF190 /* SCPlayerViewController.m */,
 				5214035721EDCD0A00CAF190 /* SCMetalManager.h */,
 				5214035821EDCD0A00CAF190 /* SCMetalManager.m */,
+				5214036021EF28A400CAF190 /* SCShaderType.h */,
 				5214035A21EDCE9E00CAF190 /* Mapping.metal */,
 			);
 			path = VideoDecoder;

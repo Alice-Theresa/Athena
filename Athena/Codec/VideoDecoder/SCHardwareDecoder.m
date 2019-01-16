@@ -113,7 +113,7 @@ static void didDecompress(void *decompressionOutputRefCon,
             } else if(decodeStatus != noErr) {
                 NSLog(@"IOS8VT: decode failed status=%ld", decodeStatus);
             }
-            NSLog(@"Read Nalu size %d", packet.size);
+//            NSLog(@"Read Nalu size %d", packet.size);
             CFRelease(sampleBuffer);
         }
         CFRelease(blockBuffer);
