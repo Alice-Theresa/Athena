@@ -6,6 +6,7 @@
 //  Copyright © 2019 Theresa. All rights reserved.
 //
 
+#import <AVFoundation/AVUtilities.h>
 #import "SCMetalManager.h"
 #import "SCShaderType.h"
 
@@ -15,10 +16,8 @@
 @property (nonatomic, strong) id<MTLLibrary> library;
 @property (nonatomic, strong) MTLRenderPipelineDescriptor *pipelineDescriptor;
 
-
-@property (nonatomic, strong) dispatch_semaphore_t semaphore;
-@property (nonatomic, assign) CVMetalTextureRef ytexture;
-@property (nonatomic, assign) CVMetalTextureRef uvtexture;
+@property (nonatomic, assign) CVMetalTextureRef yTextureRef;
+@property (nonatomic, assign) CVMetalTextureRef uvTextureRef;
 
 @end
 
@@ -38,25 +37,48 @@
         _device = MTLCreateSystemDefaultDevice();
         _commandQueue = [_device newCommandQueue];
         _library = [_device newDefaultLibrary];
-        _semaphore = dispatch_semaphore_create(1);
     }
     return self;
 }
 
 - (void)renderPixelBuffer:(CVPixelBufferRef)pixelBuffer drawIn:(MTKView *)mtkView {
-    dispatch_semaphore_wait(_semaphore, DISPATCH_TIME_FOREVER);
+    //release first or image maybe tears
+    if (self.yTextureRef) {
+        CFRelease(self.yTextureRef);
+        self.yTextureRef = NULL;
+    }
+    if (self.uvTextureRef) {
+        CFRelease(self.uvTextureRef);
+        self.uvTextureRef = NULL;
+    }
+    
     CVMetalTextureCacheRef textureCache;
     CVMetalTextureCacheCreate(0, nil, self.device, nil, &textureCache);
     
+    // calculate size
     size_t width = CVPixelBufferGetWidth(pixelBuffer);
     size_t height = CVPixelBufferGetHeight(pixelBuffer);
-    float aspect = (float)width / height;
+    
+    CGRect viewBounds = mtkView.bounds;
+    CGRect vertexSamplingRect = AVMakeRectWithAspectRatioInsideRect(CGSizeMake(width, height), viewBounds);
+    CGSize normalizedSamplingSize = CGSizeMake(0.0, 0.0);
+    CGSize cropScaleAmount = CGSizeMake(vertexSamplingRect.size.width/viewBounds.size.width,
+                                        vertexSamplingRect.size.height/viewBounds.size.height);
+    if (cropScaleAmount.width > cropScaleAmount.height) {
+        normalizedSamplingSize.width = 1.0;
+        normalizedSamplingSize.height = cropScaleAmount.height/cropScaleAmount.width;
+    }
+    else {
+        normalizedSamplingSize.width = cropScaleAmount.width/cropScaleAmount.height;
+        normalizedSamplingSize.height = 1.0;;
+    }
+    
     AAPLVertex quadVertices[] =
     {
-        { { -1.0, -1.0 / 2 / aspect } },
-        { {  1.0, -1.0 / 2 / aspect } },
-        { { -1.0, 1.0  / 2 / aspect } },
-        { {  1.0, 1.0  / 2 / aspect } }
+        { { -1 * normalizedSamplingSize.width, -1 * normalizedSamplingSize.height } },
+        { {  1 * normalizedSamplingSize.width, -1 * normalizedSamplingSize.height } },
+        { { -1 * normalizedSamplingSize.width,  1 * normalizedSamplingSize.height } },
+        { {  1 * normalizedSamplingSize.width,  1 * normalizedSamplingSize.height } }
     };
     
     CVReturn code = CVMetalTextureCacheCreateTextureFromImage(kCFAllocatorDefault,
@@ -67,7 +89,7 @@
                                               CVPixelBufferGetWidthOfPlane(pixelBuffer, 0),
                                               CVPixelBufferGetHeightOfPlane(pixelBuffer, 0),
                                               0,
-                                              &_ytexture);
+                                              &_yTextureRef);
     if (code != 0) {
         NSLog(@"error");
     }
@@ -79,12 +101,12 @@
                                               CVPixelBufferGetWidthOfPlane(pixelBuffer, 1),
                                               CVPixelBufferGetHeightOfPlane(pixelBuffer, 1),
                                               1,
-                                              &_uvtexture);
+                                              &_uvTextureRef);
     if (code != 0) {
         NSLog(@"error");
     }
-    id<MTLTexture> yTexture = CVMetalTextureGetTexture(self.ytexture);
-    id<MTLTexture> uvTexture = CVMetalTextureGetTexture(self.uvtexture);
+    id<MTLTexture> yTexture = CVMetalTextureGetTexture(self.yTextureRef);
+    id<MTLTexture> uvTexture = CVMetalTextureGetTexture(self.uvTextureRef);
 
     
     MTLRenderPassDescriptor *descriptor = [mtkView currentRenderPassDescriptor];
@@ -101,20 +123,11 @@
     [commandBuffer presentDrawable:currentDrawable];
     [commandBuffer commit];
     
-    if (_ytexture) {
-        CFRelease(_ytexture);
-        _ytexture = NULL;
-    }
-    if (_uvtexture) {
-        CFRelease(_uvtexture);
-        _uvtexture = NULL;
-    }
-    CVMetalTextureCacheFlush(textureCache, 0);
     
+    CVMetalTextureCacheFlush(textureCache, 0);
     if(textureCache) {
         CFRelease(textureCache);
     }
-    dispatch_semaphore_signal(_semaphore);
 }
 
 - (MTLRenderPipelineDescriptor *)pipelineDescriptor {
