@@ -13,6 +13,7 @@
 #import "SCFrameQueue.h"
 #import "SCVideoFrame.h"
 #import "SCControl.h"
+#import "SCYUVVideoFrame.h"
 
 @interface SCPlayerViewController () <MTKViewDelegate>
 
@@ -53,9 +54,13 @@
     
     NSTimeInterval currentTime = [NSDate date].timeIntervalSince1970;
     if (currentTime > self.interval) {
-        SCVideoFrame *frame = [self.controler.videoFrameQueue dequeueFrame];
+        SCYUVVideoFrame *frame = [self.controler.videoFrameQueue dequeueFrame];
+        if (frame == nil) {
+            return;
+        }
         self.interval = frame.duration + currentTime;
-        [[SCMetalManager shared] renderPixelBuffer:frame.pixelBuffer drawIn:view];
+//        [[SCMetalManager shared] renderPixelBuffer:frame.pixelBuffer drawIn:view];
+        [[SCMetalManager shared] render:frame drawIn:view];
     } else {
         NSLog(@"pass");
     }

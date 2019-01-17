@@ -19,11 +19,13 @@
 
 #import "SCAudioDecoder.h"
 #import "SCHardwareDecoder.h"
+#import "SCSoftwareDecoder.h"
 
 @interface SCControl () <SCAudioManagerDelegate>
 
 @property (nonatomic, strong) SCFormatContext *context;
-@property (nonatomic, strong) SCHardwareDecoder *videoDecoder;
+//@property (nonatomic, strong) SCHardwareDecoder *videoDecoder;
+@property (nonatomic, strong) SCSoftwareDecoder *videoFFDecoder;
 @property (nonatomic, strong) SCAudioDecoder *audioDecoder;
 
 @property (nonatomic, strong) NSInvocationOperation *readPacketOperation;
@@ -42,7 +44,8 @@
         _videoFrameQueue = [[SCFrameQueue alloc] init];
         _audioFrameQueue = [[SCFrameQueue alloc] init];
         
-        _videoDecoder = [[SCHardwareDecoder alloc] initWithFormatContext:_context];
+//        _videoDecoder = [[SCHardwareDecoder alloc] initWithFormatContext:_context];
+        _videoFFDecoder = [[SCSoftwareDecoder alloc] initWithFormatContext:_context];
         _audioDecoder = [[SCAudioDecoder alloc] initWithFormatContext:_context audioFrameQueue:_audioFrameQueue];
         [SCAudioManager shared].delegate = self;
     }
@@ -90,7 +93,7 @@
         if (self.videoFrameQueue.count > 10) {
             [NSThread sleepForTimeInterval:0.03];
         }
-        [self.videoFrameQueue enqueueAndSort:[self.videoDecoder decode]];
+        [self.videoFrameQueue enqueueAndSort:[self.videoFFDecoder decode]];
     }
 }
 

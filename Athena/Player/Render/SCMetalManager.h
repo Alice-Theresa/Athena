@@ -9,6 +9,8 @@
 #import <Metal/Metal.h>
 #import <MetalKit/MetalKit.h>
 
+@class SCYUVVideoFrame;
+
 NS_ASSUME_NONNULL_BEGIN
 
 @interface SCMetalManager : NSObject
@@ -20,6 +22,7 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, assign) NSUInteger height;
 
 - (void)renderPixelBuffer:(CVPixelBufferRef)pixelBuffer drawIn:(MTKView *)mtkView;
+- (void)render:(SCYUVVideoFrame *)frame drawIn:(MTKView *)mtkView;
 
 @end
 

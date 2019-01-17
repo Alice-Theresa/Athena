@@ -44,3 +44,22 @@ fragment half4 mappingFragment(TextureMappingVertex mappingVertex [[ stage_in ]]
     
     return half4(rgb * yuv, 1);
 }
+
+fragment half4 yuvFragment(TextureMappingVertex mappingVertex [[ stage_in ]],
+                           texture2d<float, access::sample> ytexture [[ texture(0) ]],
+                           texture2d<float, access::sample> utexture [[ texture(1) ]],
+                           texture2d<float, access::sample> vtexture [[ texture(2) ]]) {
+    constexpr sampler s(address::clamp_to_edge, filter::linear);
+    
+    half y, u, v;
+    half3 rgb;
+    y = half4(ytexture.sample(s, mappingVertex.textureCoordinate)).r;
+    u = half4(utexture.sample(s, mappingVertex.textureCoordinate)).r - 0.5;
+    v = half4(vtexture.sample(s, mappingVertex.textureCoordinate)).r - 0.5;
+    
+    rgb.r = y +             1.402 * v;
+    rgb.g = y - 0.344 * u - 0.714 * v;
+    rgb.b = y + 1.772 * u;
+    
+    return half4(rgb, 1);
+}
