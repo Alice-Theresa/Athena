@@ -20,7 +20,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface SCYUVVideoFrame : SCFrame {
 @public;
-    UInt8 * channel_pixels[SGYUVChannelCount];
+    UInt8 *channel_pixels[SGYUVChannelCount];
 }
 
 - (void)setFrameData:(AVFrame *)frame width:(int)width height:(int)height;

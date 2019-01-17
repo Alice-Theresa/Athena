@@ -6,9 +6,10 @@
 //  Copyright © 2018 Theresa. All rights reserved.
 //
 
+#import <libavformat/avformat.h>
 #import <Foundation/Foundation.h>
 
-@class SCVideoFrame;
+@class SCFrame;
 @class SCFormatContext;
 
 NS_ASSUME_NONNULL_BEGIN
@@ -17,7 +18,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (instancetype)init NS_UNAVAILABLE;
 - (instancetype)initWithFormatContext:(SCFormatContext *)formatContext;
-- (SCVideoFrame *)decode;
+- (SCFrame *)decode:(AVPacket)packet;
 
 @end
 

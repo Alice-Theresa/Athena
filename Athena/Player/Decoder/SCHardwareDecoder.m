@@ -95,10 +95,9 @@ static void didDecompress(void *decompressionOutputRefCon,
     }
 }
 
-- (SCVideoFrame *)decode {
+- (SCFrame *)decode:(AVPacket)packet {
     CVPixelBufferRef outputPixelBuffer = NULL;
     CMBlockBufferRef blockBuffer = NULL;
-    AVPacket packet = [[SCPacketQueue shared] getPacket];
     OSStatus status = CMBlockBufferCreateWithMemoryBlock(kCFAllocatorDefault, (void*)packet.data, packet.size, kCFAllocatorNull,
                                                           NULL, 0, packet.size, FALSE, &blockBuffer);
     if(status == kCMBlockBufferNoErr) {
@@ -121,6 +120,7 @@ static void didDecompress(void *decompressionOutputRefCon,
     SCVideoFrame *videoFrame = [[SCVideoFrame alloc] initWithAVPixelBuffer:outputPixelBuffer];
     videoFrame.position = packet.pts * context.videoTimebase;
     videoFrame.duration = packet.duration * context.videoTimebase;
+    av_packet_unref(&packet);
     return videoFrame;
 }
 

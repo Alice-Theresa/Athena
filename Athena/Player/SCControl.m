@@ -24,7 +24,7 @@
 @interface SCControl () <SCAudioManagerDelegate>
 
 @property (nonatomic, strong) SCFormatContext *context;
-//@property (nonatomic, strong) SCHardwareDecoder *videoDecoder;
+@property (nonatomic, strong) SCHardwareDecoder *videoDecoder;
 @property (nonatomic, strong) SCSoftwareDecoder *videoFFDecoder;
 @property (nonatomic, strong) SCAudioDecoder *audioDecoder;
 
@@ -44,7 +44,7 @@
         _videoFrameQueue = [[SCFrameQueue alloc] init];
         _audioFrameQueue = [[SCFrameQueue alloc] init];
         
-//        _videoDecoder = [[SCHardwareDecoder alloc] initWithFormatContext:_context];
+        _videoDecoder = [[SCHardwareDecoder alloc] initWithFormatContext:_context];
         _videoFFDecoder = [[SCSoftwareDecoder alloc] initWithFormatContext:_context];
         _audioDecoder = [[SCAudioDecoder alloc] initWithFormatContext:_context audioFrameQueue:_audioFrameQueue];
         [SCAudioManager shared].delegate = self;
@@ -93,7 +93,9 @@
         if (self.videoFrameQueue.count > 10) {
             [NSThread sleepForTimeInterval:0.03];
         }
-        [self.videoFrameQueue enqueueAndSort:[self.videoFFDecoder decode]];
+        AVPacket packet = [[SCPacketQueue shared] getPacket];
+//        [self.videoFrameQueue enqueueAndSort:[self.videoFFDecoder decode:packet]];
+        [self.videoFrameQueue enqueueAndSort:[self.videoDecoder decode:packet]];
     }
 }
 

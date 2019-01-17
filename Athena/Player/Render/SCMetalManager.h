@@ -18,8 +18,6 @@ NS_ASSUME_NONNULL_BEGIN
 + (instancetype)shared;
 
 @property (nonatomic, strong) id<MTLDevice> device;
-@property (nonatomic, assign) NSUInteger width;
-@property (nonatomic, assign) NSUInteger height;
 
 - (void)renderPixelBuffer:(CVPixelBufferRef)pixelBuffer drawIn:(MTKView *)mtkView;
 - (void)render:(SCYUVVideoFrame *)frame drawIn:(MTKView *)mtkView;

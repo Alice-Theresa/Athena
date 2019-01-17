@@ -85,6 +85,18 @@
                        1);
 }
 
+- (void)dealloc {
+    if (channel_pixels[SGYUVChannelLuma] != NULL && channel_pixels_buffer_size[SGYUVChannelLuma] > 0) {
+        free(channel_pixels[SGYUVChannelLuma]);
+    }
+    if (channel_pixels[SGYUVChannelChromaB] != NULL && channel_pixels_buffer_size[SGYUVChannelChromaB] > 0) {
+        free(channel_pixels[SGYUVChannelChromaB]);
+    }
+    if (channel_pixels[SGYUVChannelChromaR] != NULL && channel_pixels_buffer_size[SGYUVChannelChromaR] > 0) {
+        free(channel_pixels[SGYUVChannelChromaR]);
+    }
+}
+
 int SGYUVChannelFilterNeedSize(int linesize, int width, int height, int channel_count) {
     width = MIN(linesize, width);
     return width * height * channel_count;

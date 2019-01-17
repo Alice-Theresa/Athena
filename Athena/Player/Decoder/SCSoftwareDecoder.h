@@ -6,6 +6,7 @@
 //  Copyright © 2019 Theresa. All rights reserved.
 //
 
+#import <libavformat/avformat.h>
 #import <Foundation/Foundation.h>
 
 @class SCFrame;
@@ -16,7 +17,7 @@ NS_ASSUME_NONNULL_BEGIN
 @interface SCSoftwareDecoder : NSObject
 
 - (instancetype)initWithFormatContext:(SCFormatContext *)formatContext;
-- (SCFrame *)decode;
+- (SCFrame *)decode:(AVPacket)packet;
 
 @end
 

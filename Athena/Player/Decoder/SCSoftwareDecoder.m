@@ -32,9 +32,8 @@
     return self;
 }
 
-- (SCFrame *)decode {
+- (SCFrame *)decode:(AVPacket)packet {
     SCVideoFrame *videoFrame = nil;
-    AVPacket packet = [[SCPacketQueue shared] getPacket];
     int result = avcodec_send_packet(self.formatContext.videoCodecContext, &packet);
     if (result < 0) {
         return nil;
@@ -42,15 +41,13 @@
         while (result >= 0) {
             result = avcodec_receive_frame(self.formatContext.videoCodecContext, _temp_frame);
             if (result < 0) {
-                NSLog(@"error");
+//                NSLog(@"error");
             } else {
                 videoFrame = [self videoFrameFromTempFrame:packet.size];
             }
         }
     }
     av_packet_unref(&packet);
-    
-
     return videoFrame;
 }
 

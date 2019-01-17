@@ -54,13 +54,13 @@
     
     NSTimeInterval currentTime = [NSDate date].timeIntervalSince1970;
     if (currentTime > self.interval) {
-        SCYUVVideoFrame *frame = [self.controler.videoFrameQueue dequeueFrame];
+        SCVideoFrame *frame = [self.controler.videoFrameQueue dequeueFrame];
         if (frame == nil) {
             return;
         }
         self.interval = frame.duration + currentTime;
-//        [[SCMetalManager shared] renderPixelBuffer:frame.pixelBuffer drawIn:view];
-        [[SCMetalManager shared] render:frame drawIn:view];
+        [[SCMetalManager shared] renderPixelBuffer:frame.pixelBuffer drawIn:view];
+//        [[SCMetalManager shared] render:frame drawIn:view];
     } else {
         NSLog(@"pass");
     }
