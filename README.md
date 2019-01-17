@@ -11,5 +11,5 @@ player
 
          | video | audio
 -------- |------ |----
-software |       | 
+software | ✓     | ✓
 hardware | ✓     | 
