@@ -14,7 +14,7 @@
 #import "SCFrameQueue.h"
 
 #import "SCFrame.h"
-#import "SCVideoFrame.h"
+#import "SCNV12VideoFrame.h"
 #import "SCAudioFrame.h"
 
 #import "SCAudioDecoder.h"
@@ -94,8 +94,10 @@
             [NSThread sleepForTimeInterval:0.03];
         }
         AVPacket packet = [[SCPacketQueue shared] getPacket];
-//        [self.videoFrameQueue enqueueAndSort:[self.videoFFDecoder decode:packet]];
-        [self.videoFrameQueue enqueueAndSort:[self.videoDecoder decode:packet]];
+        if (packet.data != NULL) {
+//            [self.videoFrameQueue enqueueAndSort:[self.videoFFDecoder decode:packet]];
+            [self.videoFrameQueue enqueueAndSort:[self.videoDecoder decode:packet]];
+        }
     }
 }
 

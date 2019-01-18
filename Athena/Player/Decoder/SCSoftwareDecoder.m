@@ -11,8 +11,8 @@
 #import "SCFormatContext.h"
 #import "SCPacketQueue.h"
 #import "SCFrameQueue.h"
-#import "SCVideoFrame.h"
-#import "SCYUVVideoFrame.h"
+#import "SCNV12VideoFrame.h"
+#import "SCI420VideoFrame.h"
 
 @interface SCSoftwareDecoder () {
     AVFrame *_temp_frame;
@@ -33,7 +33,7 @@
 }
 
 - (SCFrame *)decode:(AVPacket)packet {
-    SCVideoFrame *videoFrame = nil;
+    SCNV12VideoFrame *videoFrame = nil;
     int result = avcodec_send_packet(self.formatContext.videoCodecContext, &packet);
     if (result < 0) {
         return nil;
@@ -51,12 +51,13 @@
     return videoFrame;
 }
 
-- (SCYUVVideoFrame *)videoFrameFromTempFrame:(int)packetSize {
+- (SCI420VideoFrame *)videoFrameFromTempFrame:(int)packetSize {
     if (!_temp_frame->data[0] || !_temp_frame->data[1] || !_temp_frame->data[2]) {
         return nil;
     }
-    SCYUVVideoFrame *videoFrame = [[SCYUVVideoFrame alloc] init];
-    [videoFrame setFrameData:_temp_frame width:self.formatContext.videoCodecContext->width height:self.formatContext.videoCodecContext->height];
+    SCI420VideoFrame *videoFrame = [[SCI420VideoFrame alloc] initWithFrameData:_temp_frame
+                                                                         width:self.formatContext.videoCodecContext->width
+                                                                        height:self.formatContext.videoCodecContext->height];
     videoFrame.position = av_frame_get_best_effort_timestamp(_temp_frame) * self.formatContext.videoTimebase;
     videoFrame.position += _temp_frame->repeat_pict * self.formatContext.videoTimebase * 0.5;
     videoFrame.duration = av_frame_get_pkt_duration(_temp_frame) * self.formatContext.videoTimebase;

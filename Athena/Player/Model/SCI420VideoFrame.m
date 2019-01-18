@@ -1,5 +1,5 @@
 //
-//  SCYUVVideoFrame.m
+//  SCI420VideoFrame.m
 //  Athena
 //
 //  Created by Theresa on 2019/01/17.
@@ -7,16 +7,25 @@
 //
 
 #import <libavformat/avformat.h>
-#import "SCYUVVideoFrame.h"
+#import "SCI420VideoFrame.h"
 
-@implementation SCYUVVideoFrame {
+@implementation SCI420VideoFrame {
     size_t channel_pixels_buffer_size[SGYUVChannelCount];
     int channel_lenghts[SGYUVChannelCount];
     int channel_linesize[SGYUVChannelCount];
 }
 
+- (instancetype)initWithFrameData:(AVFrame *)frame width:(int)width height:(int)height {
+    if (self = [super init]) {
+        [self settingFrameData:frame width:width height:height];
+    }
+    return self;
+}
 
-- (void)setFrameData:(AVFrame *)frame width:(int)width height:(int)height {
+- (void)settingFrameData:(AVFrame *)frame width:(int)width height:(int)height {
+    
+    _width = width;
+    _height = height;
     
     int linesize_y = frame->linesize[SGYUVChannelLuma];
     int linesize_u = frame->linesize[SGYUVChannelChromaB];
@@ -26,9 +35,9 @@
     channel_linesize[SGYUVChannelChromaB] = linesize_u;
     channel_linesize[SGYUVChannelChromaR] = linesize_v;
     
-    UInt8 * buffer_y = channel_pixels[SGYUVChannelLuma];
-    UInt8 * buffer_u = channel_pixels[SGYUVChannelChromaB];
-    UInt8 * buffer_v = channel_pixels[SGYUVChannelChromaR];
+    UInt8 *buffer_y = self.luma_channel_pixels;
+    UInt8 *buffer_u = self.chromaB_channel_pixels;
+    UInt8 *buffer_v = self.chromaR_channel_pixels;
     
     size_t buffer_size_y = channel_pixels_buffer_size[SGYUVChannelLuma];
     size_t buffer_size_u = channel_pixels_buffer_size[SGYUVChannelChromaB];
@@ -41,7 +50,7 @@
             free(buffer_y);
         }
         channel_pixels_buffer_size[SGYUVChannelLuma] = need_size_y;
-        channel_pixels[SGYUVChannelLuma] = malloc(need_size_y);
+        _luma_channel_pixels = malloc(need_size_y);
     }
     int need_size_u = SGYUVChannelFilterNeedSize(linesize_u, width / 2, height / 2, 1);
     channel_lenghts[SGYUVChannelChromaB] = need_size_u;
@@ -50,7 +59,7 @@
             free(buffer_u);
         }
         channel_pixels_buffer_size[SGYUVChannelChromaB] = need_size_u;
-        channel_pixels[SGYUVChannelChromaB] = malloc(need_size_u);
+        _chromaB_channel_pixels = malloc(need_size_u);
     }
     int need_size_v = SGYUVChannelFilterNeedSize(linesize_v, width / 2, height / 2, 1);
     channel_lenghts[SGYUVChannelChromaR] = need_size_v;
@@ -59,41 +68,41 @@
             free(buffer_v);
         }
         channel_pixels_buffer_size[SGYUVChannelChromaR] = need_size_v;
-        channel_pixels[SGYUVChannelChromaR] = malloc(need_size_v);
+        _chromaR_channel_pixels = malloc(need_size_v);
     }
     
     SGYUVChannelFilter(frame->data[SGYUVChannelLuma],
                        linesize_y,
                        width,
                        height,
-                       channel_pixels[SGYUVChannelLuma],
+                       self.luma_channel_pixels,
                        channel_pixels_buffer_size[SGYUVChannelLuma],
                        1);
     SGYUVChannelFilter(frame->data[SGYUVChannelChromaB],
                        linesize_u,
                        width / 2,
                        height / 2,
-                       channel_pixels[SGYUVChannelChromaB],
+                       self.chromaB_channel_pixels,
                        channel_pixels_buffer_size[SGYUVChannelChromaB],
                        1);
     SGYUVChannelFilter(frame->data[SGYUVChannelChromaR],
                        linesize_v,
                        width / 2,
                        height / 2,
-                       channel_pixels[SGYUVChannelChromaR],
+                       self.chromaR_channel_pixels,
                        channel_pixels_buffer_size[SGYUVChannelChromaR],
                        1);
 }
 
 - (void)dealloc {
-    if (channel_pixels[SGYUVChannelLuma] != NULL && channel_pixels_buffer_size[SGYUVChannelLuma] > 0) {
-        free(channel_pixels[SGYUVChannelLuma]);
+    if (self.luma_channel_pixels != NULL && channel_pixels_buffer_size[SGYUVChannelLuma] > 0) {
+        free(self.luma_channel_pixels);
     }
-    if (channel_pixels[SGYUVChannelChromaB] != NULL && channel_pixels_buffer_size[SGYUVChannelChromaB] > 0) {
-        free(channel_pixels[SGYUVChannelChromaB]);
+    if (self.chromaB_channel_pixels != NULL && channel_pixels_buffer_size[SGYUVChannelChromaB] > 0) {
+        free(self.chromaB_channel_pixels);
     }
-    if (channel_pixels[SGYUVChannelChromaR] != NULL && channel_pixels_buffer_size[SGYUVChannelChromaR] > 0) {
-        free(channel_pixels[SGYUVChannelChromaR]);
+    if (self.chromaR_channel_pixels != NULL && channel_pixels_buffer_size[SGYUVChannelChromaR] > 0) {
+        free(self.chromaR_channel_pixels);
     }
 }
 

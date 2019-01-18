@@ -7,7 +7,7 @@
 //
 
 #import "SCFrameQueue.h"
-#import "SCVideoFrame.h"
+#import "SCNV12VideoFrame.h"
 
 @interface SCFrameQueue ()
 

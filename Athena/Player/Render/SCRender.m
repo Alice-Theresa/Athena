@@ -1,5 +1,5 @@
 //
-//  SCMetalManager.m
+//  SCRender.m
 //  Athena
 //
 //  Created by Theresa on 2019/01/15.
@@ -7,11 +7,10 @@
 //
 
 #import <AVFoundation/AVUtilities.h>
-#import "SCMetalManager.h"
+#import "SCRender.h"
 #import "SCShaderType.h"
-#import "SCYUVVideoFrame.h"
 
-@interface SCMetalManager ()
+@interface SCRender ()
 
 @property (nonatomic, strong) id<MTLCommandQueue> commandQueue;
 @property (nonatomic, strong) id<MTLLibrary> library;
@@ -23,16 +22,7 @@
 
 @end
 
-@implementation SCMetalManager
-
-+ (instancetype)shared {
-    static SCMetalManager *manager;
-    static dispatch_once_t onceToken;
-    dispatch_once(&onceToken, ^{
-        manager = [[SCMetalManager alloc] init];
-    });
-    return manager;
-}
+@implementation SCRender
 
 - (instancetype)init {
     if (self = [super init]) {
@@ -43,8 +33,17 @@
     return self;
 }
 
+- (void)render:(id<SCRenderDataInterface>)frame drawIn:(MTKView *)mtkView {
+    if ([frame conformsToProtocol:@protocol(SCRenderDataNV12Interface)]) {
+        [self renderPixelBuffer:(id<SCRenderDataNV12Interface>)frame drawIn:mtkView];
+    } else if ([frame conformsToProtocol:@protocol(SCRenderDataI420Interface)]) {
+        [self renderI420:(id<SCRenderDataI420Interface>)frame drawIn:mtkView];
+    } else {
+        NSLog(@"error: no corresponding method");
+    }
+}
 
-- (void)renderPixelBuffer:(CVPixelBufferRef)pixelBuffer drawIn:(MTKView *)mtkView {
+- (void)renderPixelBuffer:(id<SCRenderDataNV12Interface>)frame drawIn:(MTKView *)mtkView {
     //release first or image maybe tears
     if (self.yTextureRef) {
         CFRelease(self.yTextureRef);
@@ -59,41 +58,32 @@
     CVMetalTextureCacheCreate(0, nil, self.device, nil, &textureCache);
     
     // calculate size
-    size_t width = CVPixelBufferGetWidth(pixelBuffer);
-    size_t height = CVPixelBufferGetHeight(pixelBuffer);
-    
-    CGSize normalizedSamplingSize = [self calculateWidth:width height:height viewBounds:mtkView.bounds];
-    AAPLVertex quadVertices[] =
-    {
-        { { -1 * normalizedSamplingSize.width, -1 * normalizedSamplingSize.height } },
-        { {  1 * normalizedSamplingSize.width, -1 * normalizedSamplingSize.height } },
-        { { -1 * normalizedSamplingSize.width,  1 * normalizedSamplingSize.height } },
-        { {  1 * normalizedSamplingSize.width,  1 * normalizedSamplingSize.height } }
-    };
+    size_t width = frame.width;
+    size_t height = frame.height;
     
     CVReturn code = CVMetalTextureCacheCreateTextureFromImage(kCFAllocatorDefault,
                                               textureCache,
-                                              pixelBuffer,
+                                              frame.pixelBuffer,
                                               nil,
                                               MTLPixelFormatR8Unorm,
-                                              CVPixelBufferGetWidthOfPlane(pixelBuffer, 0),
-                                              CVPixelBufferGetHeightOfPlane(pixelBuffer, 0),
+                                              CVPixelBufferGetWidthOfPlane(frame.pixelBuffer, 0),
+                                              CVPixelBufferGetHeightOfPlane(frame.pixelBuffer, 0),
                                               0,
                                               &_yTextureRef);
-    if (code != 0) {
-        NSLog(@"error");
+    if (code != kCVReturnSuccess) {
+        NSLog(@"code: %d", code);
     }
     code = CVMetalTextureCacheCreateTextureFromImage(kCFAllocatorDefault,
                                               textureCache,
-                                              pixelBuffer,
+                                              frame.pixelBuffer,
                                               nil,
                                               MTLPixelFormatRG8Unorm,
-                                              CVPixelBufferGetWidthOfPlane(pixelBuffer, 1),
-                                              CVPixelBufferGetHeightOfPlane(pixelBuffer, 1),
+                                              CVPixelBufferGetWidthOfPlane(frame.pixelBuffer, 1),
+                                              CVPixelBufferGetHeightOfPlane(frame.pixelBuffer, 1),
                                               1,
                                               &_uvTextureRef);
-    if (code != 0) {
-        NSLog(@"error");
+    if (code != kCVReturnSuccess) {
+        NSLog(@"code: %d", code);
     }
     id<MTLTexture> yTexture = CVMetalTextureGetTexture(self.yTextureRef);
     id<MTLTexture> uvTexture = CVMetalTextureGetTexture(self.uvTextureRef);
@@ -104,7 +94,7 @@
     id<MTLRenderCommandEncoder> encoder = [commandBuffer renderCommandEncoderWithDescriptor:descriptor];
     
     [encoder setRenderPipelineState:[self.device newRenderPipelineStateWithDescriptor:self.nv12PipelineDescriptor error:nil]];
-    [encoder setVertexBytes:quadVertices length:sizeof(quadVertices) atIndex:0];
+    [encoder setVertexBuffer:[self createBuffer:width height:height viewBounds:mtkView.bounds] offset:0 atIndex:0];
     [encoder setFragmentTexture:yTexture atIndex:0];
     [encoder setFragmentTexture:uvTexture atIndex:1];
     [encoder drawPrimitives:MTLPrimitiveTypeTriangleStrip vertexStart:0 vertexCount:4 instanceCount:1];
@@ -112,38 +102,28 @@
     [commandBuffer presentDrawable:currentDrawable];
     [commandBuffer commit];
     
-    
     CVMetalTextureCacheFlush(textureCache, 0);
     if(textureCache) {
         CFRelease(textureCache);
     }
 }
 
-- (void)render:(SCYUVVideoFrame *)frame drawIn:(MTKView *)mtkView {
-    size_t width = 1920;
-    size_t height = 1080;
+- (void)renderI420:(id<SCRenderDataI420Interface>)frame drawIn:(MTKView *)mtkView {
+    size_t width = frame.width;
+    size_t height = frame.height;
     
-    CGSize normalizedSamplingSize = [self calculateWidth:width height:height viewBounds:mtkView.bounds];
-    AAPLVertex quadVertices[] =
-    {
-        { { -1 * normalizedSamplingSize.width, -1 * normalizedSamplingSize.height } },
-        { {  1 * normalizedSamplingSize.width, -1 * normalizedSamplingSize.height } },
-        { { -1 * normalizedSamplingSize.width,  1 * normalizedSamplingSize.height } },
-        { {  1 * normalizedSamplingSize.width,  1 * normalizedSamplingSize.height } }
-    };
-    
-    MTLRegion region = { { 0, 0, 0 }, { width, height, 1 } };
-    MTLRegion region2 = { { 0, 0, 0 }, { width/2, height/2, 1 } };
+    MTLRegion yRegion = { { 0, 0, 0 }, { width, height, 1 } };
+    MTLRegion uvRegion = { { 0, 0, 0 }, { width / 2, height / 2, 1 } };
     
     MTLTextureDescriptor *yDesc = [MTLTextureDescriptor texture2DDescriptorWithPixelFormat:MTLPixelFormatR8Unorm width:width height:height mipmapped:YES];
-    MTLTextureDescriptor *uvDesc = [MTLTextureDescriptor texture2DDescriptorWithPixelFormat:MTLPixelFormatR8Unorm width:width/2 height:height/2 mipmapped:YES];
+    MTLTextureDescriptor *uvDesc = [MTLTextureDescriptor texture2DDescriptorWithPixelFormat:MTLPixelFormatR8Unorm width:width / 2 height:height / 2 mipmapped:YES];
     
     id<MTLTexture> yTexture = [self.device newTextureWithDescriptor:yDesc];
     id<MTLTexture> uTexture = [self.device newTextureWithDescriptor:uvDesc];
     id<MTLTexture> vTexture = [self.device newTextureWithDescriptor:uvDesc];
-    [yTexture replaceRegion:region mipmapLevel:0 withBytes:frame->channel_pixels[0] bytesPerRow:width];
-    [uTexture replaceRegion:region2 mipmapLevel:0 withBytes:frame->channel_pixels[1] bytesPerRow:width/2];
-    [vTexture replaceRegion:region2 mipmapLevel:0 withBytes:frame->channel_pixels[2] bytesPerRow:width/2];
+    [yTexture replaceRegion:yRegion mipmapLevel:0 withBytes:frame.luma_channel_pixels bytesPerRow:width];
+    [uTexture replaceRegion:uvRegion mipmapLevel:0 withBytes:frame.chromaB_channel_pixels bytesPerRow:width / 2];
+    [vTexture replaceRegion:uvRegion mipmapLevel:0 withBytes:frame.chromaR_channel_pixels bytesPerRow:width / 2];
     
     MTLRenderPassDescriptor *descriptor = [mtkView currentRenderPassDescriptor];
     id<CAMetalDrawable> currentDrawable = [mtkView currentDrawable];
@@ -151,7 +131,7 @@
     id<MTLRenderCommandEncoder> encoder = [commandBuffer renderCommandEncoderWithDescriptor:descriptor];
     
     [encoder setRenderPipelineState:[self.device newRenderPipelineStateWithDescriptor:self.yuvPipelineDescriptor error:nil]];
-    [encoder setVertexBytes:quadVertices length:sizeof(quadVertices) atIndex:0];
+    [encoder setVertexBuffer:[self createBuffer:width height:height viewBounds:mtkView.bounds] offset:0 atIndex:0];
     [encoder setFragmentTexture:yTexture atIndex:0];
     [encoder setFragmentTexture:uTexture atIndex:1];
     [encoder setFragmentTexture:vTexture atIndex:2];
@@ -161,20 +141,29 @@
     [commandBuffer commit];
 }
 
-- (CGSize)calculateWidth:(size_t)width height:(size_t)height viewBounds:(CGRect)viewBounds {
-    CGRect vertexSamplingRect = AVMakeRectWithAspectRatioInsideRect(CGSizeMake(width, height), viewBounds);
+- (id<MTLBuffer>)createBuffer:(size_t)width height:(size_t)height viewBounds:(CGRect)viewBounds {
+    CGRect vertexSamplingRect     = AVMakeRectWithAspectRatioInsideRect(CGSizeMake(width, height), viewBounds);
+    CGSize cropScaleAmount        = CGSizeMake(vertexSamplingRect.size.width / viewBounds.size.width, vertexSamplingRect.size.height / viewBounds.size.height);
     CGSize normalizedSamplingSize = CGSizeMake(0.0, 0.0);
-    CGSize cropScaleAmount = CGSizeMake(vertexSamplingRect.size.width / viewBounds.size.width,
-                                        vertexSamplingRect.size.height / viewBounds.size.height);
+    
     if (cropScaleAmount.width > cropScaleAmount.height) {
         normalizedSamplingSize.width = 1.0;
         normalizedSamplingSize.height = cropScaleAmount.height / cropScaleAmount.width;
-    }
-    else {
+    } else {
         normalizedSamplingSize.width = cropScaleAmount.width / cropScaleAmount.height;
         normalizedSamplingSize.height = 1.0;;
     }
-    return normalizedSamplingSize;
+    AAPLVertex quadVertices[] =
+    {
+        { { -1 * normalizedSamplingSize.width, -1 * normalizedSamplingSize.height } },
+        { {  1 * normalizedSamplingSize.width, -1 * normalizedSamplingSize.height } },
+        { { -1 * normalizedSamplingSize.width,  1 * normalizedSamplingSize.height } },
+        { {  1 * normalizedSamplingSize.width,  1 * normalizedSamplingSize.height } }
+    };
+    NSData *vertexData = [NSData dataWithBytes:&quadVertices length:sizeof(quadVertices)];
+    id<MTLBuffer> vertexBuffer = [self.device newBufferWithLength:vertexData.length options:MTLResourceStorageModeShared];
+    memcpy(vertexBuffer.contents, vertexData.bytes, vertexData.length);
+    return vertexBuffer;
 }
 
 - (MTLRenderPipelineDescriptor *)nv12PipelineDescriptor {

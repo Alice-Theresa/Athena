@@ -12,7 +12,7 @@
 #import "SCFormatContext.h"
 #import "SCPacketQueue.h"
 #import "SCFrameQueue.h"
-#import "SCVideoFrame.h"
+#import "SCNV12VideoFrame.h"
 
 @interface SCHardwareDecoder () {
     VTDecompressionSessionRef _deocderSession;
@@ -117,7 +117,7 @@ static void didDecompress(void *decompressionOutputRefCon,
         }
         CFRelease(blockBuffer);
     }
-    SCVideoFrame *videoFrame = [[SCVideoFrame alloc] initWithAVPixelBuffer:outputPixelBuffer];
+    SCNV12VideoFrame *videoFrame = [[SCNV12VideoFrame alloc] initWithAVPixelBuffer:outputPixelBuffer];
     videoFrame.position = packet.pts * context.videoTimebase;
     videoFrame.duration = packet.duration * context.videoTimebase;
     av_packet_unref(&packet);

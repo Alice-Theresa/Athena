@@ -46,7 +46,7 @@
     AVPacket packet;
     if (self.packets.count <= 0) {
         [self.condition unlock];
-        return packet;
+        return packet; //need checkout
     }
     [self.packets.firstObject getValue:&packet];
     [self.packets removeObjectAtIndex:0];

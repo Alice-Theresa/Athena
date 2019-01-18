@@ -1,5 +1,5 @@
 //
-//  SCMetalManager.h
+//  SCRender.h
 //  Athena
 //
 //  Created by Theresa on 2019/01/15.
@@ -8,20 +8,17 @@
 
 #import <Metal/Metal.h>
 #import <MetalKit/MetalKit.h>
-
-@class SCYUVVideoFrame;
+#import "SCRenderDataInterface.h"
 
 NS_ASSUME_NONNULL_BEGIN
 
-@interface SCMetalManager : NSObject
-
-+ (instancetype)shared;
+@interface SCRender : NSObject
 
 @property (nonatomic, strong) id<MTLDevice> device;
 
-- (void)renderPixelBuffer:(CVPixelBufferRef)pixelBuffer drawIn:(MTKView *)mtkView;
-- (void)render:(SCYUVVideoFrame *)frame drawIn:(MTKView *)mtkView;
+- (void)render:(id<SCRenderDataInterface>)frame drawIn:(MTKView *)mtkView;
 
 @end
 
 NS_ASSUME_NONNULL_END
+
