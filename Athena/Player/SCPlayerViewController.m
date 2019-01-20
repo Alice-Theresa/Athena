@@ -15,14 +15,19 @@
 #import "SCControl.h"
 #import "SCI420VideoFrame.h"
 #import "SCRenderDataInterface.h"
+#import "TestUtil.h"
+#import "VideoCaptureManager.h"
+#import "SharedQueue.h"
 
-@interface SCPlayerViewController () <MTKViewDelegate>
+@interface SCPlayerViewController () <AVCaptureVideoDataOutputSampleBufferDelegate, MTKViewDelegate>
 
 @property (nonatomic, strong) MTKView *mtkView;
 @property (nonatomic, strong) SCControl *controler;
 @property (nonatomic, assign) NSTimeInterval interval;
-@property (nonatomic, assign) CVMetalTextureCacheRef textureCache;
 @property (nonatomic, strong) SCRender *render;
+
+@property (nonatomic, strong) VideoCaptureManager *manager;
+@property (nonatomic, strong) SCFrameQueue *videoFrameQueue;
 
 @end
 
@@ -30,7 +35,12 @@
 
 - (void)viewDidLoad {
     [super viewDidLoad];
-    CVMetalTextureCacheCreate(0, nil, self.render.device, nil, &_textureCache);
+    
+//    self.manager = [VideoCaptureManager shared];
+//    [self.manager addVideoInputOutput:self];
+//    [self.manager startCapture];
+//    self.videoFrameQueue = [[SCFrameQueue alloc] init];
+    
     [self.view addSubview:self.mtkView];
     self.controler = [[SCControl alloc] init];
     [self.controler open];
@@ -60,37 +70,29 @@
 }
 
 - (void)drawInMTKView:(MTKView *)view {
-//    NSTimeInterval currentTime = [NSDate date].timeIntervalSince1970;
-//    if (currentTime > self.interval) {
-//        SCFrame *frame = [self.controler.videoFrameQueue dequeueFrame];
-//        if (frame == nil) {
-//            return;
-//        }
-//        self.interval = frame.duration + currentTime;
-//
-//        [self.render render:frame drawIn:view];
-//    }
-    [self.render render:[[SCNV12VideoFrame alloc] initWithAVPixelBuffer:[self pixelBufferFromImage:[UIImage imageNamed:@"test.jpg"].CGImage]] drawIn:view];
+    NSTimeInterval currentTime = [NSDate date].timeIntervalSince1970;
+    if (currentTime > self.interval) {
+        SCFrame *frame = [self.controler.videoFrameQueue dequeueFrame];
+        if (frame == nil) {
+            return;
+        }
+        self.interval = frame.duration + currentTime;
+
+        [self.render render:frame drawIn:view];
+    }
+//    [self.render render:[[SCNV12VideoFrame alloc] initWithAVPixelBuffer:[TestUtil createNV12From:[UIImage imageNamed:@"test.jpg"]]] drawIn:view];
+//    [self.render render:[self.videoFrameQueue dequeueFrame] drawIn:view];
 }
 
 - (void)mtkView:(MTKView *)view drawableSizeWillChange:(CGSize)size {
     
 }
 
-- (CVPixelBufferRef)pixelBufferFromImage:(CGImageRef)image {
-    MTKTextureLoader *loader = [[MTKTextureLoader alloc] initWithDevice:self.render.device];
-    id<MTLTexture> texture = [loader newTextureWithCGImage:image options:nil error:nil];
-    
-    CVPixelBufferRef pixelBuffer = NULL;
-    CVPixelBufferLockBaseAddress(pixelBuffer, 0);
-    
-    MTLRegion region = MTLRegionMake2D(0, 0, CGImageGetWidth(image), CGImageGetHeight(image));
-    NSUInteger bytesPerRow = CVPixelBufferGetBytesPerRow(pixelBuffer);
-    unsigned char *baseAddressY  = CVPixelBufferGetBaseAddressOfPlane(pixelBuffer, 0);
-    [texture getBytes:baseAddressY bytesPerRow:CGImageGetWidth(image) fromRegion:region mipmapLevel:0];
-    CVPixelBufferUnlockBaseAddress(pixelBuffer, 0);
-    
-    return pixelBuffer;
+- (void)captureOutput:(AVCaptureOutput *)output didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer fromConnection:(AVCaptureConnection *)connection {
+    CVImageBufferRef pixelBuffer = CMSampleBufferGetImageBuffer(sampleBuffer);
+//    [self.render pb:pixelBuffer size:CGSizeMake(720, 1280) drawIn:self.mtkView];
+//    [self.render render:[[SCNV12VideoFrame alloc] initWithAVPixelBuffer:pixelBuffer] drawIn:self.mtkView];
+    [self.videoFrameQueue enqueue:[[SCNV12VideoFrame alloc] initWithAVPixelBuffer:pixelBuffer]];
 }
 
 @end

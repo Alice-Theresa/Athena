@@ -12,6 +12,7 @@
 
 - (instancetype)initWithAVPixelBuffer:(CVPixelBufferRef)pixelBuffer {
     if (self = [super init]) {
+//        CFRetain(pixelBuffer); only for camera capture
         _pixelBuffer = pixelBuffer;
         _width = CVPixelBufferGetWidth(pixelBuffer);
         _height = CVPixelBufferGetHeight(pixelBuffer);

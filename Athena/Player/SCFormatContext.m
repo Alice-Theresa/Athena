@@ -40,7 +40,7 @@
     avformat_network_init();
     formatContext = avformat_alloc_context();
 
-    NSString *path = [[[NSBundle mainBundle] resourcePath] stringByAppendingPathComponent:@"Aimer - I beg you.mkv"];
+    NSString *path = [[[NSBundle mainBundle] resourcePath] stringByAppendingPathComponent:@"Aimer.mkv"];
     
     if(avformat_open_input(&formatContext, [path UTF8String], NULL, NULL) != 0){
         printf("Couldn't open input stream.\n");

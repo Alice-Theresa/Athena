@@ -43,8 +43,7 @@
     }
 }
 
-- (void)renderPixelBuffer:(id<SCRenderDataNV12Interface>)frame drawIn:(MTKView *)mtkView {
-    //release first or image maybe tears
+- (void)flushTexture {
     if (self.yTextureRef) {
         CFRelease(self.yTextureRef);
         self.yTextureRef = NULL;
@@ -53,6 +52,62 @@
         CFRelease(self.uvTextureRef);
         self.uvTextureRef = NULL;
     }
+}
+
+- (void)pb:(CVPixelBufferRef)pixelBuffer size:(CGSize)size drawIn:(MTKView *)mtkView {
+    
+    CVMetalTextureCacheRef textureCache;
+    CVMetalTextureCacheCreate(0, nil, self.device, nil, &textureCache);
+    
+    CVReturn code = CVMetalTextureCacheCreateTextureFromImage(kCFAllocatorDefault,
+                                                              textureCache,
+                                                              pixelBuffer,
+                                                              nil,
+                                                              MTLPixelFormatR8Unorm,
+                                                              CVPixelBufferGetWidthOfPlane(pixelBuffer, 0),
+                                                              CVPixelBufferGetHeightOfPlane(pixelBuffer, 0),
+                                                              0,
+                                                              &_yTextureRef);
+    code = CVMetalTextureCacheCreateTextureFromImage(kCFAllocatorDefault,
+                                                     textureCache,
+                                                     pixelBuffer,
+                                                     nil,
+                                                     MTLPixelFormatRG8Unorm,
+                                                     CVPixelBufferGetWidthOfPlane(pixelBuffer, 1),
+                                                     CVPixelBufferGetHeightOfPlane(pixelBuffer, 1),
+                                                     1,
+                                                     &_uvTextureRef);
+    id<MTLTexture> yTexture = CVMetalTextureGetTexture(_yTextureRef);
+    id<MTLTexture> uvTexture = CVMetalTextureGetTexture(_uvTextureRef);
+    
+    [self flushTexture];
+    CVMetalTextureCacheFlush(textureCache, 0);
+    if(textureCache) {
+        CFRelease(textureCache);
+    }
+
+    dispatch_async(dispatch_get_main_queue(), ^{
+        [self renderTest:yTexture texture2:uvTexture drawIn:mtkView size:size];
+    });
+}
+
+- (void)renderTest:(id<MTLTexture>)yTexture texture2:(id<MTLTexture>)uvTexture drawIn:(MTKView *)mtkView size:(CGSize)size {
+    MTLRenderPassDescriptor *descriptor = [mtkView currentRenderPassDescriptor];
+    id<CAMetalDrawable> currentDrawable = [mtkView currentDrawable];
+    id<MTLCommandBuffer> commandBuffer = [self.commandQueue commandBuffer];
+    id<MTLRenderCommandEncoder> encoder = [commandBuffer renderCommandEncoderWithDescriptor:descriptor];
+    
+    [encoder setRenderPipelineState:[self.device newRenderPipelineStateWithDescriptor:self.nv12PipelineDescriptor error:nil]];
+    [encoder setVertexBuffer:[self createBuffer:size.width height:size.height viewBounds:mtkView.bounds] offset:0 atIndex:0];
+    [encoder setFragmentTexture:yTexture atIndex:0];
+    [encoder setFragmentTexture:uvTexture atIndex:1];
+    [encoder drawPrimitives:MTLPrimitiveTypeTriangleStrip vertexStart:0 vertexCount:4 instanceCount:1];
+    [encoder endEncoding];
+    [commandBuffer presentDrawable:currentDrawable];
+    [commandBuffer commit];
+}
+
+- (void)renderPixelBuffer:(id<SCRenderDataNV12Interface>)frame drawIn:(MTKView *)mtkView {
     
     CVMetalTextureCacheRef textureCache;
     CVMetalTextureCacheCreate(0, nil, self.device, nil, &textureCache);
@@ -73,6 +128,7 @@
     if (code != kCVReturnSuccess) {
         NSLog(@"code: %d", code);
     }
+    id<MTLTexture> yTexture = CVMetalTextureGetTexture(self.yTextureRef);
     code = CVMetalTextureCacheCreateTextureFromImage(kCFAllocatorDefault,
                                               textureCache,
                                               frame.pixelBuffer,
@@ -85,7 +141,6 @@
     if (code != kCVReturnSuccess) {
         NSLog(@"code: %d", code);
     }
-    id<MTLTexture> yTexture = CVMetalTextureGetTexture(self.yTextureRef);
     id<MTLTexture> uvTexture = CVMetalTextureGetTexture(self.uvTextureRef);
 
     MTLRenderPassDescriptor *descriptor = [mtkView currentRenderPassDescriptor];
@@ -101,7 +156,9 @@
     [encoder endEncoding];
     [commandBuffer presentDrawable:currentDrawable];
     [commandBuffer commit];
+    [commandBuffer waitUntilCompleted]; //fix screen tearing problem? or flushTexture at the very beinging
     
+    [self flushTexture];
     CVMetalTextureCacheFlush(textureCache, 0);
     if(textureCache) {
         CFRelease(textureCache);
