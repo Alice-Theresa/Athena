@@ -10,7 +10,6 @@
 #import "SCHardwareDecoder.h"
 #import "SharedQueue.h"
 #import "SCFormatContext.h"
-#import "SCPacketQueue.h"
 #import "SCFrameQueue.h"
 #import "SCNV12VideoFrame.h"
 

@@ -10,7 +10,6 @@
 		5202621C21606DB800F1033B /* AudioDecodeViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 5202621A21606DB800F1033B /* AudioDecodeViewController.m */; };
 		5202621D21606DB800F1033B /* AudioDecodeViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 5202621B21606DB800F1033B /* AudioDecodeViewController.xib */; };
 		5210136621CCE62A003D98F5 /* AAPLEAGLLayer.m in Sources */ = {isa = PBXBuildFile; fileRef = 5210136321CCE62A003D98F5 /* AAPLEAGLLayer.m */; };
-		5214035621EDCC6000CAF190 /* SCPlayerViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 5214035521EDCC6000CAF190 /* SCPlayerViewController.m */; };
 		5214035921EDCD0A00CAF190 /* SCRender.m in Sources */ = {isa = PBXBuildFile; fileRef = 5214035821EDCD0A00CAF190 /* SCRender.m */; };
 		5214035B21EDCE9E00CAF190 /* Mapping.metal in Sources */ = {isa = PBXBuildFile; fileRef = 5214035A21EDCE9E00CAF190 /* Mapping.metal */; };
 		5214035D21EDE3F000CAF190 /* test.jpg in Resources */ = {isa = PBXBuildFile; fileRef = 5214035C21EDE3F000CAF190 /* test.jpg */; };
@@ -31,6 +30,9 @@
 		52296C1621E742D0006585FE /* SCAudioManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 52296C1521E742D0006585FE /* SCAudioManager.m */; };
 		526F498021D0DE110023E6C3 /* SCHardwareDecoder.m in Sources */ = {isa = PBXBuildFile; fileRef = 526F497F21D0DE110023E6C3 /* SCHardwareDecoder.m */; };
 		526F498921D213D10023E6C3 /* SCFormatContext.m in Sources */ = {isa = PBXBuildFile; fileRef = 526F498821D213D10023E6C3 /* SCFormatContext.m */; };
+		527D336221F559C000B9D959 /* Aimer.mkv in Resources */ = {isa = PBXBuildFile; fileRef = 527D336121F559C000B9D959 /* Aimer.mkv */; };
+		527D337421F5AF9800B9D959 /* SCPlayerViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 527D337221F5AF9800B9D959 /* SCPlayerViewController.m */; };
+		527D337921F5C23F00B9D959 /* SCPlayerControlView.m in Sources */ = {isa = PBXBuildFile; fileRef = 527D337821F5C23F00B9D959 /* SCPlayerControlView.m */; };
 		5290678D1F94BF94001A7BFA /* libfdk-aac.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 5290678C1F94BF8F001A7BFA /* libfdk-aac.a */; };
 		529067971F95A48A001A7BFA /* SharedQueue.m in Sources */ = {isa = PBXBuildFile; fileRef = 529067961F95A48A001A7BFA /* SharedQueue.m */; };
 		529067A11F96F13B001A7BFA /* MainViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 529067A01F96F13B001A7BFA /* MainViewController.m */; };
@@ -61,7 +63,6 @@
 		765ED7841F93878B000CF16E /* libbz2.1.0.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = 765ED7831F93878B000CF16E /* libbz2.1.0.tbd */; };
 		765ED7861F938795000CF16E /* libz.1.2.8.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = 765ED7851F938795000CF16E /* libz.1.2.8.tbd */; };
 		76F2D7D821F375DB0088445C /* libyuv.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 76F2D7D721F375DB0088445C /* libyuv.a */; };
-		76F2D7DA21F37A060088445C /* Aimer.mkv in Resources */ = {isa = PBXBuildFile; fileRef = 76F2D7D921F37A060088445C /* Aimer.mkv */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -70,8 +71,6 @@
 		5202621B21606DB800F1033B /* AudioDecodeViewController.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = AudioDecodeViewController.xib; sourceTree = "<group>"; };
 		5210136321CCE62A003D98F5 /* AAPLEAGLLayer.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AAPLEAGLLayer.m; sourceTree = "<group>"; };
 		5210136521CCE62A003D98F5 /* AAPLEAGLLayer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AAPLEAGLLayer.h; sourceTree = "<group>"; };
-		5214035421EDCC6000CAF190 /* SCPlayerViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SCPlayerViewController.h; sourceTree = "<group>"; };
-		5214035521EDCC6000CAF190 /* SCPlayerViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = SCPlayerViewController.m; sourceTree = "<group>"; };
 		5214035721EDCD0A00CAF190 /* SCRender.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SCRender.h; sourceTree = "<group>"; };
 		5214035821EDCD0A00CAF190 /* SCRender.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = SCRender.m; sourceTree = "<group>"; };
 		5214035A21EDCE9E00CAF190 /* Mapping.metal */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.metal; path = Mapping.metal; sourceTree = "<group>"; };
@@ -110,6 +109,11 @@
 		526F498721D213D10023E6C3 /* SCFormatContext.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SCFormatContext.h; sourceTree = "<group>"; };
 		526F498821D213D10023E6C3 /* SCFormatContext.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = SCFormatContext.m; sourceTree = "<group>"; };
 		527D334021F1777D00B9D959 /* SCRenderDataInterface.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SCRenderDataInterface.h; sourceTree = "<group>"; };
+		527D336121F559C000B9D959 /* Aimer.mkv */ = {isa = PBXFileReference; lastKnownFileType = file; path = Aimer.mkv; sourceTree = "<group>"; };
+		527D337121F5AF9800B9D959 /* SCPlayerViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SCPlayerViewController.h; sourceTree = "<group>"; };
+		527D337221F5AF9800B9D959 /* SCPlayerViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = SCPlayerViewController.m; sourceTree = "<group>"; };
+		527D337721F5C23F00B9D959 /* SCPlayerControlView.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SCPlayerControlView.h; sourceTree = "<group>"; };
+		527D337821F5C23F00B9D959 /* SCPlayerControlView.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = SCPlayerControlView.m; sourceTree = "<group>"; };
 		529067861F94BF8F001A7BFA /* aacdecoder_lib.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = aacdecoder_lib.h; sourceTree = "<group>"; };
 		529067871F94BF8F001A7BFA /* aacenc_lib.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = aacenc_lib.h; sourceTree = "<group>"; };
 		529067881F94BF8F001A7BFA /* FDK_audio.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = FDK_audio.h; sourceTree = "<group>"; };
@@ -293,7 +297,6 @@
 		76F2D7D421F375DB0088445C /* macros_msa.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = macros_msa.h; sourceTree = "<group>"; };
 		76F2D7D521F375DB0088445C /* row.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = row.h; sourceTree = "<group>"; };
 		76F2D7D721F375DB0088445C /* libyuv.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = libyuv.a; sourceTree = "<group>"; };
-		76F2D7D921F37A060088445C /* Aimer.mkv */ = {isa = PBXFileReference; lastKnownFileType = file; path = Aimer.mkv; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -361,8 +364,8 @@
 				529067961F95A48A001A7BFA /* SharedQueue.m */,
 				522136611F7F737500182B12 /* AppDelegate.h */,
 				522136621F7F737500182B12 /* AppDelegate.m */,
+				527D336121F559C000B9D959 /* Aimer.mkv */,
 				5214035C21EDE3F000CAF190 /* test.jpg */,
-				76F2D7D921F37A060088445C /* Aimer.mkv */,
 				522136671F7F737500182B12 /* Main.storyboard */,
 				5221366A1F7F737500182B12 /* Assets.xcassets */,
 				5221366C1F7F737500182B12 /* LaunchScreen.storyboard */,
@@ -549,12 +552,10 @@
 				526F498821D213D10023E6C3 /* SCFormatContext.m */,
 				521B7E7B21D7602800F5B689 /* SCControl.h */,
 				521B7E7A21D7602800F5B689 /* SCControl.m */,
-				521B7E8021D7604C00F5B689 /* SCPacketQueue.h */,
-				521B7E7F21D7604C00F5B689 /* SCPacketQueue.m */,
-				521B7E8121D7604C00F5B689 /* SCFrameQueue.h */,
-				521B7E7D21D7604C00F5B689 /* SCFrameQueue.m */,
-				5214035421EDCC6000CAF190 /* SCPlayerViewController.h */,
-				5214035521EDCC6000CAF190 /* SCPlayerViewController.m */,
+				527D337121F5AF9800B9D959 /* SCPlayerViewController.h */,
+				527D337221F5AF9800B9D959 /* SCPlayerViewController.m */,
+				527D337721F5C23F00B9D959 /* SCPlayerControlView.h */,
+				527D337821F5C23F00B9D959 /* SCPlayerControlView.m */,
 			);
 			path = Player;
 			sourceTree = "<group>";
@@ -570,6 +571,10 @@
 				521B7E8221D7604D00F5B689 /* SCNV12VideoFrame.m */,
 				52EAE6DE21F0542E00D9B90B /* SCI420VideoFrame.h */,
 				52EAE6DF21F0542E00D9B90B /* SCI420VideoFrame.m */,
+				521B7E8021D7604C00F5B689 /* SCPacketQueue.h */,
+				521B7E7F21D7604C00F5B689 /* SCPacketQueue.m */,
+				521B7E8121D7604C00F5B689 /* SCFrameQueue.h */,
+				521B7E7D21D7604C00F5B689 /* SCFrameQueue.m */,
 			);
 			path = Model;
 			sourceTree = "<group>";
@@ -927,7 +932,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				76F2D7DA21F37A060088445C /* Aimer.mkv in Resources */,
+				527D336221F559C000B9D959 /* Aimer.mkv in Resources */,
 				5221366E1F7F737500182B12 /* LaunchScreen.storyboard in Resources */,
 				5202621D21606DB800F1033B /* AudioDecodeViewController.xib in Resources */,
 				52E1033A215E095F007783E6 /* AudioEncodeViewController.xib in Resources */,
@@ -965,10 +970,11 @@
 				521B7E7C21D7602900F5B689 /* SCControl.m in Sources */,
 				52296C0C21E6037B006585FE /* SCAudioFrame.m in Sources */,
 				52AA25101F98951F0084771B /* VideoCaptureManager.m in Sources */,
-				5214035621EDCC6000CAF190 /* SCPlayerViewController.m in Sources */,
 				52B338571F7F9BE2003BEFFB /* AACHardEncoder.m in Sources */,
 				526F498021D0DE110023E6C3 /* SCHardwareDecoder.m in Sources */,
+				527D337421F5AF9800B9D959 /* SCPlayerViewController.m in Sources */,
 				5210136621CCE62A003D98F5 /* AAPLEAGLLayer.m in Sources */,
+				527D337921F5C23F00B9D959 /* SCPlayerControlView.m in Sources */,
 				52296C1621E742D0006585FE /* SCAudioManager.m in Sources */,
 				521B7E8521D7604D00F5B689 /* SCNV12VideoFrame.m in Sources */,
 				522136631F7F737500182B12 /* AppDelegate.m in Sources */,

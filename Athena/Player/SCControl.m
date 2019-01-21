@@ -24,9 +24,12 @@
 @interface SCControl () <SCAudioManagerDelegate>
 
 @property (nonatomic, strong) SCFormatContext *context;
+
 @property (nonatomic, strong) SCHardwareDecoder *videoDecoder;
 @property (nonatomic, strong) SCSoftwareDecoder *videoFFDecoder;
 @property (nonatomic, strong) SCAudioDecoder *audioDecoder;
+
+@property (nonatomic, strong) SCPacketQueue *packetQueue;
 
 @property (nonatomic, strong) NSInvocationOperation *readPacketOperation;
 @property (nonatomic, strong) NSInvocationOperation *decodeOperation;
@@ -34,19 +37,22 @@
 
 @property (nonatomic, strong) SCAudioFrame *currentAudioFrame;
 
+@property (nonatomic, assign, readwrite) BOOL isPlaying;
+
 @end
 
 @implementation SCControl
 
 - (instancetype)init {
     if (self = [super init]) {
-        _context = [[SCFormatContext alloc] init];
+        _context         = [[SCFormatContext alloc] init];
         _videoFrameQueue = [[SCFrameQueue alloc] init];
         _audioFrameQueue = [[SCFrameQueue alloc] init];
-        
-        _videoDecoder = [[SCHardwareDecoder alloc] initWithFormatContext:_context];
+        _packetQueue     = [[SCPacketQueue alloc] init];
+
+        _videoDecoder   = [[SCHardwareDecoder alloc] initWithFormatContext:_context];
         _videoFFDecoder = [[SCSoftwareDecoder alloc] initWithFormatContext:_context];
-        _audioDecoder = [[SCAudioDecoder alloc] initWithFormatContext:_context audioFrameQueue:_audioFrameQueue];
+        _audioDecoder   = [[SCAudioDecoder alloc] initWithFormatContext:_context audioFrameQueue:_audioFrameQueue];
         [SCAudioManager shared].delegate = self;
     }
     return self;
@@ -67,11 +73,14 @@
     [self.controlQueue addOperation:self.decodeOperation];
     
     [[SCAudioManager shared] play];
-    
+    self.isPlaying = YES;
 }
 
 - (void)readPacket {
-    while (!self.controlQueue.isSuspended) {
+    while (YES) {
+        if (self.isPlaying == NO) {
+            [NSThread sleepForTimeInterval:0.03];
+        }
         AVPacket packet;
         av_init_packet(&packet);
         int result = [self.context readFrame:&packet];
@@ -80,7 +89,7 @@
             break;
         } else {
             if (packet.stream_index == self.context.videoIndex) {
-                [[SCPacketQueue shared] putPacket:packet];
+                [self.packetQueue putPacket:packet];
             } else if (packet.stream_index == self.context.audioIndex) {
                 [self.audioDecoder synchronizedDecode:packet];
             }
@@ -89,12 +98,15 @@
 }
 
 - (void)decodeVideoFrame {
-    while (!self.controlQueue.isSuspended) {
+    while (YES) {
+        if (self.isPlaying == NO) {
+            [NSThread sleepForTimeInterval:0.03];
+        }
         if (self.videoFrameQueue.count > 10) {
             [NSThread sleepForTimeInterval:0.03];
         }
-        AVPacket packet = [[SCPacketQueue shared] getPacket];
-        if (packet.data != NULL) {
+        AVPacket packet = [self.packetQueue getPacket];
+        if (packet.data != NULL && packet.stream_index >= 0) {
 //            [self.videoFrameQueue enqueueAndSort:[self.videoFFDecoder decode:packet]];
             [self.videoFrameQueue enqueueAndSort:[self.videoDecoder decode:packet]];
         }
@@ -102,22 +114,22 @@
 }
 
 - (void)pause {
-    self.controlQueue.suspended = YES;
+    self.isPlaying = NO;
     [[SCAudioManager shared] stop];
 }
 
 - (void)resume {
-    self.controlQueue.suspended = NO;
+    self.isPlaying = YES;
     [[SCAudioManager shared] play];
 }
 
 - (void)stop {
-    self.controlQueue.suspended = YES;
+    self.isPlaying = NO;
     [self.readPacketOperation cancel];
     [self.decodeOperation cancel];
     [self.videoFrameQueue flush];
     [self.audioFrameQueue flush];
-    [[SCPacketQueue shared] flush];
+    [self.packetQueue flush];
     [[SCAudioManager shared] stop];
 }
 

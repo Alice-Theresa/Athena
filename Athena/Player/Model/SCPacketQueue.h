@@ -13,7 +13,6 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface SCPacketQueue : NSObject
 
-+ (instancetype)shared;
 - (void)putPacket:(AVPacket)packet;
 - (AVPacket)getPacket;
 - (void)flush;

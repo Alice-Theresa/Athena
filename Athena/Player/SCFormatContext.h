@@ -15,8 +15,11 @@ NS_ASSUME_NONNULL_BEGIN
 
 @property (nonatomic, assign, readonly) int videoIndex;
 @property (nonatomic, assign, readonly) int audioIndex;
+
 @property (nonatomic, assign, readonly) NSTimeInterval videoTimebase;
 @property (nonatomic, assign, readonly) NSTimeInterval audioTimebase;
+
+@property (nonatomic, assign, readonly) NSTimeInterval duration;    //unit: second
 
 @property (nonatomic, assign) AVCodecContext *videoCodecContext;
 @property (nonatomic, assign) AVCodecContext *audioCodecContext;

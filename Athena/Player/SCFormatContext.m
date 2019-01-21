@@ -7,7 +7,6 @@
 //
 
 #import "SCFormatContext.h"
-#import "SCPacketQueue.h"
 
 @interface SCFormatContext () {
     AVFormatContext *formatContext;
@@ -20,7 +19,7 @@
 @property (nonatomic, assign, readwrite) NSTimeInterval videoTimebase;
 @property (nonatomic, assign, readwrite) NSTimeInterval audioTimebase;
 
-
+@property (nonatomic, assign, readwrite) NSTimeInterval duration;
 
 @end
 
@@ -65,7 +64,7 @@
     }
     if (self.videoIndex == -1) {
         printf("Couldn't find a video stream.\n");
-        return;
+//        return;
     }
     
     _videoCodecContext = formatContext->streams[self.videoIndex]->codec;
@@ -83,6 +82,7 @@
     }
     
     [self settingTimeBase];
+    [self settingDuration];
 }
 
 - (int)readFrame:(AVPacket *)packet {
@@ -105,5 +105,8 @@
     }
 }
 
+- (void)settingDuration {
+    self.duration = formatContext->duration / AV_TIME_BASE;
+}
 
 @end

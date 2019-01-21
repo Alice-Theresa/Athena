@@ -15,8 +15,10 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface SCControl : NSObject
 
-@property (nonatomic, strong) SCFrameQueue *videoFrameQueue;
-@property (nonatomic, strong) SCFrameQueue *audioFrameQueue;
+@property (nonatomic, strong, readonly) SCFrameQueue *videoFrameQueue;
+@property (nonatomic, strong, readonly) SCFrameQueue *audioFrameQueue;
+
+@property (nonatomic, assign, readonly) BOOL isPlaying;
 
 - (void)open;
 
