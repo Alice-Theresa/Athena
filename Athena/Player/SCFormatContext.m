@@ -25,6 +25,10 @@
 
 @implementation SCFormatContext
 
+- (void)dealloc {
+    avformat_free_context(formatContext);
+}
+
 - (instancetype)init {
     if (self = [super init]) {
         _videoIndex = -1;

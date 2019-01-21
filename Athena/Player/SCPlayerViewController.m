@@ -9,22 +9,18 @@
 #import <MetalKit/MetalKit.h>
 #import <CoreVideo/CoreVideo.h>
 #import "SCPlayerViewController.h"
-#import "SCRender.h"
 #import "SCControl.h"
 #import "SCFrameQueue.h"
 #import "SCFrame.h"
 #import "SCRenderDataInterface.h"
 #import "SCPlayerControlView.h"
 
-@interface SCPlayerViewController () <MTKViewDelegate>
+@interface SCPlayerViewController ()
 
 @property (nonatomic, strong) MTKView *mtkView;
 @property (nonatomic, strong) SCPlayerControlView *controlView;
 
 @property (nonatomic, strong) SCControl *controler;
-@property (nonatomic, strong) SCRender *render;
-
-@property (nonatomic, assign) NSTimeInterval interval;
 @property (nonatomic, assign) BOOL isHideContainer;
 
 @end
@@ -53,10 +49,10 @@
 }
 
 - (void)setup {
-    self.render = [[SCRender alloc] init];
-    self.controler = [[SCControl alloc] init];
+    self.controler = [[SCControl alloc] initWithRenderView:self.mtkView];
     
     self.view.backgroundColor = [UIColor blackColor];
+    self.mtkView = [[MTKView alloc]  initWithFrame:self.view.bounds];
     [self.view addSubview:self.mtkView];
     [self.mtkView addSubview:self.controlView];
     
@@ -75,27 +71,14 @@
     if (self.controler.isPlaying) {
         [self.controler pause];
         [self.controlView settingPause];
-        self.mtkView.paused = YES;
     } else {
         [self.controler resume];
         [self.controlView settingPlay];
-        self.mtkView.paused = NO;
     }
 }
 
 - (void)popVC {
     [self.navigationController popViewControllerAnimated:YES];
-}
-
-- (MTKView *)mtkView {
-    if (!_mtkView) {
-        _mtkView = [[MTKView alloc] initWithFrame:self.view.bounds device:self.render.device];
-        _mtkView.depthStencilPixelFormat = MTLPixelFormatInvalid;
-        _mtkView.framebufferOnly = false;
-        _mtkView.delegate = self;
-        _mtkView.colorPixelFormat = MTLPixelFormatBGRA8Unorm;
-    }
-    return _mtkView;
 }
 
 - (SCPlayerControlView *)controlView {
@@ -104,21 +87,5 @@
     }
     return _controlView;
 }
-
-#pragma mark - delegate
-
-- (void)drawInMTKView:(MTKView *)view {
-    NSTimeInterval currentTime = [NSDate date].timeIntervalSince1970;
-    if (currentTime > self.interval) {
-        SCFrame *frame = [self.controler.videoFrameQueue dequeueFrame];
-        if (frame == nil) {
-            return;
-        }
-        self.interval = frame.duration + currentTime;
-        [self.render render:(id<SCRenderDataInterface>)frame drawIn:view];
-    }
-}
-
-- (void)mtkView:(MTKView *)view drawableSizeWillChange:(CGSize)size {}
 
 @end

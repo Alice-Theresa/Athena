@@ -21,6 +21,8 @@
 #import "SCHardwareDecoder.h"
 #import "SCSoftwareDecoder.h"
 
+#import "SCRender.h"
+
 @interface SCControl () <SCAudioManagerDelegate>
 
 @property (nonatomic, strong) SCFormatContext *context;
@@ -35,25 +37,40 @@
 @property (nonatomic, strong) NSInvocationOperation *decodeOperation;
 @property (nonatomic, strong) NSOperationQueue *controlQueue;
 
+@property (nonatomic, strong) SCRender *render;
+@property (nonatomic, strong) MTKView *mtkView;
+@property (nonatomic, strong) CADisplayLink *displayLink;
+
 @property (nonatomic, strong) SCAudioFrame *currentAudioFrame;
 
 @property (nonatomic, assign, readwrite) BOOL isPlaying;
+@property (nonatomic, assign) NSTimeInterval interval;
 
 @end
 
 @implementation SCControl
 
-- (instancetype)init {
+- (instancetype)initWithRenderView:(MTKView *)view {
     if (self = [super init]) {
+        _displayLink = [CADisplayLink displayLinkWithTarget:self selector:@selector(rendering)];
+        [_displayLink addToRunLoop:[NSRunLoop mainRunLoop] forMode:NSRunLoopCommonModes];
+        
         _context         = [[SCFormatContext alloc] init];
         _videoFrameQueue = [[SCFrameQueue alloc] init];
         _audioFrameQueue = [[SCFrameQueue alloc] init];
         _packetQueue     = [[SCPacketQueue alloc] init];
+        _render          = [[SCRender alloc] init];
 
         _videoDecoder   = [[SCHardwareDecoder alloc] initWithFormatContext:_context];
         _videoFFDecoder = [[SCSoftwareDecoder alloc] initWithFormatContext:_context];
         _audioDecoder   = [[SCAudioDecoder alloc] initWithFormatContext:_context audioFrameQueue:_audioFrameQueue];
         [SCAudioManager shared].delegate = self;
+        
+        _mtkView = view;
+        _mtkView.device = _render.device;
+        _mtkView.depthStencilPixelFormat = MTLPixelFormatInvalid;
+        _mtkView.framebufferOnly = false;
+        _mtkView.colorPixelFormat = MTLPixelFormatBGRA8Unorm;
     }
     return self;
 }
@@ -116,21 +133,36 @@
 - (void)pause {
     self.isPlaying = NO;
     [[SCAudioManager shared] stop];
+    [self.displayLink setPaused:YES];
 }
 
 - (void)resume {
     self.isPlaying = YES;
     [[SCAudioManager shared] play];
+    [self.displayLink setPaused:NO];
 }
 
 - (void)stop {
     self.isPlaying = NO;
+    [self.displayLink 	invalidate];
     [self.readPacketOperation cancel];
     [self.decodeOperation cancel];
     [self.videoFrameQueue flush];
     [self.audioFrameQueue flush];
     [self.packetQueue flush];
     [[SCAudioManager shared] stop];
+}
+
+- (void)rendering {
+    NSTimeInterval currentTime = [NSDate date].timeIntervalSince1970;
+    if (currentTime > self.interval) {
+        SCFrame *frame = [self.videoFrameQueue dequeueFrame];
+        if (frame == nil) {
+            return;
+        }
+        self.interval = frame.duration + currentTime;
+        [self.render render:(id<SCRenderDataInterface>)frame drawIn:self.mtkView];
+    }
 }
 
 - (void)fetchoutputData:(float *)outputData numberOfFrames:(UInt32)numberOfFrames numberOfChannels:(UInt32)numberOfChannels {

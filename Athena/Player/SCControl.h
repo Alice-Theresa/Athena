@@ -6,7 +6,7 @@
 //  Copyright © 2018 Theresa. All rights reserved.
 //
 
-#import <Foundation/Foundation.h>
+#import <MetalKit/MetalKit.h>
 
 @class SCFormatContext;
 @class SCFrameQueue;
@@ -19,6 +19,9 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, strong, readonly) SCFrameQueue *audioFrameQueue;
 
 @property (nonatomic, assign, readonly) BOOL isPlaying;
+
+- (instancetype)init NS_UNAVAILABLE;
+- (instancetype)initWithRenderView:(MTKView *)view;
 
 - (void)open;
 
