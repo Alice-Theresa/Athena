@@ -16,8 +16,6 @@ NS_ASSUME_NONNULL_BEGIN
 
 @property (nonatomic, strong) id<MTLDevice> device;
 
-- (void)pb:(CVPixelBufferRef)pixelBuffer size:(CGSize)size drawIn:(MTKView *)mtkView;
-
 - (void)render:(id<SCRenderDataInterface>)frame drawIn:(MTKView *)mtkView;
 
 @end

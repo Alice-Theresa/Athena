@@ -45,8 +45,8 @@
 
     ConvertToI420((uint8_t *)_outbuffer , width * height,
                   _outbuffer_yuv, width,
-                  _outbuffer_yuv + width * height , width /2 ,
-                  _outbuffer_yuv + width * height * 5 / 4, width /2 ,
+                  _outbuffer_yuv + width * height , width / 2 ,
+                  _outbuffer_yuv + width * height * 5 / 4, width / 2 ,
                   0, 0,
                   width, height,
                   width, height,
@@ -60,7 +60,6 @@
     
     CVReturn result = CVPixelBufferCreate(kCFAllocatorDefault,
                                           width, height,
-                                          //kCVPixelFormatType_420YpCbCr8BiPlanarVideoRange,      // kCVPixelFormatType_420YpCbCr8Planar
                                           kCVPixelFormatType_420YpCbCr8BiPlanarVideoRange ,
                                           (__bridge CFDictionaryRef)(options),
                                           &pixelBuffer);

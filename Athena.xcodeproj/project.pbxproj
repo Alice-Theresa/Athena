@@ -60,7 +60,6 @@
 		765ED7821F938781000CF16E /* libiconv.2.4.0.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = 765ED7811F938781000CF16E /* libiconv.2.4.0.tbd */; };
 		765ED7841F93878B000CF16E /* libbz2.1.0.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = 765ED7831F93878B000CF16E /* libbz2.1.0.tbd */; };
 		765ED7861F938795000CF16E /* libz.1.2.8.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = 765ED7851F938795000CF16E /* libz.1.2.8.tbd */; };
-		76F2D7A221F36BC70088445C /* TestUtil.m in Sources */ = {isa = PBXBuildFile; fileRef = 76F2D7A121F36BC70088445C /* TestUtil.m */; };
 		76F2D7D821F375DB0088445C /* libyuv.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 76F2D7D721F375DB0088445C /* libyuv.a */; };
 		76F2D7DA21F37A060088445C /* Aimer.mkv in Resources */ = {isa = PBXBuildFile; fileRef = 76F2D7D921F37A060088445C /* Aimer.mkv */; };
 /* End PBXBuildFile section */
@@ -272,8 +271,6 @@
 		765ED7811F938781000CF16E /* libiconv.2.4.0.tbd */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.text-based-dylib-definition"; name = libiconv.2.4.0.tbd; path = usr/lib/libiconv.2.4.0.tbd; sourceTree = SDKROOT; };
 		765ED7831F93878B000CF16E /* libbz2.1.0.tbd */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.text-based-dylib-definition"; name = libbz2.1.0.tbd; path = usr/lib/libbz2.1.0.tbd; sourceTree = SDKROOT; };
 		765ED7851F938795000CF16E /* libz.1.2.8.tbd */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.text-based-dylib-definition"; name = libz.1.2.8.tbd; path = usr/lib/libz.1.2.8.tbd; sourceTree = SDKROOT; };
-		76F2D7A021F36BC70088445C /* TestUtil.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = TestUtil.h; path = Test/TestUtil.h; sourceTree = "<group>"; };
-		76F2D7A121F36BC70088445C /* TestUtil.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = TestUtil.m; path = Test/TestUtil.m; sourceTree = "<group>"; };
 		76F2D7C021F375DB0088445C /* libyuv.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = libyuv.h; sourceTree = "<group>"; };
 		76F2D7C221F375DB0088445C /* scale_row.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = scale_row.h; sourceTree = "<group>"; };
 		76F2D7C321F375DB0088445C /* scale.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = scale.h; sourceTree = "<group>"; };
@@ -544,8 +541,6 @@
 		52EAE6D521F02A0100D9B90B /* Player */ = {
 			isa = PBXGroup;
 			children = (
-				76F2D7A021F36BC70088445C /* TestUtil.h */,
-				76F2D7A121F36BC70088445C /* TestUtil.m */,
 				52EAE6DC21F03CA600D9B90B /* Decoder */,
 				52EAE6DB21F03C8900D9B90B /* Render */,
 				52EAE6DA21F03C8200D9B90B /* Audio */,
@@ -976,7 +971,6 @@
 				5210136621CCE62A003D98F5 /* AAPLEAGLLayer.m in Sources */,
 				52296C1621E742D0006585FE /* SCAudioManager.m in Sources */,
 				521B7E8521D7604D00F5B689 /* SCNV12VideoFrame.m in Sources */,
-				76F2D7A221F36BC70088445C /* TestUtil.m in Sources */,
 				522136631F7F737500182B12 /* AppDelegate.m in Sources */,
 				52E04397215E2988003CB1C5 /* AudioPlayerManager.m in Sources */,
 				526F498921D213D10023E6C3 /* SCFormatContext.m in Sources */,

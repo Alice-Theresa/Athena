@@ -16,18 +16,13 @@
 #import "SCI420VideoFrame.h"
 #import "SCRenderDataInterface.h"
 #import "TestUtil.h"
-#import "VideoCaptureManager.h"
-#import "SharedQueue.h"
 
-@interface SCPlayerViewController () <AVCaptureVideoDataOutputSampleBufferDelegate, MTKViewDelegate>
+@interface SCPlayerViewController () <MTKViewDelegate>
 
 @property (nonatomic, strong) MTKView *mtkView;
 @property (nonatomic, strong) SCControl *controler;
 @property (nonatomic, assign) NSTimeInterval interval;
 @property (nonatomic, strong) SCRender *render;
-
-@property (nonatomic, strong) VideoCaptureManager *manager;
-@property (nonatomic, strong) SCFrameQueue *videoFrameQueue;
 
 @end
 
@@ -35,11 +30,6 @@
 
 - (void)viewDidLoad {
     [super viewDidLoad];
-    
-//    self.manager = [VideoCaptureManager shared];
-//    [self.manager addVideoInputOutput:self];
-//    [self.manager startCapture];
-//    self.videoFrameQueue = [[SCFrameQueue alloc] init];
     
     [self.view addSubview:self.mtkView];
     self.controler = [[SCControl alloc] init];
@@ -78,21 +68,11 @@
         }
         self.interval = frame.duration + currentTime;
 
-        [self.render render:frame drawIn:view];
+        [self.render render:(id<SCRenderDataInterface>)frame drawIn:view];
     }
 //    [self.render render:[[SCNV12VideoFrame alloc] initWithAVPixelBuffer:[TestUtil createNV12From:[UIImage imageNamed:@"test.jpg"]]] drawIn:view];
-//    [self.render render:[self.videoFrameQueue dequeueFrame] drawIn:view];
 }
 
-- (void)mtkView:(MTKView *)view drawableSizeWillChange:(CGSize)size {
-    
-}
-
-- (void)captureOutput:(AVCaptureOutput *)output didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer fromConnection:(AVCaptureConnection *)connection {
-    CVImageBufferRef pixelBuffer = CMSampleBufferGetImageBuffer(sampleBuffer);
-//    [self.render pb:pixelBuffer size:CGSizeMake(720, 1280) drawIn:self.mtkView];
-//    [self.render render:[[SCNV12VideoFrame alloc] initWithAVPixelBuffer:pixelBuffer] drawIn:self.mtkView];
-    [self.videoFrameQueue enqueue:[[SCNV12VideoFrame alloc] initWithAVPixelBuffer:pixelBuffer]];
-}
+- (void)mtkView:(MTKView *)view drawableSizeWillChange:(CGSize)size {}
 
 @end

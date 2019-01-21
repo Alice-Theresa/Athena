@@ -103,10 +103,12 @@
 
 - (void)pause {
     self.controlQueue.suspended = YES;
+    [[SCAudioManager shared] stop];
 }
 
 - (void)resume {
     self.controlQueue.suspended = NO;
+    [[SCAudioManager shared] play];
 }
 
 - (void)stop {

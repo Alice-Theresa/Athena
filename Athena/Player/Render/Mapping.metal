@@ -29,7 +29,7 @@ vertex TextureMappingVertex mappingVertex(unsigned int vertex_id [[ vertex_id ]]
     return outVertex;
 }
 
-fragment half4 mappingFragment(TextureMappingVertex mappingVertex [[ stage_in ]],
+fragment half4 nv12Fragment(TextureMappingVertex mappingVertex [[ stage_in ]],
                                texture2d<float, access::sample> ytexture [[ texture(0) ]],
                                texture2d<float, access::sample> uvtexture [[ texture(1) ]]) {
     constexpr sampler s(address::clamp_to_edge, filter::linear);
@@ -45,7 +45,7 @@ fragment half4 mappingFragment(TextureMappingVertex mappingVertex [[ stage_in ]]
     return half4(rgb * yuv, 1);
 }
 
-fragment half4 yuvFragment(TextureMappingVertex mappingVertex [[ stage_in ]],
+fragment half4 i420Fragment(TextureMappingVertex mappingVertex [[ stage_in ]],
                            texture2d<float, access::sample> ytexture [[ texture(0) ]],
                            texture2d<float, access::sample> utexture [[ texture(1) ]],
                            texture2d<float, access::sample> vtexture [[ texture(2) ]]) {

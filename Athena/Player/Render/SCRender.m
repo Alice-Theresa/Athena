@@ -35,7 +35,7 @@
 
 - (void)render:(id<SCRenderDataInterface>)frame drawIn:(MTKView *)mtkView {
     if ([frame conformsToProtocol:@protocol(SCRenderDataNV12Interface)]) {
-        [self renderPixelBuffer:(id<SCRenderDataNV12Interface>)frame drawIn:mtkView];
+        [self renderNV12:(id<SCRenderDataNV12Interface>)frame drawIn:mtkView];
     } else if ([frame conformsToProtocol:@protocol(SCRenderDataI420Interface)]) {
         [self renderI420:(id<SCRenderDataI420Interface>)frame drawIn:mtkView];
     } else {
@@ -43,76 +43,10 @@
     }
 }
 
-- (void)flushTexture {
-    if (self.yTextureRef) {
-        CFRelease(self.yTextureRef);
-        self.yTextureRef = NULL;
-    }
-    if (self.uvTextureRef) {
-        CFRelease(self.uvTextureRef);
-        self.uvTextureRef = NULL;
-    }
-}
-
-- (void)pb:(CVPixelBufferRef)pixelBuffer size:(CGSize)size drawIn:(MTKView *)mtkView {
-    
+- (void)renderNV12:(id<SCRenderDataNV12Interface>)frame drawIn:(MTKView *)mtkView {
     CVMetalTextureCacheRef textureCache;
     CVMetalTextureCacheCreate(0, nil, self.device, nil, &textureCache);
     
-    CVReturn code = CVMetalTextureCacheCreateTextureFromImage(kCFAllocatorDefault,
-                                                              textureCache,
-                                                              pixelBuffer,
-                                                              nil,
-                                                              MTLPixelFormatR8Unorm,
-                                                              CVPixelBufferGetWidthOfPlane(pixelBuffer, 0),
-                                                              CVPixelBufferGetHeightOfPlane(pixelBuffer, 0),
-                                                              0,
-                                                              &_yTextureRef);
-    code = CVMetalTextureCacheCreateTextureFromImage(kCFAllocatorDefault,
-                                                     textureCache,
-                                                     pixelBuffer,
-                                                     nil,
-                                                     MTLPixelFormatRG8Unorm,
-                                                     CVPixelBufferGetWidthOfPlane(pixelBuffer, 1),
-                                                     CVPixelBufferGetHeightOfPlane(pixelBuffer, 1),
-                                                     1,
-                                                     &_uvTextureRef);
-    id<MTLTexture> yTexture = CVMetalTextureGetTexture(_yTextureRef);
-    id<MTLTexture> uvTexture = CVMetalTextureGetTexture(_uvTextureRef);
-    
-    [self flushTexture];
-    CVMetalTextureCacheFlush(textureCache, 0);
-    if(textureCache) {
-        CFRelease(textureCache);
-    }
-
-    dispatch_async(dispatch_get_main_queue(), ^{
-        [self renderTest:yTexture texture2:uvTexture drawIn:mtkView size:size];
-    });
-}
-
-- (void)renderTest:(id<MTLTexture>)yTexture texture2:(id<MTLTexture>)uvTexture drawIn:(MTKView *)mtkView size:(CGSize)size {
-    MTLRenderPassDescriptor *descriptor = [mtkView currentRenderPassDescriptor];
-    id<CAMetalDrawable> currentDrawable = [mtkView currentDrawable];
-    id<MTLCommandBuffer> commandBuffer = [self.commandQueue commandBuffer];
-    id<MTLRenderCommandEncoder> encoder = [commandBuffer renderCommandEncoderWithDescriptor:descriptor];
-    
-    [encoder setRenderPipelineState:[self.device newRenderPipelineStateWithDescriptor:self.nv12PipelineDescriptor error:nil]];
-    [encoder setVertexBuffer:[self createBuffer:size.width height:size.height viewBounds:mtkView.bounds] offset:0 atIndex:0];
-    [encoder setFragmentTexture:yTexture atIndex:0];
-    [encoder setFragmentTexture:uvTexture atIndex:1];
-    [encoder drawPrimitives:MTLPrimitiveTypeTriangleStrip vertexStart:0 vertexCount:4 instanceCount:1];
-    [encoder endEncoding];
-    [commandBuffer presentDrawable:currentDrawable];
-    [commandBuffer commit];
-}
-
-- (void)renderPixelBuffer:(id<SCRenderDataNV12Interface>)frame drawIn:(MTKView *)mtkView {
-    
-    CVMetalTextureCacheRef textureCache;
-    CVMetalTextureCacheCreate(0, nil, self.device, nil, &textureCache);
-    
-    // calculate size
     size_t width = frame.width;
     size_t height = frame.height;
     
@@ -149,14 +83,14 @@
     id<MTLRenderCommandEncoder> encoder = [commandBuffer renderCommandEncoderWithDescriptor:descriptor];
     
     [encoder setRenderPipelineState:[self.device newRenderPipelineStateWithDescriptor:self.nv12PipelineDescriptor error:nil]];
-    [encoder setVertexBuffer:[self createBuffer:width height:height viewBounds:mtkView.bounds] offset:0 atIndex:0];
+    [encoder setVertexBuffer:[self createBuffer:CGSizeMake(width, height) viewBounds:mtkView.bounds] offset:0 atIndex:0];
     [encoder setFragmentTexture:yTexture atIndex:0];
     [encoder setFragmentTexture:uvTexture atIndex:1];
     [encoder drawPrimitives:MTLPrimitiveTypeTriangleStrip vertexStart:0 vertexCount:4 instanceCount:1];
     [encoder endEncoding];
     [commandBuffer presentDrawable:currentDrawable];
     [commandBuffer commit];
-    [commandBuffer waitUntilCompleted]; //fix screen tearing problem? or flushTexture at the very beinging
+    [commandBuffer waitUntilCompleted]; //fix screen tearing problem or flush texture at the very beinging
     
     [self flushTexture];
     CVMetalTextureCacheFlush(textureCache, 0);
@@ -188,7 +122,7 @@
     id<MTLRenderCommandEncoder> encoder = [commandBuffer renderCommandEncoderWithDescriptor:descriptor];
     
     [encoder setRenderPipelineState:[self.device newRenderPipelineStateWithDescriptor:self.yuvPipelineDescriptor error:nil]];
-    [encoder setVertexBuffer:[self createBuffer:width height:height viewBounds:mtkView.bounds] offset:0 atIndex:0];
+    [encoder setVertexBuffer:[self createBuffer:CGSizeMake(width, height) viewBounds:mtkView.bounds] offset:0 atIndex:0];
     [encoder setFragmentTexture:yTexture atIndex:0];
     [encoder setFragmentTexture:uTexture atIndex:1];
     [encoder setFragmentTexture:vTexture atIndex:2];
@@ -198,8 +132,8 @@
     [commandBuffer commit];
 }
 
-- (id<MTLBuffer>)createBuffer:(size_t)width height:(size_t)height viewBounds:(CGRect)viewBounds {
-    CGRect vertexSamplingRect     = AVMakeRectWithAspectRatioInsideRect(CGSizeMake(width, height), viewBounds);
+- (id<MTLBuffer>)createBuffer:(CGSize)contentSize viewBounds:(CGRect)viewBounds {
+    CGRect vertexSamplingRect     = AVMakeRectWithAspectRatioInsideRect(contentSize, viewBounds);
     CGSize cropScaleAmount        = CGSizeMake(vertexSamplingRect.size.width / viewBounds.size.width, vertexSamplingRect.size.height / viewBounds.size.height);
     CGSize normalizedSamplingSize = CGSizeMake(0.0, 0.0);
     
@@ -223,13 +157,24 @@
     return vertexBuffer;
 }
 
+- (void)flushTexture {
+    if (self.yTextureRef) {
+        CFRelease(self.yTextureRef);
+        self.yTextureRef = NULL;
+    }
+    if (self.uvTextureRef) {
+        CFRelease(self.uvTextureRef);
+        self.uvTextureRef = NULL;
+    }
+}
+
 - (MTLRenderPipelineDescriptor *)nv12PipelineDescriptor {
     if (!_nv12PipelineDescriptor) {
         _nv12PipelineDescriptor                                 = [[MTLRenderPipelineDescriptor alloc] init];
         _nv12PipelineDescriptor.colorAttachments[0].pixelFormat = MTLPixelFormatBGRA8Unorm;
         _nv12PipelineDescriptor.depthAttachmentPixelFormat      = MTLPixelFormatInvalid;
         _nv12PipelineDescriptor.vertexFunction                  = [self.library newFunctionWithName:@"mappingVertex"];
-        _nv12PipelineDescriptor.fragmentFunction                = [self.library newFunctionWithName:@"mappingFragment"];
+        _nv12PipelineDescriptor.fragmentFunction                = [self.library newFunctionWithName:@"nv12Fragment"];
     }
     return _nv12PipelineDescriptor;
 }
@@ -240,10 +185,9 @@
         _yuvPipelineDescriptor.colorAttachments[0].pixelFormat = MTLPixelFormatBGRA8Unorm;
         _yuvPipelineDescriptor.depthAttachmentPixelFormat      = MTLPixelFormatInvalid;
         _yuvPipelineDescriptor.vertexFunction                  = [self.library newFunctionWithName:@"mappingVertex"];
-        _yuvPipelineDescriptor.fragmentFunction                = [self.library newFunctionWithName:@"yuvFragment"];
+        _yuvPipelineDescriptor.fragmentFunction                = [self.library newFunctionWithName:@"i420Fragment"];
     }
     return _yuvPipelineDescriptor;
 }
-
 
 @end
