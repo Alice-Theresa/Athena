@@ -14,7 +14,7 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-@interface SCHardwareDecoder : NSObject
+@interface SCVTDecoder : NSObject
 
 - (instancetype)init NS_UNAVAILABLE;
 - (instancetype)initWithFormatContext:(SCFormatContext *)formatContext;

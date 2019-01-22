@@ -8,27 +8,36 @@
 
 #import <MetalKit/MetalKit.h>
 
-@class SCFormatContext;
-@class SCFrameQueue;
+typedef NS_ENUM(NSUInteger, SCControlState) {
+    SCControlStateOrigin = 0,
+    SCControlStateOpened,
+    SCControlStatePlaying,
+    SCControlStatePaused,
+    SCControlStateClosed
+};
+
+@class SCControl;
+
+@protocol ControlCenterProtocol <NSObject>
+
+- (void)controlCenter:(SCControl *)control didRender:(NSUInteger)position duration:(NSUInteger)duration;
+
+@end
 
 NS_ASSUME_NONNULL_BEGIN
 
 @interface SCControl : NSObject
 
-@property (nonatomic, strong, readonly) SCFrameQueue *videoFrameQueue;
-@property (nonatomic, strong, readonly) SCFrameQueue *audioFrameQueue;
-
-@property (nonatomic, assign, readonly) BOOL isPlaying;
+@property (nonatomic, assign, readonly) SCControlState controlState;
+@property (nonatomic, weak) id<ControlCenterProtocol> delegate;
 
 - (instancetype)init NS_UNAVAILABLE;
 - (instancetype)initWithRenderView:(MTKView *)view;
 
-- (void)open;
-
+- (void)openFile:(NSString *)filename;
 - (void)pause;
 - (void)resume;
-
-- (void)stop;
+- (void)close;
 
 @end
 

@@ -15,7 +15,7 @@
 #import "SCRenderDataInterface.h"
 #import "SCPlayerControlView.h"
 
-@interface SCPlayerViewController ()
+@interface SCPlayerViewController () <ControlCenterProtocol>
 
 @property (nonatomic, strong) MTKView *mtkView;
 @property (nonatomic, strong) SCPlayerControlView *controlView;
@@ -30,7 +30,7 @@
 - (void)viewDidLoad {
     [super viewDidLoad];
     [self setup];
-    [self.controler open];
+    [self.controler openFile:@"Aimer.mkv"];
 }
 
 - (void)viewWillAppear:(BOOL)animated {
@@ -45,16 +45,18 @@
 
 - (void)viewDidDisappear:(BOOL)animated {
     [super viewDidDisappear:animated];
-    [self.controler stop];
+    [self.controler close];
 }
 
 - (void)setup {
-    self.controler = [[SCControl alloc] initWithRenderView:self.mtkView];
-    
     self.view.backgroundColor = [UIColor blackColor];
-    self.mtkView = [[MTKView alloc]  initWithFrame:self.view.bounds];
+    self.mtkView              = [[MTKView alloc] initWithFrame:self.view.bounds];
+    self.controlView          = [[SCPlayerControlView alloc] initWithFrame:self.view.bounds];
     [self.view addSubview:self.mtkView];
     [self.mtkView addSubview:self.controlView];
+    
+    self.controler = [[SCControl alloc] initWithRenderView:self.mtkView];
+    self.controler.delegate = self;
     
     [self.controlView.actionButton addTarget:self action:@selector(resumeOrPause) forControlEvents:UIControlEventTouchUpInside];
     [self.controlView.backButton addTarget:self action:@selector(popVC) forControlEvents:UIControlEventTouchUpInside];
@@ -68,10 +70,10 @@
 }
 
 - (void)resumeOrPause {
-    if (self.controler.isPlaying) {
+    if (self.controler.controlState == SCControlStatePlaying) {
         [self.controler pause];
         [self.controlView settingPause];
-    } else {
+    } else if (self.controler.controlState == SCControlStatePaused) {
         [self.controler resume];
         [self.controlView settingPlay];
     }
@@ -81,11 +83,8 @@
     [self.navigationController popViewControllerAnimated:YES];
 }
 
-- (SCPlayerControlView *)controlView {
-    if (!_controlView) {
-        _controlView = [[SCPlayerControlView alloc] initWithFrame:self.view.bounds];
-    }
-    return _controlView;
+- (void)controlCenter:(SCControl *)control didRender:(NSUInteger)position duration:(NSUInteger)duration {
+    
 }
 
 @end

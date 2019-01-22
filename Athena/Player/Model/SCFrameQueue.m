@@ -41,6 +41,16 @@
     [self.condition unlock];
 }
 
+- (void)enqueueArray:(NSArray<SCFrame *> *)array {
+    if (array.count == 0) {
+        return;
+    }
+    [self.condition lock];
+    [self.frames addObjectsFromArray:array];
+    self.count += array.count;
+    [self.condition unlock];
+}
+
 - (void)enqueueAndSort:(SCFrame *)frame {
     if (!frame) {
         return;

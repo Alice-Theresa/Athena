@@ -25,10 +25,6 @@
 
 @implementation SCFormatContext
 
-- (void)dealloc {
-    avformat_free_context(formatContext);
-}
-
 - (instancetype)init {
     if (self = [super init]) {
         _videoIndex = -1;
@@ -42,8 +38,6 @@
     av_register_all();
     avformat_network_init();
     formatContext = avformat_alloc_context();
-
-    [self openFile:@"Aimer.mkv"];
 }
 
 - (void)openFile:(NSString *)filename {
@@ -53,7 +47,7 @@
         printf("Couldn't open input stream.\n");
         return ;
     }
-    if(avformat_find_stream_info(formatContext,NULL)<0){
+    if(avformat_find_stream_info(formatContext, NULL) < 0){
         printf("Couldn't find stream information.\n");
         return;
     }
@@ -89,8 +83,14 @@
     [self settingDuration];
 }
 
+- (void)closeFile {
+    avformat_close_input(&formatContext);
+    avcodec_close(_videoCodecContext);
+    avcodec_close(_audioCodecContext);
+}
+
 - (int)readFrame:(AVPacket *)packet {
-    return av_read_frame(self->formatContext, packet);
+    return av_read_frame(formatContext, packet);
 }
 
 - (void)settingTimeBase {

@@ -25,19 +25,22 @@
     int _audio_swr_buffer_size;
 }
 
-@property (nonatomic, strong) SCFormatContext *context;
+@property (nonatomic, weak  ) SCFormatContext *context;
 @property (nonatomic, assign) AVCodecContext *codecContext;
-@property (nonatomic, assign) SCFrameQueue *queue;
 
 @end
 
 @implementation SCAudioDecoder
 
-- (instancetype)initWithFormatContext:(SCFormatContext *)formatContext audioFrameQueue:(SCFrameQueue *)queue {
+- (void)dealloc {
+    av_frame_free(&_temp_frame);
+    swr_free(&_audio_swr_context);
+}
+
+- (instancetype)initWithFormatContext:(SCFormatContext *)formatContext {
     if (self = [super init]) {
         _context = formatContext;
         _codecContext = formatContext.audioCodecContext;
-        _queue = queue;
         _temp_frame = av_frame_alloc();
         [self setupSwsContext];
     }
@@ -66,33 +69,31 @@
     }
 }
 
-- (SCAudioFrame *)synchronizedDecode:(AVPacket)packet {
+- (NSArray<SCFrame *> *)syncDecode:(AVPacket)packet {
+    NSArray *defaultArray = @[];
+    NSMutableArray *array = [NSMutableArray array];
     if (packet.data == NULL) {
-        return nil;
+        return defaultArray;
     }
-    
     int result = avcodec_send_packet(self.codecContext, &packet);
     if (result < 0 && result != AVERROR(EAGAIN) && result != AVERROR_EOF) {
-        return nil;
+        return defaultArray;
     }
-    
     while (result >= 0) {
         result = avcodec_receive_frame(self.codecContext, _temp_frame);
         if (result < 0) {
             if (result != AVERROR(EAGAIN) && result != AVERROR_EOF) {
-                return nil;
+                return defaultArray;
             }
             break;
         }
-        @autoreleasepool {
-            SCAudioFrame *frame = [self decode:packet.size];
-            if (frame) {
-                [self.queue enqueue:frame];
-            }
+        SCAudioFrame *frame = [self decode:packet.size];
+        if (frame) {
+            [array addObject:frame];
         }
     }
     av_packet_unref(&packet);
-    return nil;
+    return [array copy];
 }
 
 - (SCAudioFrame *)decode:(int)packetSize {

@@ -7,19 +7,11 @@
 //
 
 #import <VideoToolbox/VideoToolbox.h>
-#import "SCHardwareDecoder.h"
+#import "SCVTDecoder.h"
 #import "SharedQueue.h"
 #import "SCFormatContext.h"
 #import "SCFrameQueue.h"
 #import "SCNV12VideoFrame.h"
-
-@interface SCHardwareDecoder () {
-    VTDecompressionSessionRef _deocderSession;
-    CMVideoFormatDescriptionRef _decoderFormatDescription;
-    SCFormatContext *context;
-}
-
-@end
 
 static void didDecompress(void *decompressionOutputRefCon,
                           void *sourceFrameRefCon,
@@ -32,7 +24,16 @@ static void didDecompress(void *decompressionOutputRefCon,
     *outputPixelBuffer = CVPixelBufferRetain(pixelBuffer);
 }
 
-@implementation SCHardwareDecoder
+@interface SCVTDecoder () {
+    VTDecompressionSessionRef _deocderSession;
+    CMVideoFormatDescriptionRef _decoderFormatDescription;
+}
+
+@property (nonatomic, weak) SCFormatContext *context;
+
+@end
+
+@implementation SCVTDecoder
 
 - (void)dealloc {
     if(_deocderSession) {
@@ -57,7 +58,7 @@ static void didDecompress(void *decompressionOutputRefCon,
     if(_deocderSession) {
         return YES;
     }
-    context = formatContext;
+    _context = formatContext;
     AVCodecContext *codecContext = formatContext.videoCodecContext;
     uint8_t *extradata = codecContext->extradata;
     int extradata_size = codecContext->extradata_size;
@@ -85,6 +86,7 @@ static void didDecompress(void *decompressionOutputRefCon,
         
         OSStatus status = VTDecompressionSessionCreate(kCFAllocatorDefault, _decoderFormatDescription, NULL,
                                                        destinationPixelBufferAttributes, &callBackRecord, &_deocderSession);
+        CFRelease(destinationPixelBufferAttributes);
         if(status != noErr) {
             NSLog(@"Create Decompression Session failed - Code= %ld", status);
             return NO;
@@ -117,8 +119,8 @@ static void didDecompress(void *decompressionOutputRefCon,
         CFRelease(blockBuffer);
     }
     SCNV12VideoFrame *videoFrame = [[SCNV12VideoFrame alloc] initWithAVPixelBuffer:outputPixelBuffer];
-    videoFrame.position = packet.pts * context.videoTimebase;
-    videoFrame.duration = packet.duration * context.videoTimebase;
+    videoFrame.position = packet.pts * self.context.videoTimebase;
+    videoFrame.duration = packet.duration * self.context.videoTimebase;
     av_packet_unref(&packet);
     return videoFrame;
 }

@@ -25,6 +25,8 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, assign) AVCodecContext *audioCodecContext;
 
 - (int)readFrame:(AVPacket *)packet;
+- (void)openFile:(NSString *)filename;
+- (void)closeFile;
 
 @end
 

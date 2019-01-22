@@ -1,27 +1,31 @@
 //
-//  SCSoftwareDecoder.m
+//  SCVideoDecoder.m
 //  Athena
 //
 //  Created by Theresa on 2019/01/07.
 //  Copyright © 2019 Theresa. All rights reserved.
 //
 
-#import "SCSoftwareDecoder.h"
+#import "SCVideoDecoder.h"
 #import "SharedQueue.h"
 #import "SCFormatContext.h"
 #import "SCFrameQueue.h"
 #import "SCNV12VideoFrame.h"
 #import "SCI420VideoFrame.h"
 
-@interface SCSoftwareDecoder () {
+@interface SCVideoDecoder () {
     AVFrame *_temp_frame;
 }
 
-@property (nonatomic, strong) SCFormatContext *formatContext;
+@property (nonatomic, weak) SCFormatContext *formatContext;
 
 @end
 
-@implementation SCSoftwareDecoder
+@implementation SCVideoDecoder
+
+- (void)dealloc {
+    av_frame_free(&_temp_frame);
+}
 
 - (instancetype)initWithFormatContext:(SCFormatContext *)formatContext {
     if (self = [super init]) {
@@ -32,7 +36,7 @@
 }
 
 - (SCFrame *)decode:(AVPacket)packet {
-    SCNV12VideoFrame *videoFrame = nil;
+    SCI420VideoFrame *videoFrame = nil;
     int result = avcodec_send_packet(self.formatContext.videoCodecContext, &packet);
     if (result < 0) {
         return nil;

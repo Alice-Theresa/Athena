@@ -10,8 +10,10 @@
 
 @interface SCPacketQueue ()
 
+@property (nonatomic, assign, readwrite) NSUInteger packetTotalSize;
+
 @property (nonatomic, strong) NSCondition *condition;
-@property (nonatomic, strong) NSMutableArray <NSValue *> * packets;
+@property (nonatomic, strong) NSMutableArray <NSValue *> *packets;
 
 @end
 
@@ -25,14 +27,15 @@
     return self;
 }
 
-- (void)putPacket:(AVPacket)packet {
+- (void)enqueuePacket:(AVPacket)packet {
     [self.condition lock];
+    self.packetTotalSize += packet.size;
     NSValue *value = [NSValue value:&packet withObjCType:@encode(AVPacket)];
     [self.packets addObject:value];
     [self.condition unlock];
 }
 
-- (AVPacket)getPacket {
+- (AVPacket)dequeuePacket {
     [self.condition lock];
     AVPacket packet;
     packet.stream_index = -1;
@@ -42,6 +45,7 @@
     }
     [self.packets.firstObject getValue:&packet];
     [self.packets removeObjectAtIndex:0];
+    self.packetTotalSize -= packet.size;
     [self.condition unlock];
     return packet;
 }
@@ -49,6 +53,7 @@
 - (void)flush {
     [self.condition lock];
     [self.packets removeAllObjects];
+    self.packetTotalSize = 0;
     [self.condition unlock];
 }
 

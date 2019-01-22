@@ -13,8 +13,10 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface SCPacketQueue : NSObject
 
-- (void)putPacket:(AVPacket)packet;
-- (AVPacket)getPacket;
+@property (nonatomic, assign, readonly) NSUInteger packetTotalSize;
+
+- (void)enqueuePacket:(AVPacket)packet;
+- (AVPacket)dequeuePacket;
 - (void)flush;
 
 @end

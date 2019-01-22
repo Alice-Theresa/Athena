@@ -1,5 +1,5 @@
 //
-//  SCSoftwareDecoder.h
+//  SCVideoDecoder.h
 //  Athena
 //
 //  Created by Theresa on 2019/01/07.
@@ -14,7 +14,7 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-@interface SCSoftwareDecoder : NSObject
+@interface SCVideoDecoder : NSObject
 
 - (instancetype)initWithFormatContext:(SCFormatContext *)formatContext;
 - (SCFrame *)decode:(AVPacket)packet;
