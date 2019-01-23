@@ -60,6 +60,7 @@
     
     [self.controlView.actionButton addTarget:self action:@selector(resumeOrPause) forControlEvents:UIControlEventTouchUpInside];
     [self.controlView.backButton addTarget:self action:@selector(popVC) forControlEvents:UIControlEventTouchUpInside];
+    [self.controlView.progressSlide addTarget:self action:@selector(seekingTime:) forControlEvents:UIControlEventTouchUpInside];
     UITapGestureRecognizer *tap = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(showOrHideView)];
     [self.controlView addGestureRecognizer:tap];
 }
@@ -83,8 +84,14 @@
     [self.navigationController popViewControllerAnimated:YES];
 }
 
+- (void)seekingTime:(id)sender {
+    [self.controler seekingTime:self.controlView.progressSlide.value];
+}
+
 - (void)controlCenter:(SCControl *)control didRender:(NSUInteger)position duration:(NSUInteger)duration {
-    
+    NSString *current = [NSString stringWithFormat:@"%02lu:%02lu:%02lu", position / 3600, position % 3600 / 60, position % 3600 % 60];
+    NSString *total = [NSString stringWithFormat:@"%02lu:%02lu:%02lu", duration / 3600, duration % 3600 / 60, duration % 3600 % 60];
+    self.controlView.timeLabel.text = [NSString stringWithFormat:@"%@/%@", current, total];
 }
 
 @end

@@ -35,8 +35,11 @@
 }
 
 - (void)setupDecoder {
-    av_register_all();
-    avformat_network_init();
+    static dispatch_once_t onceToken;
+    dispatch_once(&onceToken, ^{
+        av_register_all();
+        avformat_network_init();
+    });
     formatContext = avformat_alloc_context();
 }
 
@@ -62,7 +65,9 @@
     }
     if (self.videoIndex == -1) {
         printf("Couldn't find a video stream.\n");
-//        return;
+    }
+    if (self.audioIndex == -1) {
+        printf("Couldn't find a audio stream.\n");
     }
     
     _videoCodecContext = formatContext->streams[self.videoIndex]->codec;
@@ -91,6 +96,11 @@
 
 - (int)readFrame:(AVPacket *)packet {
     return av_read_frame(formatContext, packet);
+}
+
+- (void)seekingTime:(NSTimeInterval)time {
+    int64_t ts = time * AV_TIME_BASE;
+    av_seek_frame(formatContext, -1, ts, AVSEEK_FLAG_BACKWARD);
 }
 
 - (void)settingTimeBase {

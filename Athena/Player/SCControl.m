@@ -49,14 +49,12 @@
 
 @property (nonatomic, assign, readwrite) SCControlState controlState;
 @property (nonatomic, assign) NSTimeInterval interval;
+@property (nonatomic, assign) BOOL needSeeking;
+@property (nonatomic, assign) NSTimeInterval seekingTime;
 
 @end
 
 @implementation SCControl
-
-- (void)dealloc {
-    NSLog(@"dealloc");
-}
 
 - (instancetype)initWithRenderView:(MTKView *)view {
     if (self = [super init]) {
@@ -127,19 +125,29 @@
 - (void)close {
     self.controlState = SCControlStateClosed;
     [self.displayLink invalidate];
-    [self.readPacketOperation cancel];
-    [self.videoDecodeOperation cancel];
-    [self.audioDecodeOperation cancel];
+    [self.controlQueue cancelAllOperations];
+    [self.controlQueue waitUntilAllOperationsAreFinished];
     self.readPacketOperation = nil;
     self.videoDecodeOperation = nil;
     self.audioDecodeOperation = nil;
+    [self flushQueue];
+    [[SCAudioManager shared] stop];
+    [self.context closeFile];
+}
+
+- (void)seekingTime:(NSTimeInterval)percentage {
+    self.seekingTime = percentage * self.context.duration;
+    self.needSeeking = YES;
+}
+
+- (void)flushQueue {
     [self.videoFrameQueue flush];
     [self.audioFrameQueue flush];
     [self.videoPacketQueue flush];
     [self.audioPacketQueue flush];
-    [[SCAudioManager shared] stop];
-    [self.context closeFile];
 }
+
+#pragma mark - reading, decoding and rendering
 
 - (void)readPacket {
     BOOL finished = NO;
@@ -153,6 +161,12 @@
         }
         if (self.videoPacketQueue.packetTotalSize + self.audioPacketQueue.packetTotalSize > 10 * 1024 * 1024) {
             [NSThread sleepForTimeInterval:0.03];
+            continue;
+        }
+        if (self.needSeeking) {
+            [self.context seekingTime:self.seekingTime];
+            [self flushQueue];
+            self.needSeeking = NO;
             continue;
         }
         AVPacket packet;
@@ -221,6 +235,8 @@
         }
     }
 }
+
+#pragma mark - audio delegate
 
 - (void)fetchoutputData:(float *)outputData numberOfFrames:(UInt32)numberOfFrames numberOfChannels:(UInt32)numberOfChannels {
     @autoreleasepool {

@@ -44,7 +44,7 @@
         while (result >= 0) {
             result = avcodec_receive_frame(self.formatContext.videoCodecContext, _temp_frame);
             if (result < 0) {
-//                NSLog(@"error");
+               // look at audio decoder 
             } else {
                 videoFrame = [self videoFrameFromTempFrame:packet.size];
             }
