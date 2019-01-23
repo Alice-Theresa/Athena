@@ -84,8 +84,8 @@
     
     [encoder setRenderPipelineState:[self.device newRenderPipelineStateWithDescriptor:self.nv12PipelineDescriptor error:nil]];
     [encoder setVertexBuffer:[self createBuffer:CGSizeMake(width, height) viewBounds:mtkView.bounds] offset:0 atIndex:0];
-    [encoder setFragmentTexture:yTexture atIndex:0];
-    [encoder setFragmentTexture:uvTexture atIndex:1];
+    [encoder setFragmentTexture:yTexture atIndex:SCTextureIndexY];
+    [encoder setFragmentTexture:uvTexture atIndex:SCTextureIndexUV];
     [encoder drawPrimitives:MTLPrimitiveTypeTriangleStrip vertexStart:0 vertexCount:4 instanceCount:1];
     [encoder endEncoding];
     [commandBuffer presentDrawable:currentDrawable];
@@ -123,9 +123,9 @@
     
     [encoder setRenderPipelineState:[self.device newRenderPipelineStateWithDescriptor:self.yuvPipelineDescriptor error:nil]];
     [encoder setVertexBuffer:[self createBuffer:CGSizeMake(width, height) viewBounds:mtkView.bounds] offset:0 atIndex:0];
-    [encoder setFragmentTexture:yTexture atIndex:0];
-    [encoder setFragmentTexture:uTexture atIndex:1];
-    [encoder setFragmentTexture:vTexture atIndex:2];
+    [encoder setFragmentTexture:yTexture atIndex:SCTextureIndexY];
+    [encoder setFragmentTexture:uTexture atIndex:SCTextureIndexU];
+    [encoder setFragmentTexture:vTexture atIndex:SCTextureIndexV];
     [encoder drawPrimitives:MTLPrimitiveTypeTriangleStrip vertexStart:0 vertexCount:4 instanceCount:1];
     [encoder endEncoding];
     [commandBuffer presentDrawable:currentDrawable];
@@ -144,7 +144,7 @@
         normalizedSamplingSize.width = cropScaleAmount.width / cropScaleAmount.height;
         normalizedSamplingSize.height = 1.0;;
     }
-    AAPLVertex quadVertices[] =
+    SCVertex quadVertices[] =
     {
         { { -1 * normalizedSamplingSize.width, -1 * normalizedSamplingSize.height } },
         { {  1 * normalizedSamplingSize.width, -1 * normalizedSamplingSize.height } },

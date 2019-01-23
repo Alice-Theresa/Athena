@@ -73,14 +73,14 @@
 }
 
 - (void)resumeOrPause {
-//    if (self.controler.controlState == SCControlStatePlaying) {
-//        [self.controler pause];
-//        [self.controlView settingPause];
-//    } else if (self.controler.controlState == SCControlStatePaused) {
-//        [self.controler resume];
-//        [self.controlView settingPlay];
-//    }
-    [self.controler switchVideoDecoder];
+    if (self.controler.controlState == SCControlStatePlaying) {
+        [self.controler pause];
+        [self.controlView settingPause];
+    } else if (self.controler.controlState == SCControlStatePaused) {
+        [self.controler resume];
+        [self.controlView settingPlay];
+    }
+//    [self.controler switchVideoDecoder];
 }
 
 - (void)popVC {
@@ -103,6 +103,16 @@
     if (!self.isTouchSlider) {
         self.controlView.progressSlide.value = (float)position / duration;
     }
+}
+
+- (void)defineLayout {
+    [self.view addConstraint:[NSLayoutConstraint constraintWithItem:self.mtkView
+                                                     attribute:NSLayoutAttributeLeading
+                                                     relatedBy:NSLayoutRelationEqual
+                                                        toItem:self
+                                                     attribute:NSLayoutAttributeLeading
+                                                    multiplier:1
+                                                      constant:20]];
 }
 
 @end

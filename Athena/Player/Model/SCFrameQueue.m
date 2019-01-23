@@ -42,9 +42,9 @@
 }
 
 - (void)enqueueAndSort:(SCFrame *)frame {
-    if (!frame) {
-        return;
-    }
+//    if (!frame) {
+//        return;
+//    }
 //    [self.condition lock];
     BOOL added = NO;
     if (self.frames.count > 0) {

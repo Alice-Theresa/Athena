@@ -11,8 +11,19 @@
 
 #include <simd/simd.h>
 
+typedef enum SCInputIndex {
+    SCInputIndexVertices = 0,
+} SCInputIndex;
+
+typedef enum SCTextureIndex {
+    SCTextureIndexY = 0,
+    SCTextureIndexUV,
+    SCTextureIndexU,
+    SCTextureIndexV,
+} SCTextureIndex;
+
 typedef struct {
     vector_float2 position;
-} AAPLVertex;
+} SCVertex;
 
 #endif /* SCShaderType_h */

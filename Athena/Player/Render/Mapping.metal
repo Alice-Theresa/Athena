@@ -16,7 +16,7 @@ typedef struct {
 } TextureMappingVertex;
 
 vertex TextureMappingVertex mappingVertex(unsigned int vertex_id [[ vertex_id ]],
-                                          constant AAPLVertex *vertices [[ buffer(0) ]]) {
+                                          constant SCVertex *vertices [[ buffer(SCInputIndexVertices) ]]) {
     float4x2 textureCoordinates = float4x2(float2( 0.0, 1.0 ),
                                            float2( 1.0, 1.0 ),
                                            float2( 0.0, 0.0 ),
@@ -30,8 +30,8 @@ vertex TextureMappingVertex mappingVertex(unsigned int vertex_id [[ vertex_id ]]
 }
 
 fragment half4 nv12Fragment(TextureMappingVertex mappingVertex [[ stage_in ]],
-                               texture2d<float, access::sample> ytexture [[ texture(0) ]],
-                               texture2d<float, access::sample> uvtexture [[ texture(1) ]]) {
+                               texture2d<float, access::sample> ytexture [[ texture(SCTextureIndexY) ]],
+                               texture2d<float, access::sample> uvtexture [[ texture(SCTextureIndexUV) ]]) {
     constexpr sampler s(address::clamp_to_edge, filter::linear);
     
     half3 yuv;
@@ -46,9 +46,9 @@ fragment half4 nv12Fragment(TextureMappingVertex mappingVertex [[ stage_in ]],
 }
 
 fragment half4 i420Fragment(TextureMappingVertex mappingVertex [[ stage_in ]],
-                           texture2d<float, access::sample> ytexture [[ texture(0) ]],
-                           texture2d<float, access::sample> utexture [[ texture(1) ]],
-                           texture2d<float, access::sample> vtexture [[ texture(2) ]]) {
+                           texture2d<float, access::sample> ytexture [[ texture(SCTextureIndexY) ]],
+                           texture2d<float, access::sample> utexture [[ texture(SCTextureIndexU) ]],
+                           texture2d<float, access::sample> vtexture [[ texture(SCTextureIndexV) ]]) {
     constexpr sampler s(address::clamp_to_edge, filter::linear);
     
     half y, u, v;
