@@ -27,8 +27,8 @@
 
 @property (nonatomic, strong) SCFormatContext *context;
 
-@property (nonatomic, strong) SCVTDecoder *videoDecoder;
-@property (nonatomic, strong) SCVideoDecoder *videoFFDecoder;
+@property (nonatomic, strong) SCVTDecoder *VTDecoder;
+@property (nonatomic, strong) SCVideoDecoder *videoDecoder;
 @property (nonatomic, strong) SCAudioDecoder *audioDecoder;
 
 @property (nonatomic, strong) SCPacketQueue *videoPacketQueue;
@@ -51,6 +51,7 @@
 @property (nonatomic, assign) NSTimeInterval interval;
 @property (nonatomic, assign) BOOL needSeeking;
 @property (nonatomic, assign) NSTimeInterval seekingTime;
+@property (nonatomic, assign) BOOL hardwareDecode;
 
 @end
 
@@ -80,9 +81,9 @@
     _context = [[SCFormatContext alloc] init];
     [_context openFile:filename];
     
-    _videoDecoder   = [[SCVTDecoder alloc] initWithFormatContext:_context];
-//    _videoFFDecoder = [[SCVideoDecoder alloc] initWithFormatContext:_context];
-    _audioDecoder   = [[SCAudioDecoder alloc] initWithFormatContext:_context];
+    _VTDecoder    = [[SCVTDecoder alloc] initWithFormatContext:_context];
+    _videoDecoder = [[SCVideoDecoder alloc] initWithFormatContext:_context];
+    _audioDecoder = [[SCAudioDecoder alloc] initWithFormatContext:_context];
     [SCAudioManager shared].delegate = self;
     [self start];
 }
@@ -138,6 +139,10 @@
 - (void)seekingTime:(NSTimeInterval)percentage {
     self.seekingTime = percentage * self.context.duration;
     self.needSeeking = YES;
+}
+
+- (void)switchVideoDecoder {
+    self.hardwareDecode = !self.hardwareDecode;
 }
 
 - (void)flushQueue {
@@ -196,10 +201,15 @@
             [NSThread sleepForTimeInterval:0.03];
             continue;
         }
-        AVPacket packet = [self.videoPacketQueue dequeuePacket];
-        if (packet.data != NULL && packet.stream_index >= 0) {
-//            [self.videoFrameQueue enqueueAndSort:[self.videoFFDecoder decode:packet]];
-            [self.videoFrameQueue enqueueAndSort:[self.videoDecoder decode:packet]];
+        @autoreleasepool {
+            AVPacket packet = [self.videoPacketQueue dequeuePacket];
+            if (packet.data != NULL && packet.stream_index >= 0) {
+                if (self.hardwareDecode) {
+                    [self.videoFrameQueue enqueueArrayAndSort:[self.videoDecoder decode:packet]];
+                } else {
+                    [self.videoFrameQueue enqueueArrayAndSort:[self.VTDecoder decode:packet]];
+                }
+            }
         }
     }
 }
@@ -214,9 +224,11 @@
             [NSThread sleepForTimeInterval:0.03];
             continue;
         }
-        AVPacket packet = [self.audioPacketQueue dequeuePacket];
-        if (packet.data != NULL && packet.stream_index >= 0) {
-            [self.audioFrameQueue enqueueArray:[self.audioDecoder syncDecode:packet]];
+        @autoreleasepool {
+            AVPacket packet = [self.audioPacketQueue dequeuePacket];
+            if (packet.data != NULL && packet.stream_index >= 0) {
+                [self.audioFrameQueue enqueueArray:[self.audioDecoder decode:packet]];
+            }
         }
     }
 }

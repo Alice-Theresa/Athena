@@ -66,7 +66,7 @@
                                                         toItem:self
                                                      attribute:NSLayoutAttributeTop
                                                     multiplier:1
-                                                      constant:20]];
+                                                      constant:40]];
     
     [self addConstraint:[NSLayoutConstraint constraintWithItem:self.actionButton
                                                      attribute:NSLayoutAttributeLeading
@@ -111,7 +111,7 @@
                                                         toItem:self
                                                      attribute:NSLayoutAttributeBottom
                                                     multiplier:1
-                                                      constant:-20]];
+                                                      constant:-40]];
     [self addConstraint:[NSLayoutConstraint constraintWithItem:self.timeLabel
                                                      attribute:NSLayoutAttributeCenterY
                                                      relatedBy:NSLayoutRelationEqual

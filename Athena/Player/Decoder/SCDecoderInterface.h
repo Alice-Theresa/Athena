@@ -1,20 +1,23 @@
 //
-//  SCAudioDecoder.h
+//  SCDecoderInterface.h
 //  Athena
 //
-//  Created by Theresa on 2019/01/09.
+//  Created by Theresa on 2019/01/23.
 //  Copyright © 2019 Theresa. All rights reserved.
 //
 
-#import "SCDecoderInterface.h"
+#import <libavformat/avformat.h>
+#import <Foundation/Foundation.h>
+
 @class SCFrame;
 @class SCFormatContext;
 
 NS_ASSUME_NONNULL_BEGIN
 
-@interface SCAudioDecoder : NSObject <SCDecoderInterface>
+@protocol SCDecoderInterface <NSObject>
 
-- (instancetype)init NS_UNAVAILABLE;
+@property (nonatomic, weak, readonly) SCFormatContext *context;
+
 - (instancetype)initWithFormatContext:(SCFormatContext *)formatContext;
 - (NSArray<SCFrame *> *)decode:(AVPacket)packet;
 

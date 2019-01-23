@@ -31,16 +31,6 @@
     return self;
 }
 
-- (void)enqueue:(SCFrame *)frame {
-    if (!frame) {
-        return;
-    }
-    [self.condition lock];
-    [self.frames addObject:frame];
-    self.count++;
-    [self.condition unlock];
-}
-
 - (void)enqueueArray:(NSArray<SCFrame *> *)array {
     if (array.count == 0) {
         return;
@@ -55,7 +45,7 @@
     if (!frame) {
         return;
     }
-    [self.condition lock];
+//    [self.condition lock];
     BOOL added = NO;
     if (self.frames.count > 0) {
         for (int i = (int)self.frames.count - 1; i >= 0; i--) {
@@ -71,6 +61,14 @@
         [self.frames addObject:frame];
     }
     self.count++;
+//    [self.condition unlock];
+}
+
+- (void)enqueueArrayAndSort:(NSArray<SCFrame *> *)array {
+    [self.condition lock];
+    for (SCFrame *frame in array) {
+        [self enqueueAndSort:frame];
+    }
     [self.condition unlock];
 }
 
@@ -83,8 +81,8 @@
     }
     frame = self.frames.firstObject;
     [self.frames removeObjectAtIndex:0];
-    [self.condition unlock];
     self.count--;
+    [self.condition unlock];
     return frame;
 }
 

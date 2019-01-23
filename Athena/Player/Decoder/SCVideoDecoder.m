@@ -17,7 +17,7 @@
     AVFrame *_temp_frame;
 }
 
-@property (nonatomic, weak) SCFormatContext *formatContext;
+@property (nonatomic, weak) SCFormatContext *context;
 
 @end
 
@@ -29,29 +29,35 @@
 
 - (instancetype)initWithFormatContext:(SCFormatContext *)formatContext {
     if (self = [super init]) {
-        _formatContext = formatContext;
+        _context = formatContext;
         _temp_frame = av_frame_alloc();
     }
     return self;
 }
 
-- (SCFrame *)decode:(AVPacket)packet {
-    SCI420VideoFrame *videoFrame = nil;
-    int result = avcodec_send_packet(self.formatContext.videoCodecContext, &packet);
+- (NSArray<SCFrame *> *)decode:(AVPacket)packet {
+    NSArray *defaultArray = @[];
+    NSMutableArray *array = [NSMutableArray array];
+    int result = avcodec_send_packet(self.context.videoCodecContext, &packet);
     if (result < 0) {
-        return nil;
-    } else {
-        while (result >= 0) {
-            result = avcodec_receive_frame(self.formatContext.videoCodecContext, _temp_frame);
-            if (result < 0) {
-               // look at audio decoder 
-            } else {
-                videoFrame = [self videoFrameFromTempFrame:packet.size];
+        return defaultArray;
+    }
+    while (result >= 0) {
+        result = avcodec_receive_frame(self.context.videoCodecContext, _temp_frame);
+        if (result < 0) {
+            if (result != AVERROR(EAGAIN) && result != AVERROR_EOF) {
+                return defaultArray;
+            }
+            break;
+        } else {
+            SCI420VideoFrame *frame = [self videoFrameFromTempFrame:packet.size];
+            if (frame) {
+                [array addObject:frame];
             }
         }
     }
     av_packet_unref(&packet);
-    return videoFrame;
+    return [array copy];
 }
 
 - (SCI420VideoFrame *)videoFrameFromTempFrame:(int)packetSize {
@@ -59,11 +65,11 @@
         return nil;
     }
     SCI420VideoFrame *videoFrame = [[SCI420VideoFrame alloc] initWithFrameData:_temp_frame
-                                                                         width:self.formatContext.videoCodecContext->width
-                                                                        height:self.formatContext.videoCodecContext->height];
-    videoFrame.position = av_frame_get_best_effort_timestamp(_temp_frame) * self.formatContext.videoTimebase;
-    videoFrame.position += _temp_frame->repeat_pict * self.formatContext.videoTimebase * 0.5;
-    videoFrame.duration = av_frame_get_pkt_duration(_temp_frame) * self.formatContext.videoTimebase;
+                                                                         width:self.context.videoCodecContext->width
+                                                                        height:self.context.videoCodecContext->height];
+    videoFrame.position = av_frame_get_best_effort_timestamp(_temp_frame) * self.context.videoTimebase;
+    videoFrame.position += _temp_frame->repeat_pict * self.context.videoTimebase * 0.5;
+    videoFrame.duration = av_frame_get_pkt_duration(_temp_frame) * self.context.videoTimebase;
     return videoFrame;
 }
 

@@ -22,6 +22,7 @@
 
 @property (nonatomic, strong) SCControl *controler;
 @property (nonatomic, assign) BOOL isHideContainer;
+@property (nonatomic, assign) BOOL isTouchSlider;
 
 @end
 
@@ -61,6 +62,7 @@
     [self.controlView.actionButton addTarget:self action:@selector(resumeOrPause) forControlEvents:UIControlEventTouchUpInside];
     [self.controlView.backButton addTarget:self action:@selector(popVC) forControlEvents:UIControlEventTouchUpInside];
     [self.controlView.progressSlide addTarget:self action:@selector(seekingTime:) forControlEvents:UIControlEventTouchUpInside];
+    [self.controlView.progressSlide addTarget:self action:@selector(touchSlider) forControlEvents:UIControlEventTouchDown];
     UITapGestureRecognizer *tap = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(showOrHideView)];
     [self.controlView addGestureRecognizer:tap];
 }
@@ -71,27 +73,36 @@
 }
 
 - (void)resumeOrPause {
-    if (self.controler.controlState == SCControlStatePlaying) {
-        [self.controler pause];
-        [self.controlView settingPause];
-    } else if (self.controler.controlState == SCControlStatePaused) {
-        [self.controler resume];
-        [self.controlView settingPlay];
-    }
+//    if (self.controler.controlState == SCControlStatePlaying) {
+//        [self.controler pause];
+//        [self.controlView settingPause];
+//    } else if (self.controler.controlState == SCControlStatePaused) {
+//        [self.controler resume];
+//        [self.controlView settingPlay];
+//    }
+    [self.controler switchVideoDecoder];
 }
 
 - (void)popVC {
     [self.navigationController popViewControllerAnimated:YES];
 }
 
+- (void)touchSlider {
+    self.isTouchSlider = YES;
+}
+
 - (void)seekingTime:(id)sender {
     [self.controler seekingTime:self.controlView.progressSlide.value];
+    self.isTouchSlider = NO;
 }
 
 - (void)controlCenter:(SCControl *)control didRender:(NSUInteger)position duration:(NSUInteger)duration {
     NSString *current = [NSString stringWithFormat:@"%02lu:%02lu:%02lu", position / 3600, position % 3600 / 60, position % 3600 % 60];
     NSString *total = [NSString stringWithFormat:@"%02lu:%02lu:%02lu", duration / 3600, duration % 3600 / 60, duration % 3600 % 60];
     self.controlView.timeLabel.text = [NSString stringWithFormat:@"%@/%@", current, total];
+    if (!self.isTouchSlider) {
+        self.controlView.progressSlide.value = (float)position / duration;
+    }
 }
 
 @end

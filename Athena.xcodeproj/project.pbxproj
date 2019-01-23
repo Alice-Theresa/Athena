@@ -114,6 +114,7 @@
 		527D337221F5AF9800B9D959 /* SCPlayerViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = SCPlayerViewController.m; sourceTree = "<group>"; };
 		527D337721F5C23F00B9D959 /* SCPlayerControlView.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SCPlayerControlView.h; sourceTree = "<group>"; };
 		527D337821F5C23F00B9D959 /* SCPlayerControlView.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = SCPlayerControlView.m; sourceTree = "<group>"; };
+		527D338121F8406E00B9D959 /* SCDecoderInterface.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SCDecoderInterface.h; sourceTree = "<group>"; };
 		529067861F94BF8F001A7BFA /* aacdecoder_lib.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = aacdecoder_lib.h; sourceTree = "<group>"; };
 		529067871F94BF8F001A7BFA /* aacenc_lib.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = aacenc_lib.h; sourceTree = "<group>"; };
 		529067881F94BF8F001A7BFA /* FDK_audio.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = FDK_audio.h; sourceTree = "<group>"; };
@@ -611,6 +612,7 @@
 				52ACC2CC21E358D900ABB193 /* SCVideoDecoder.m */,
 				5218B39E21E5CE3F00D9115D /* SCAudioDecoder.h */,
 				5218B39F21E5CE3F00D9115D /* SCAudioDecoder.m */,
+				527D338121F8406E00B9D959 /* SCDecoderInterface.h */,
 			);
 			path = Decoder;
 			sourceTree = "<group>";

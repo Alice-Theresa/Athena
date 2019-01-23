@@ -69,7 +69,7 @@
     }
 }
 
-- (NSArray<SCFrame *> *)syncDecode:(AVPacket)packet {
+- (NSArray<SCFrame *> *)decode:(AVPacket)packet {
     NSArray *defaultArray = @[];
     NSMutableArray *array = [NSMutableArray array];
     if (packet.data == NULL) {
@@ -87,7 +87,7 @@
             }
             break;
         }
-        SCAudioFrame *frame = [self decode:packet.size];
+        SCAudioFrame *frame = [self innerDecode:packet.size];
         if (frame) {
             [array addObject:frame];
         }
@@ -96,7 +96,7 @@
     return [array copy];
 }
 
-- (SCAudioFrame *)decode:(int)packetSize {
+- (SCAudioFrame *)innerDecode:(int)packetSize {
     if (!_temp_frame->data[0]) {
         return nil;
     }

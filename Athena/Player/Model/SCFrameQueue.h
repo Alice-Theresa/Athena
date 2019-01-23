@@ -19,13 +19,13 @@ NS_ASSUME_NONNULL_BEGIN
 /**
  use for audio frame
  */
-- (void)enqueue:(SCFrame *)frame;
 - (void)enqueueArray:(NSArray<SCFrame *> *)array;
 
 /**
  use for video frame, sort by pts
  */
 - (void)enqueueAndSort:(SCFrame *)frame;
+- (void)enqueueArrayAndSort:(NSArray<SCFrame *> *)array;
 
 - (SCFrame *)dequeueFrame;
 

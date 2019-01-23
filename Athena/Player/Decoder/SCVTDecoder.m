@@ -8,9 +8,7 @@
 
 #import <VideoToolbox/VideoToolbox.h>
 #import "SCVTDecoder.h"
-#import "SharedQueue.h"
 #import "SCFormatContext.h"
-#import "SCFrameQueue.h"
 #import "SCNV12VideoFrame.h"
 
 static void didDecompress(void *decompressionOutputRefCon,
@@ -88,7 +86,7 @@ static void didDecompress(void *decompressionOutputRefCon,
                                                        destinationPixelBufferAttributes, &callBackRecord, &_deocderSession);
         CFRelease(destinationPixelBufferAttributes);
         if(status != noErr) {
-            NSLog(@"Create Decompression Session failed - Code= %ld", status);
+            NSLog(@"Create Decompression Session failed - Code= %d", status);
             return NO;
         } else {
             return YES;
@@ -96,10 +94,10 @@ static void didDecompress(void *decompressionOutputRefCon,
     }
 }
 
-- (SCFrame *)decode:(AVPacket)packet {
+- (NSArray<SCFrame *> *)decode:(AVPacket)packet {
     CVPixelBufferRef outputPixelBuffer = NULL;
     CMBlockBufferRef blockBuffer = NULL;
-    OSStatus status = CMBlockBufferCreateWithMemoryBlock(kCFAllocatorDefault, (void*)packet.data, packet.size, kCFAllocatorNull,
+    OSStatus status = CMBlockBufferCreateWithMemoryBlock(kCFAllocatorDefault, (void *)packet.data, packet.size, kCFAllocatorNull,
                                                           NULL, 0, packet.size, FALSE, &blockBuffer);
     if(status == kCMBlockBufferNoErr) {
         CMSampleBufferRef sampleBuffer = NULL;
@@ -122,7 +120,7 @@ static void didDecompress(void *decompressionOutputRefCon,
     videoFrame.position = packet.pts * self.context.videoTimebase;
     videoFrame.duration = packet.duration * self.context.videoTimebase;
     av_packet_unref(&packet);
-    return videoFrame;
+    return @[videoFrame];
 }
 
 static CMFormatDescriptionRef CreateFormatDescription(CMVideoCodecType codec_type, int width, int height, const uint8_t * extradata, int extradata_size)

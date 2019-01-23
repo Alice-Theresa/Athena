@@ -6,18 +6,18 @@
 //  Copyright © 2019 Theresa. All rights reserved.
 //
 
-#import <libavformat/avformat.h>
-#import <Foundation/Foundation.h>
+#import "SCDecoderInterface.h"
 
 @class SCFrame;
 @class SCFormatContext;
 
 NS_ASSUME_NONNULL_BEGIN
 
-@interface SCVideoDecoder : NSObject
+@interface SCVideoDecoder : NSObject <SCDecoderInterface>
 
+- (instancetype)init NS_UNAVAILABLE;
 - (instancetype)initWithFormatContext:(SCFormatContext *)formatContext;
-- (SCFrame *)decode:(AVPacket)packet;
+- (NSArray<SCFrame *> *)decode:(AVPacket)packet;
 
 @end
 
