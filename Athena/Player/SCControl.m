@@ -55,10 +55,23 @@
 
 @end
 
+static AVPacket flush_packet;
+
 @implementation SCControl
+
+- (void)dealloc {
+    [[NSNotificationCenter defaultCenter] removeObserver:self name:UIApplicationWillResignActiveNotification object:nil];
+}
 
 - (instancetype)initWithRenderView:(MTKView *)view {
     if (self = [super init]) {
+        static dispatch_once_t onceToken;
+        dispatch_once(&onceToken, ^{
+            av_init_packet(&flush_packet);
+            flush_packet.data = (uint8_t *)&flush_packet;
+            flush_packet.duration = 0;
+        });
+        
         _displayLink = [CADisplayLink displayLinkWithTarget:self selector:@selector(rendering)];
         [_displayLink addToRunLoop:[NSRunLoop mainRunLoop] forMode:NSRunLoopCommonModes];
         
@@ -73,6 +86,8 @@
         _mtkView.depthStencilPixelFormat = MTLPixelFormatInvalid;
         _mtkView.framebufferOnly = false;
         _mtkView.colorPixelFormat = MTLPixelFormatBGRA8Unorm;
+        
+        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(appWillResignActive) name:UIApplicationWillResignActiveNotification object:nil];
     }
     return self;
 }
@@ -171,6 +186,8 @@
         if (self.needSeeking) {
             [self.context seekingTime:self.seekingTime];
             [self flushQueue];
+            [self.videoPacketQueue enqueuePacket:flush_packet];
+            [self.audioPacketQueue enqueuePacket:flush_packet];
             self.needSeeking = NO;
             continue;
         }
@@ -203,6 +220,11 @@
         }
         @autoreleasepool {
             AVPacket packet = [self.videoPacketQueue dequeuePacket];
+            if (packet.data == flush_packet.data) {
+                avcodec_flush_buffers(self.context.videoCodecContext);
+                [self.videoFrameQueue flush];
+                continue;
+            }
             if (packet.data != NULL && packet.stream_index >= 0) {
                 if (self.hardwareDecode) {
                     [self.videoFrameQueue enqueueArrayAndSort:[self.videoDecoder decode:packet]];
@@ -226,6 +248,11 @@
         }
         @autoreleasepool {
             AVPacket packet = [self.audioPacketQueue dequeuePacket];
+            if (packet.data == flush_packet.data) {
+                avcodec_flush_buffers(self.context.audioCodecContext);
+                [self.audioFrameQueue flush];
+                continue;
+            }
             if (packet.data != NULL && packet.stream_index >= 0) {
                 [self.audioFrameQueue enqueueArray:[self.audioDecoder decode:packet]];
             }
@@ -242,7 +269,7 @@
         }
         self.interval = frame.duration + currentTime;
         [self.render render:(id<SCRenderDataInterface>)frame drawIn:self.mtkView];
-        if ([self.delegate respondsToSelector:@selector(controlCenter:didRender:duration:)]) {
+        if ([self.delegate respondsToSelector:@selector(controlCenter:didRender:duration:)] && !self.needSeeking) {
             [self.delegate controlCenter:self didRender:frame.position duration:self.context.duration];
         }
     }
@@ -278,7 +305,10 @@
             }
         }
     }
-    
+}
+
+- (void)appWillResignActive {
+    [self pause];
 }
 
 @end

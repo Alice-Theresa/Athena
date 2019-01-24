@@ -24,7 +24,6 @@ NS_ASSUME_NONNULL_BEGIN
 /**
  use for video frame, sort by pts
  */
-//- (void)enqueueAndSort:(SCFrame *)frame;
 - (void)enqueueArrayAndSort:(NSArray<SCFrame *> *)array;
 
 - (SCFrame *)dequeueFrame;

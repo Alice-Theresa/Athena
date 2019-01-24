@@ -35,6 +35,7 @@ static void didDecompress(void *decompressionOutputRefCon,
 
 - (void)dealloc {
     if(_deocderSession) {
+        VTDecompressionSessionWaitForAsynchronousFrames(_deocderSession);
         VTDecompressionSessionInvalidate(_deocderSession);
         CFRelease(_deocderSession);
         _deocderSession = NULL;
