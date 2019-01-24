@@ -52,6 +52,11 @@
 
 - (void)flush {
     [self.condition lock];
+    for (NSValue * value in self.packets) {
+        AVPacket packet;
+        [value getValue:&packet];
+        av_packet_unref(&packet);
+    }
     [self.packets removeAllObjects];
     self.packetTotalSize = 0;
     [self.condition unlock];

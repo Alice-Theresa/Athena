@@ -89,9 +89,9 @@
 }
 
 - (void)closeFile {
-    avformat_close_input(&formatContext);
     avcodec_close(_videoCodecContext);
     avcodec_close(_audioCodecContext);
+    avformat_close_input(&formatContext);
 }
 
 - (int)readFrame:(AVPacket *)packet {

@@ -42,10 +42,6 @@
 }
 
 - (void)enqueueAndSort:(SCFrame *)frame {
-//    if (!frame) {
-//        return;
-//    }
-//    [self.condition lock];
     BOOL added = NO;
     if (self.frames.count > 0) {
         for (int i = (int)self.frames.count - 1; i >= 0; i--) {
@@ -61,7 +57,6 @@
         [self.frames addObject:frame];
     }
     self.count++;
-//    [self.condition unlock];
 }
 
 - (void)enqueueArrayAndSort:(NSArray<SCFrame *> *)array {
