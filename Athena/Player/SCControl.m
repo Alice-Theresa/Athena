@@ -49,13 +49,11 @@
 
 @property (nonatomic, assign, readwrite) SCControlState controlState;
 @property (nonatomic, assign) NSTimeInterval interval;
-@property (nonatomic, assign) BOOL needSeeking;
+@property (nonatomic, assign) BOOL isSeeking;
 @property (nonatomic, assign) NSTimeInterval seekingTime;
 @property (nonatomic, assign) BOOL hardwareDecode;
 
 @end
-
-static AVPacket flush_packet;
 
 @implementation SCControl
 
@@ -65,13 +63,6 @@ static AVPacket flush_packet;
 
 - (instancetype)initWithRenderView:(MTKView *)view {
     if (self = [super init]) {
-        static dispatch_once_t onceToken;
-        dispatch_once(&onceToken, ^{
-            av_init_packet(&flush_packet);
-            flush_packet.data = (uint8_t *)&flush_packet;
-            flush_packet.duration = 0;
-        });
-        
         _displayLink = [CADisplayLink displayLinkWithTarget:self selector:@selector(rendering)];
         [_displayLink addToRunLoop:[NSRunLoop mainRunLoop] forMode:NSRunLoopCommonModes];
         
@@ -153,7 +144,7 @@ static AVPacket flush_packet;
 
 - (void)seekingTime:(NSTimeInterval)percentage {
     self.seekingTime = percentage * self.context.duration;
-    self.needSeeking = YES;
+    self.isSeeking = YES;
 }
 
 - (void)switchVideoDecoder {
@@ -161,8 +152,8 @@ static AVPacket flush_packet;
 }
 
 - (void)flushQueue {
-    [self.videoFrameQueue flush];
-    [self.audioFrameQueue flush];
+    [self.videoFrameQueue flushAndBlock];
+    [self.audioFrameQueue flushAndBlock];
     [self.videoPacketQueue flush];
     [self.audioPacketQueue flush];
 }
@@ -183,12 +174,12 @@ static AVPacket flush_packet;
             [NSThread sleepForTimeInterval:0.03];
             continue;
         }
-        if (self.needSeeking) {
+        if (self.isSeeking) {
             [self.context seekingTime:self.seekingTime];
             [self flushQueue];
-            [self.videoPacketQueue enqueuePacket:flush_packet];
-            [self.audioPacketQueue enqueuePacket:flush_packet];
-            self.needSeeking = NO;
+            [self.videoPacketQueue enqueueDiscardPacket];
+            [self.audioPacketQueue enqueueDiscardPacket];
+            self.isSeeking = NO;
             continue;
         }
         AVPacket packet;
@@ -220,9 +211,9 @@ static AVPacket flush_packet;
         }
         @autoreleasepool {
             AVPacket packet = [self.videoPacketQueue dequeuePacket];
-            if (packet.data == flush_packet.data) {
+            if (packet.flags == AV_PKT_FLAG_DISCARD) {
                 avcodec_flush_buffers(self.context.videoCodecContext);
-                [self.videoFrameQueue flush];
+                [self.videoFrameQueue unblock];
                 continue;
             }
             if (packet.data != NULL && packet.stream_index >= 0) {
@@ -248,9 +239,9 @@ static AVPacket flush_packet;
         }
         @autoreleasepool {
             AVPacket packet = [self.audioPacketQueue dequeuePacket];
-            if (packet.data == flush_packet.data) {
+            if (packet.flags == AV_PKT_FLAG_DISCARD) {
                 avcodec_flush_buffers(self.context.audioCodecContext);
-                [self.audioFrameQueue flush];
+                [self.audioFrameQueue unblock];
                 continue;
             }
             if (packet.data != NULL && packet.stream_index >= 0) {
@@ -269,7 +260,7 @@ static AVPacket flush_packet;
         }
         self.interval = frame.duration + currentTime;
         [self.render render:(id<SCRenderDataInterface>)frame drawIn:self.mtkView];
-        if ([self.delegate respondsToSelector:@selector(controlCenter:didRender:duration:)] && !self.needSeeking) {
+        if ([self.delegate respondsToSelector:@selector(controlCenter:didRender:duration:)] && !self.isSeeking) {
             [self.delegate controlCenter:self didRender:frame.position duration:self.context.duration];
         }
     }

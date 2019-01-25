@@ -28,7 +28,15 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (SCFrame *)dequeueFrame;
 
-- (void)flush;
+/**
+ clear queue and no more receive frames
+ */
+- (void)flushAndBlock;
+
+/**
+ receive frames again
+ */
+- (void)unblock;
 
 @end
 

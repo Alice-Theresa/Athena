@@ -11,6 +11,7 @@
 
 @interface SCFrameQueue ()
 
+@property (nonatomic, assign) BOOL isBlock;
 @property (nonatomic, assign, readwrite) NSInteger count;
 @property (nonatomic, strong) NSCondition *condition;
 @property (nonatomic, strong) NSMutableArray <SCFrame *> *frames;
@@ -32,10 +33,11 @@
 }
 
 - (void)enqueueArray:(NSArray<SCFrame *> *)array {
-    if (array.count == 0) {
+    [self.condition lock];
+    if (array.count == 0 || self.isBlock) {
+        [self.condition unlock];
         return;
     }
-    [self.condition lock];
     [self.frames addObjectsFromArray:array];
     self.count += array.count;
     [self.condition unlock];
@@ -61,6 +63,10 @@
 
 - (void)enqueueArrayAndSort:(NSArray<SCFrame *> *)array {
     [self.condition lock];
+    if (array.count == 0 || self.isBlock) {
+        [self.condition unlock];
+        return;
+    }
     for (SCFrame *frame in array) {
         [self enqueueAndSort:frame];
     }
@@ -81,10 +87,16 @@
     return frame;
 }
 
-- (void)flush {
+- (void)flushAndBlock {
     [self.condition lock];
     [self.frames removeAllObjects];
     self.count = 0;
+    self.isBlock = YES;
+    [self.condition unlock];
+}
+- (void)unblock {
+    [self.condition lock];
+    self.isBlock = NO;
     [self.condition unlock];
 }
 
