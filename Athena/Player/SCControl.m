@@ -20,7 +20,7 @@
 #import "SCVTDecoder.h"
 #import "SCVideoDecoder.h"
 #import "SCDecoderInterface.h"
-
+#import "SCPointerQueue.h"
 #import "SCRender.h"
 
 @interface SCControl () <SCAudioManagerDelegate>
@@ -34,7 +34,7 @@
 
 @property (nonatomic, strong) SCPacketQueue *videoPacketQueue;
 @property (nonatomic, strong) SCPacketQueue *audioPacketQueue;
-@property (nonatomic, strong) SCFrameQueue *videoFrameQueue;
+@property (nonatomic, strong) SCPointerQueue *videoFrameQueue;
 @property (nonatomic, strong) SCFrameQueue *audioFrameQueue;
 
 @property (nonatomic, strong) NSInvocationOperation *readPacketOperation;
@@ -67,7 +67,7 @@
         _displayLink = [CADisplayLink displayLinkWithTarget:self selector:@selector(rendering)];
         [_displayLink addToRunLoop:[NSRunLoop mainRunLoop] forMode:NSRunLoopCommonModes];
         
-        _videoFrameQueue  = [[SCFrameQueue alloc] init];
+        _videoFrameQueue  = [[SCPointerQueue alloc] init];
         _audioFrameQueue  = [[SCFrameQueue alloc] init];
         _videoPacketQueue = [[SCPacketQueue alloc] init];
         _audioPacketQueue = [[SCPacketQueue alloc] init];
@@ -85,6 +85,10 @@
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(appWillResignActive) name:UIApplicationWillResignActiveNotification object:nil];
     }
     return self;
+}
+
+- (void)appWillResignActive {
+    [self pause];
 }
 
 - (void)openFile:(NSString *)filename {
@@ -164,7 +168,7 @@
     [self.audioPacketQueue flush];
 }
 
-#pragma mark - reading, decoding and rendering
+#pragma mark - reading
 
 - (void)readPacket {
     BOOL finished = NO;
@@ -202,6 +206,8 @@
         }
     }
 }
+
+#pragma mark - decoding
 
 - (void)decodeVideoFrame {
     while (self.controlState != SCControlStateClosed) {
@@ -261,6 +267,8 @@
     }
 }
 
+#pragma mark - rendering
+
 - (void)rendering {
     NSTimeInterval currentTime = [NSDate date].timeIntervalSince1970;
     if (currentTime > self.interval) {
@@ -306,10 +314,6 @@
             }
         }
     }
-}
-
-- (void)appWillResignActive {
-    [self pause];
 }
 
 @end
