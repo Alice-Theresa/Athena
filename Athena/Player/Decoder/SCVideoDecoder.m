@@ -18,7 +18,7 @@
 }
 
 @property (nonatomic, weak) SCFormatContext *context;
-
+@property (nonatomic, assign) NSUInteger counter;
 @end
 
 @implementation SCVideoDecoder
@@ -64,6 +64,12 @@
     if (!_temp_frame->data[0] || !_temp_frame->data[1] || !_temp_frame->data[2]) {
         return nil;
     }
+    
+    if (AV_PICTURE_TYPE_I == _temp_frame->pict_type) {
+        printf("%d\n", self.counter);
+        self.counter = 0;
+    }
+    self.counter++;
     SCI420VideoFrame *videoFrame = [[SCI420VideoFrame alloc] initWithFrameData:_temp_frame
                                                                          width:self.context.videoCodecContext->width
                                                                         height:self.context.videoCodecContext->height];

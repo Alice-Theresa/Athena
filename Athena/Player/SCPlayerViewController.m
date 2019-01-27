@@ -97,22 +97,17 @@
 }
 
 - (void)controlCenter:(SCControl *)control didRender:(NSUInteger)position duration:(NSUInteger)duration {
-    NSString *current = [NSString stringWithFormat:@"%02lu:%02lu:%02lu", position / 3600, position % 3600 / 60, position % 3600 % 60];
     NSString *total = [NSString stringWithFormat:@"%02lu:%02lu:%02lu", duration / 3600, duration % 3600 / 60, duration % 3600 % 60];
-    self.controlView.timeLabel.text = [NSString stringWithFormat:@"%@/%@", current, total];
     if (!self.isTouchSlider) {
+        NSString *current = [NSString stringWithFormat:@"%02lu:%02lu:%02lu", position / 3600, position % 3600 / 60, position % 3600 % 60];
+        self.controlView.timeLabel.text = [NSString stringWithFormat:@"%@/%@", current, total];
         self.controlView.progressSlide.value = (float)position / duration;
+    } else {
+        NSUInteger result = self.controlView.progressSlide.value * duration;
+        NSString *current = [NSString stringWithFormat:@"%02lu:%02lu:%02lu", result / 3600, result % 3600 / 60, result % 3600 % 60];
+        self.controlView.timeLabel.text = [NSString stringWithFormat:@"%@/%@", current, total];
     }
 }
 
-- (void)defineLayout {
-    [self.view addConstraint:[NSLayoutConstraint constraintWithItem:self.mtkView
-                                                     attribute:NSLayoutAttributeLeading
-                                                     relatedBy:NSLayoutRelationEqual
-                                                        toItem:self
-                                                     attribute:NSLayoutAttributeLeading
-                                                    multiplier:1
-                                                      constant:20]];
-}
 
 @end

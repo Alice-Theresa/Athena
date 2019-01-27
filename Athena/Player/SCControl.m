@@ -14,12 +14,12 @@
 #import "SCFrameQueue.h"
 
 #import "SCFrame.h"
-#import "SCNV12VideoFrame.h"
 #import "SCAudioFrame.h"
 
 #import "SCAudioDecoder.h"
 #import "SCVTDecoder.h"
 #import "SCVideoDecoder.h"
+#import "SCDecoderInterface.h"
 
 #import "SCRender.h"
 
@@ -29,6 +29,7 @@
 
 @property (nonatomic, strong) SCVTDecoder *VTDecoder;
 @property (nonatomic, strong) SCVideoDecoder *videoDecoder;
+@property (nonatomic, strong) id<SCDecoderInterface> currentDecoder;
 @property (nonatomic, strong) SCAudioDecoder *audioDecoder;
 
 @property (nonatomic, strong) SCPacketQueue *videoPacketQueue;
@@ -50,8 +51,8 @@
 @property (nonatomic, assign, readwrite) SCControlState controlState;
 @property (nonatomic, assign) NSTimeInterval interval;
 @property (nonatomic, assign) BOOL isSeeking;
-@property (nonatomic, assign) NSTimeInterval seekingTime;
-@property (nonatomic, assign) BOOL hardwareDecode;
+@property (nonatomic, assign) NSTimeInterval videoSeekingTime;
+@property (nonatomic, assign) NSTimeInterval audioSeekingTime;
 
 @end
 
@@ -78,6 +79,9 @@
         _mtkView.framebufferOnly = false;
         _mtkView.colorPixelFormat = MTLPixelFormatBGRA8Unorm;
         
+        _videoSeekingTime = INT_MIN;
+        _audioSeekingTime = INT_MIN;
+        
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(appWillResignActive) name:UIApplicationWillResignActiveNotification object:nil];
     }
     return self;
@@ -90,6 +94,7 @@
     _VTDecoder    = [[SCVTDecoder alloc] initWithFormatContext:_context];
     _videoDecoder = [[SCVideoDecoder alloc] initWithFormatContext:_context];
     _audioDecoder = [[SCAudioDecoder alloc] initWithFormatContext:_context];
+    _currentDecoder = _VTDecoder;
     [SCAudioManager shared].delegate = self;
     [self start];
 }
@@ -143,12 +148,13 @@
 }
 
 - (void)seekingTime:(NSTimeInterval)percentage {
-    self.seekingTime = percentage * self.context.duration;
+    self.videoSeekingTime = percentage * self.context.duration;
+    self.audioSeekingTime = self.videoSeekingTime;
     self.isSeeking = YES;
 }
 
-- (void)switchVideoDecoder {
-    self.hardwareDecode = !self.hardwareDecode;
+- (void)switchToHardwareDecode:(BOOL)isHardware {
+    self.currentDecoder = isHardware ? self.VTDecoder : self.videoDecoder;
 }
 
 - (void)flushQueue {
@@ -175,10 +181,8 @@
             continue;
         }
         if (self.isSeeking) {
-            [self.context seekingTime:self.seekingTime];
+            [self.context seekingTime:self.videoSeekingTime];
             [self flushQueue];
-            [self.videoPacketQueue enqueueDiscardPacket];
-            [self.audioPacketQueue enqueueDiscardPacket];
             self.isSeeking = NO;
             continue;
         }
@@ -211,17 +215,19 @@
         }
         @autoreleasepool {
             AVPacket packet = [self.videoPacketQueue dequeuePacket];
-            if (packet.flags == AV_PKT_FLAG_DISCARD) {
-                avcodec_flush_buffers(self.context.videoCodecContext);
-                [self.videoFrameQueue unblock];
-                continue;
-            }
             if (packet.data != NULL && packet.stream_index >= 0) {
-                if (self.hardwareDecode) {
-                    [self.videoFrameQueue enqueueArrayAndSort:[self.videoDecoder decode:packet]];
-                } else {
-                    [self.videoFrameQueue enqueueArrayAndSort:[self.VTDecoder decode:packet]];
+                NSArray<SCFrame *> *frames = [self.currentDecoder decode:packet];
+                
+                NSAssert(frames.count != 0, @"0 frames count");
+                if (fabs(frames.lastObject.duration + frames.lastObject.position - self.videoSeekingTime) < 0.1) {
+                    [self.videoFrameQueue unblock];
+                    self.videoSeekingTime = INT_MIN;
+                    continue;
                 }
+                if (self.videoSeekingTime >= 0) {
+                    continue;
+                }
+                [self.videoFrameQueue enqueueArrayAndSort:frames];
             }
         }
     }
@@ -239,13 +245,17 @@
         }
         @autoreleasepool {
             AVPacket packet = [self.audioPacketQueue dequeuePacket];
-            if (packet.flags == AV_PKT_FLAG_DISCARD) {
-                avcodec_flush_buffers(self.context.audioCodecContext);
-                [self.audioFrameQueue unblock];
-                continue;
-            }
             if (packet.data != NULL && packet.stream_index >= 0) {
-                [self.audioFrameQueue enqueueArray:[self.audioDecoder decode:packet]];
+                NSArray<SCFrame *> *frames = [self.audioDecoder decode:packet];
+                if (fabs(frames.lastObject.duration + frames.lastObject.position - self.videoSeekingTime) < 0.1) {
+                    [self.audioFrameQueue unblock];
+                    self.audioSeekingTime = INT_MIN;
+                    continue;
+                }
+                if (self.audioSeekingTime >= 0) {
+                    continue;
+                }
+                [self.audioFrameQueue enqueueArray:frames];
             }
         }
     }

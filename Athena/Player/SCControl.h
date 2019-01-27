@@ -40,7 +40,7 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)close;
 
 - (void)seekingTime:(NSTimeInterval)percentage;
-- (void)switchVideoDecoder;
+- (void)switchToHardwareDecode:(BOOL)isHardware;
 
 @end
 

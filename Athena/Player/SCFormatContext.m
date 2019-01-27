@@ -99,8 +99,9 @@
 }
 
 - (void)seekingTime:(NSTimeInterval)time {
-    int64_t ts = time * AV_TIME_BASE;
-    av_seek_frame(formatContext, -1, ts, AVSEEK_FLAG_BACKWARD);
+    int64_t seek_pos = time * AV_TIME_BASE;
+    int64_t seek_target = av_rescale_q(seek_pos, AV_TIME_BASE_Q, formatContext->streams[self.videoIndex]->time_base);
+    av_seek_frame(formatContext, self.videoIndex, seek_target, AVSEEK_FLAG_BACKWARD);
 }
 
 - (void)settingTimeBase {

@@ -27,16 +27,16 @@
     return self;
 }
 
-- (void)enqueueDiscardPacket {
-    [self.condition lock];
-    AVPacket flush_packet;
-    av_init_packet(&flush_packet);
-    flush_packet.flags = AV_PKT_FLAG_DISCARD;
-    self.packetTotalSize += flush_packet.size;
-    NSValue *value = [NSValue value:&flush_packet withObjCType:@encode(AVPacket)];
-    [self.packets addObject:value];
-    [self.condition unlock];
-}
+//- (void)enqueueDiscardPacket {
+//    [self.condition lock];
+//    AVPacket flush_packet;
+//    av_init_packet(&flush_packet);
+//    flush_packet.flags = AV_PKT_FLAG_DISCARD;
+//    self.packetTotalSize += flush_packet.size;
+//    NSValue *value = [NSValue value:&flush_packet withObjCType:@encode(AVPacket)];
+//    [self.packets addObject:value];
+//    [self.condition unlock];
+//}
 
 - (void)enqueuePacket:(AVPacket)packet {
     [self.condition lock];
