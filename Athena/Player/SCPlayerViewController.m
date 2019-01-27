@@ -10,7 +10,6 @@
 #import <CoreVideo/CoreVideo.h>
 #import "SCPlayerViewController.h"
 #import "SCControl.h"
-#import "SCFrameQueue.h"
 #import "SCFrame.h"
 #import "SCRenderDataInterface.h"
 #import "SCPlayerControlView.h"

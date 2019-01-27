@@ -57,13 +57,13 @@
     self.count++;
 }
 
-- (void)enqueueArrayAndSort:(NSArray<SCFrame *> *)array {
+- (void)enqueueFramesAndSort:(NSArray<SCFrame *> *)frames {
     dispatch_semaphore_wait(self.semaphore, DISPATCH_TIME_FOREVER);
-    if (array.count == 0 || self.isBlock) {
+    if (frames.count == 0 || self.isBlock) {
         dispatch_semaphore_signal(self.semaphore);
         return;
     }
-    for (SCFrame *frame in array) {
+    for (SCFrame *frame in frames) {
         [self enqueueAndSort:frame];
     }
     dispatch_semaphore_signal(self.semaphore);

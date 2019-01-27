@@ -9,7 +9,6 @@
 #import "SCVideoDecoder.h"
 #import "SharedQueue.h"
 #import "SCFormatContext.h"
-#import "SCFrameQueue.h"
 #import "SCNV12VideoFrame.h"
 #import "SCI420VideoFrame.h"
 
@@ -25,6 +24,7 @@
 
 - (void)dealloc {
     av_frame_free(&_temp_frame);
+    NSLog(@"Video Decoder dealloc");    
 }
 
 - (instancetype)initWithFormatContext:(SCFormatContext *)formatContext {

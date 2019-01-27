@@ -44,6 +44,7 @@ static void didDecompress(void *decompressionOutputRefCon,
         CFRelease(_decoderFormatDescription);
         _decoderFormatDescription = NULL;
     }
+    NSLog(@"VT Decoder dealloc");
 }
 
 - (instancetype)initWithFormatContext:(SCFormatContext *)formatContext {

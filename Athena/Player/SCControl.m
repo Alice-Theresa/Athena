@@ -11,7 +11,6 @@
 #import "SCAudioManager.h"
 #import "SCControl.h"
 #import "SCPacketQueue.h"
-#import "SCFrameQueue.h"
 
 #import "SCFrame.h"
 #import "SCAudioFrame.h"
@@ -35,7 +34,7 @@
 @property (nonatomic, strong) SCPacketQueue *videoPacketQueue;
 @property (nonatomic, strong) SCPacketQueue *audioPacketQueue;
 @property (nonatomic, strong) SCPointerQueue *videoFrameQueue;
-@property (nonatomic, strong) SCFrameQueue *audioFrameQueue;
+@property (nonatomic, strong) SCPointerQueue *audioFrameQueue;
 
 @property (nonatomic, strong) NSInvocationOperation *readPacketOperation;
 @property (nonatomic, strong) NSInvocationOperation *videoDecodeOperation;
@@ -49,8 +48,9 @@
 @property (nonatomic, strong) SCAudioFrame *currentAudioFrame;
 
 @property (nonatomic, assign, readwrite) SCControlState controlState;
-@property (nonatomic, assign) NSTimeInterval interval;
+
 @property (nonatomic, assign) BOOL isSeeking;
+@property (nonatomic, assign) NSTimeInterval interval;
 @property (nonatomic, assign) NSTimeInterval videoSeekingTime;
 @property (nonatomic, assign) NSTimeInterval audioSeekingTime;
 
@@ -64,11 +64,13 @@
 
 - (instancetype)initWithRenderView:(MTKView *)view {
     if (self = [super init]) {
+        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(appWillResignActive) name:UIApplicationWillResignActiveNotification object:nil];
+        
         _displayLink = [CADisplayLink displayLinkWithTarget:self selector:@selector(rendering)];
         [_displayLink addToRunLoop:[NSRunLoop mainRunLoop] forMode:NSRunLoopCommonModes];
         
         _videoFrameQueue  = [[SCPointerQueue alloc] init];
-        _audioFrameQueue  = [[SCFrameQueue alloc] init];
+        _audioFrameQueue  = [[SCPointerQueue alloc] init];
         _videoPacketQueue = [[SCPacketQueue alloc] init];
         _audioPacketQueue = [[SCPacketQueue alloc] init];
         _render           = [[SCRender alloc] init];
@@ -81,8 +83,6 @@
         
         _videoSeekingTime = INT_MIN;
         _audioSeekingTime = INT_MIN;
-        
-        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(appWillResignActive) name:UIApplicationWillResignActiveNotification object:nil];
     }
     return self;
 }
@@ -223,8 +223,6 @@
             AVPacket packet = [self.videoPacketQueue dequeuePacket];
             if (packet.data != NULL && packet.stream_index >= 0) {
                 NSArray<SCFrame *> *frames = [self.currentDecoder decode:packet];
-                
-                NSAssert(frames.count != 0, @"0 frames count");
                 if (fabs(frames.lastObject.duration + frames.lastObject.position - self.videoSeekingTime) < 0.1) {
                     [self.videoFrameQueue unblock];
                     self.videoSeekingTime = INT_MIN;
@@ -233,7 +231,7 @@
                 if (self.videoSeekingTime >= 0) {
                     continue;
                 }
-                [self.videoFrameQueue enqueueArrayAndSort:frames];
+                [self.videoFrameQueue enqueueFramesAndSort:frames];
             }
         }
     }
@@ -261,7 +259,7 @@
                 if (self.audioSeekingTime >= 0) {
                     continue;
                 }
-                [self.audioFrameQueue enqueueArray:frames];
+                [self.audioFrameQueue enqueueFramesAndSort:frames];
             }
         }
     }

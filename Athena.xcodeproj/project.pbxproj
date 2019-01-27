@@ -15,7 +15,6 @@
 		5214035D21EDE3F000CAF190 /* test.jpg in Resources */ = {isa = PBXBuildFile; fileRef = 5214035C21EDE3F000CAF190 /* test.jpg */; };
 		5218B3A021E5CE3F00D9115D /* SCAudioDecoder.m in Sources */ = {isa = PBXBuildFile; fileRef = 5218B39F21E5CE3F00D9115D /* SCAudioDecoder.m */; };
 		521B7E7C21D7602900F5B689 /* SCControl.m in Sources */ = {isa = PBXBuildFile; fileRef = 521B7E7A21D7602800F5B689 /* SCControl.m */; };
-		521B7E8321D7604D00F5B689 /* SCFrameQueue.m in Sources */ = {isa = PBXBuildFile; fileRef = 521B7E7D21D7604C00F5B689 /* SCFrameQueue.m */; };
 		521B7E8421D7604D00F5B689 /* SCPacketQueue.m in Sources */ = {isa = PBXBuildFile; fileRef = 521B7E7F21D7604C00F5B689 /* SCPacketQueue.m */; };
 		521B7E8521D7604D00F5B689 /* SCNV12VideoFrame.m in Sources */ = {isa = PBXBuildFile; fileRef = 521B7E8221D7604D00F5B689 /* SCNV12VideoFrame.m */; };
 		522136631F7F737500182B12 /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 522136621F7F737500182B12 /* AppDelegate.m */; };
@@ -82,11 +81,9 @@
 		5218B39F21E5CE3F00D9115D /* SCAudioDecoder.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = SCAudioDecoder.m; sourceTree = "<group>"; };
 		521B7E7A21D7602800F5B689 /* SCControl.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SCControl.m; sourceTree = "<group>"; };
 		521B7E7B21D7602800F5B689 /* SCControl.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SCControl.h; sourceTree = "<group>"; };
-		521B7E7D21D7604C00F5B689 /* SCFrameQueue.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SCFrameQueue.m; sourceTree = "<group>"; };
 		521B7E7E21D7604C00F5B689 /* SCNV12VideoFrame.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SCNV12VideoFrame.h; sourceTree = "<group>"; };
 		521B7E7F21D7604C00F5B689 /* SCPacketQueue.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SCPacketQueue.m; sourceTree = "<group>"; };
 		521B7E8021D7604C00F5B689 /* SCPacketQueue.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SCPacketQueue.h; sourceTree = "<group>"; };
-		521B7E8121D7604C00F5B689 /* SCFrameQueue.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SCFrameQueue.h; sourceTree = "<group>"; };
 		521B7E8221D7604D00F5B689 /* SCNV12VideoFrame.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SCNV12VideoFrame.m; sourceTree = "<group>"; };
 		5221365E1F7F737500182B12 /* Athena.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Athena.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		522136611F7F737500182B12 /* AppDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AppDelegate.h; sourceTree = "<group>"; };
@@ -580,8 +577,6 @@
 				52EAE6DF21F0542E00D9B90B /* SCI420VideoFrame.m */,
 				521B7E8021D7604C00F5B689 /* SCPacketQueue.h */,
 				521B7E7F21D7604C00F5B689 /* SCPacketQueue.m */,
-				521B7E8121D7604C00F5B689 /* SCFrameQueue.h */,
-				521B7E7D21D7604C00F5B689 /* SCFrameQueue.m */,
 				76C3E2DA21FD63ED00EDC6AB /* SCPointerQueue.h */,
 				76C3E2DB21FD63ED00EDC6AB /* SCPointerQueue.m */,
 				76C3E2DD21FD65E900EDC6AB /* SCNode.h */,
@@ -961,7 +956,6 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				521B7E8321D7604D00F5B689 /* SCFrameQueue.m in Sources */,
 				52296C0F21E6D98D006585FE /* SCFrame.m in Sources */,
 				5214035B21EDCE9E00CAF190 /* Mapping.metal in Sources */,
 				522136661F7F737500182B12 /* AudioEncodeViewController.m in Sources */,

@@ -16,7 +16,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 @property (nonatomic, assign, readonly) NSInteger count;
 
-- (void)enqueueArrayAndSort:(NSArray<SCFrame *> *)array;
+- (void)enqueueFramesAndSort:(NSArray<SCFrame *> *)frames;
 
 - (SCFrame *)dequeueFrame;
 

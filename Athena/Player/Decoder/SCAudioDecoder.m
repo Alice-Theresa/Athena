@@ -9,7 +9,6 @@
 #import "SCAudioDecoder.h"
 #import "SCFormatContext.h"
 #import "SCAudioFrame.h"
-#import "SCFrameQueue.h"
 
 #include <libswresample/swresample.h>
 #import <Accelerate/Accelerate.h>
@@ -35,6 +34,7 @@
 - (void)dealloc {
     av_frame_free(&_temp_frame);
     swr_free(&_audio_swr_context);
+    NSLog(@"Audio Decoder dealloc");    
 }
 
 - (instancetype)initWithFormatContext:(SCFormatContext *)formatContext {
