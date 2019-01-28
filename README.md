@@ -13,3 +13,9 @@ player
 -------- |------ |----
 software | ✓     | ✓
 hardware | ✓     | 
+
+Todo:
+- Clock for Sync
+- Track
+- H265 support
+- Audio setting
