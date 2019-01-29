@@ -19,3 +19,4 @@ Todo:
 - Track select
 - Error handle
 - Audio setting
+- Subtitle render
