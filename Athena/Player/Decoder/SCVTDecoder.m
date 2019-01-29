@@ -152,7 +152,8 @@ static CMFormatDescriptionRef CreateFormatDescription(CMVideoCodecType codec_typ
     cf_dict_set_int32(par, CFSTR("VerticalSpacing"), 0);
     
     // SampleDescriptionExtensionAtoms
-    cf_dict_set_data(atoms, CFSTR("avcC"), (uint8_t *)extradata, extradata_size);
+
+    cf_dict_set_data(atoms, codec_type == kCMVideoCodecType_H264 ? CFSTR("avcC") : CFSTR("hvcC"), (uint8_t *)extradata, extradata_size);
     
     // Extensions
     cf_dict_set_string(extensions, CFSTR ("CVImageBufferChromaLocationBottomField"), "left");

@@ -30,7 +30,7 @@
 - (void)viewDidLoad {
     [super viewDidLoad];
     [self setup];
-    [self.controler openFile:@"Aimer.mkv"];
+    [self.controler openFile:@"265.mkv"];
 }
 
 - (void)viewWillAppear:(BOOL)animated {
