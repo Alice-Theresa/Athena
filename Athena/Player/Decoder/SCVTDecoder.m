@@ -69,7 +69,20 @@ static void didDecompress(void *decompressionOutputRefCon,
     if (extradata[0] != 1) {
         return NO;
     } else {
-        _decoderFormatDescription = CreateFormatDescription(kCMVideoCodecType_H264, codecContext->width, codecContext->height, extradata, extradata_size);
+        CMVideoCodecType type;
+        if (self.context.videoCodecContext->codec_id == AV_CODEC_ID_H264) {
+            type = kCMVideoCodecType_H264;
+        } else if (self.context.videoCodecContext->codec_id == AV_CODEC_ID_HEVC) {
+            type = kCMVideoCodecType_HEVC;
+        } else {
+            return NO;
+        }
+        if (@available(iOS 11.0, *)) {
+            if (!VTIsHardwareDecodeSupported(type)) {
+                return NO;
+            }
+        }
+        _decoderFormatDescription = CreateFormatDescription(type, codecContext->width, codecContext->height, extradata, extradata_size);
         if (_decoderFormatDescription == NULL) {
             NSLog(@"create decoder format description failed");
             return NO;

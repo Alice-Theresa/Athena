@@ -1,5 +1,5 @@
 //
-//  SCPointerQueue.h
+//  SCFrameQueue.h
 //  Athena
 //
 //  Created by S.C. on 2019/1/27.
@@ -12,7 +12,7 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-@interface SCPointerQueue : NSObject
+@interface SCFrameQueue : NSObject
 
 @property (nonatomic, assign, readonly) NSInteger count;
 

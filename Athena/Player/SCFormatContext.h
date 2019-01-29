@@ -9,6 +9,8 @@
 #import <Foundation/Foundation.h>
 #import <libavformat/avformat.h>
 
+@class SCTrack;
+
 NS_ASSUME_NONNULL_BEGIN
 
 @interface SCFormatContext : NSObject
@@ -23,6 +25,10 @@ NS_ASSUME_NONNULL_BEGIN
 
 @property (nonatomic, assign) AVCodecContext *videoCodecContext;
 @property (nonatomic, assign) AVCodecContext *audioCodecContext;
+
+@property (nonatomic, strong, readonly) NSArray<SCTrack *> *videoTracks;
+@property (nonatomic, strong, readonly) NSArray<SCTrack *> *audioTracks;
+@property (nonatomic, strong, readonly) NSArray<SCTrack *> *subtitleTracks;
 
 - (int)readFrame:(AVPacket *)packet;
 - (void)seekingTime:(NSTimeInterval)time;

@@ -1,27 +1,27 @@
 //
-//  SCPointerQueue.m
+//  SCFrameQueue.m
 //  Athena
 //
 //  Created by S.C. on 2019/1/27.
 //  Copyright © 2019 Theresa. All rights reserved.
 //
 
-#import "SCPointerQueue.h"
+#import "SCFrameQueue.h"
 #import "SCFrame.h"
-#import "SCNode.h"
+#import "SCFrameNode.h"
 
-@interface SCPointerQueue ()
+@interface SCFrameQueue ()
 
 @property (nonatomic, assign) BOOL isBlock;
 @property (nonatomic, assign, readwrite) NSInteger count;
 @property (nonatomic, strong) dispatch_semaphore_t semaphore;
 
-@property (nonatomic, strong) SCNode *header;
-@property (nonatomic, strong) SCNode *tailer;
+@property (nonatomic, strong) SCFrameNode *header;
+@property (nonatomic, strong) SCFrameNode *tailer;
 
 @end
 
-@implementation SCPointerQueue
+@implementation SCFrameQueue
 
 - (void)dealloc {
     NSLog(@"Frame Queue dealloc");
@@ -35,12 +35,12 @@
 }
 
 - (void)enqueueAndSort:(SCFrame *)frame {
-    SCNode *node = [[SCNode alloc] initWithFrame:frame];
+    SCFrameNode *node = [[SCFrameNode alloc] initWithFrame:frame];
     if (self.count == 0) {
         self.header = node;
         self.tailer = node;
     } else if (self.tailer.frame.position > frame.position) {
-        SCNode *search = self.tailer.pre;
+        SCFrameNode *search = self.tailer.pre;
         while (search.frame.position > frame.position) {
             search = search.pre;
         }
@@ -77,7 +77,7 @@
         return frame;
     }
     frame = self.header.frame;
-    SCNode *next = self.header.next;
+    SCFrameNode *next = self.header.next;
     next.pre = nil;
     self.header = next;
     self.count--;

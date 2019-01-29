@@ -10,7 +10,7 @@
 #import "SCFormatContext.h"
 #import "SCAudioManager.h"
 #import "SCControl.h"
-#import "SCPacketQueue.h"
+
 
 #import "SCFrame.h"
 #import "SCAudioFrame.h"
@@ -19,7 +19,8 @@
 #import "SCVTDecoder.h"
 #import "SCVideoDecoder.h"
 #import "SCDecoderInterface.h"
-#import "SCPointerQueue.h"
+#import "SCFrameQueue.h"
+#import "SCPacketQueue.h"
 #import "SCRender.h"
 
 @interface SCControl () <SCAudioManagerDelegate>
@@ -33,8 +34,8 @@
 
 @property (nonatomic, strong) SCPacketQueue *videoPacketQueue;
 @property (nonatomic, strong) SCPacketQueue *audioPacketQueue;
-@property (nonatomic, strong) SCPointerQueue *videoFrameQueue;
-@property (nonatomic, strong) SCPointerQueue *audioFrameQueue;
+@property (nonatomic, strong) SCFrameQueue *videoFrameQueue;
+@property (nonatomic, strong) SCFrameQueue *audioFrameQueue;
 
 @property (nonatomic, strong) NSInvocationOperation *readPacketOperation;
 @property (nonatomic, strong) NSInvocationOperation *videoDecodeOperation;
@@ -69,8 +70,8 @@
         _displayLink = [CADisplayLink displayLinkWithTarget:self selector:@selector(rendering)];
         [_displayLink addToRunLoop:[NSRunLoop mainRunLoop] forMode:NSRunLoopCommonModes];
         
-        _videoFrameQueue  = [[SCPointerQueue alloc] init];
-        _audioFrameQueue  = [[SCPointerQueue alloc] init];
+        _videoFrameQueue  = [[SCFrameQueue alloc] init];
+        _audioFrameQueue  = [[SCFrameQueue alloc] init];
         _videoPacketQueue = [[SCPacketQueue alloc] init];
         _audioPacketQueue = [[SCPacketQueue alloc] init];
         _render           = [[SCRender alloc] init];

@@ -1,5 +1,5 @@
 //
-//  SCNode.h
+//  SCFrameNode.h
 //  Athena
 //
 //  Created by S.C. on 2019/1/27.
@@ -12,11 +12,11 @@ NS_ASSUME_NONNULL_BEGIN
 
 @class SCFrame;
 
-@interface SCNode : NSObject
+@interface SCFrameNode : NSObject
 
 @property (nonatomic, strong, readonly) SCFrame *frame;
-@property (nonatomic, weak  ) SCNode *pre;
-@property (nonatomic, strong) SCNode *next;
+@property (nonatomic, weak  ) SCFrameNode *pre;
+@property (nonatomic, strong) SCFrameNode *next;
 
 - (instancetype)init NS_UNAVAILABLE;
 - (instancetype)initWithFrame:(SCFrame *)frame;

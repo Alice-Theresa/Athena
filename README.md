@@ -16,6 +16,6 @@ hardware | ✓     |
 
 Todo:
 - Clock for Sync
-- Track
-- H265 support
+- Track select
+- Error handle
 - Audio setting
