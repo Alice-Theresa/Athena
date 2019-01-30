@@ -27,6 +27,17 @@
     return self;
 }
 
+- (void)enqueueDiscardPacket {
+    [self.condition lock];
+    AVPacket packet;
+    av_init_packet(&packet);
+    self.packetTotalSize += packet.size;
+    packet.flags = AV_PKT_FLAG_DISCARD;
+    NSValue *value = [NSValue value:&packet withObjCType:@encode(AVPacket)];
+    [self.packets addObject:value];
+    [self.condition unlock];
+}
+
 - (void)enqueuePacket:(AVPacket)packet {
     [self.condition lock];
     self.packetTotalSize += packet.size;

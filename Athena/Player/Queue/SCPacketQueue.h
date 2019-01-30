@@ -15,6 +15,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 @property (nonatomic, assign, readonly) NSUInteger packetTotalSize;
 
+- (void)enqueueDiscardPacket;
 - (void)enqueuePacket:(AVPacket)packet;
 - (AVPacket)dequeuePacket;
 - (void)flush;

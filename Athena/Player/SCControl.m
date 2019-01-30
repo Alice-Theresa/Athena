@@ -49,8 +49,11 @@
 
 @property (nonatomic, assign) BOOL isSeeking;
 @property (nonatomic, assign) NSTimeInterval videoSeekingTime;
-@property (nonatomic, assign) NSTimeInterval audioSeekingTime;
 @property (nonatomic, strong) SCSynchronizer *syncor;
+
+@property (nonatomic, strong) SCFrame *videoFrame;
+@property (nonatomic, strong) SCAudioFrame *audioFrame;
+
 
 @end
 
@@ -77,8 +80,6 @@
         _mtkView.colorPixelFormat = MTLPixelFormatBGRA8Unorm;
         _mtkView.delegate = self;
         
-        _videoSeekingTime = INT_MIN;
-        _audioSeekingTime = INT_MIN;
         _syncor = [[SCSynchronizer alloc] init];
     }
     return self;
@@ -149,7 +150,7 @@
 
 - (void)seekingTime:(NSTimeInterval)percentage {
     self.videoSeekingTime = percentage * self.context.duration;
-    self.audioSeekingTime = self.videoSeekingTime;
+    [self.syncor block];
     self.isSeeking = YES;
 }
 
@@ -158,8 +159,8 @@
 }
 
 - (void)flushQueue {
-    [self.videoFrameQueue flushAndBlock];
-    [self.audioFrameQueue flushAndBlock];
+    [self.videoFrameQueue flush];
+    [self.audioFrameQueue flush];
     [self.videoPacketQueue flush];
     [self.audioPacketQueue flush];
 }
@@ -183,6 +184,8 @@
         if (self.isSeeking) {
             [self.context seekingTime:self.videoSeekingTime];
             [self flushQueue];
+            [self.videoPacketQueue enqueueDiscardPacket];
+            [self.audioPacketQueue enqueueDiscardPacket];
             self.isSeeking = NO;
             continue;
         }
@@ -219,16 +222,14 @@
         }
         @autoreleasepool {
             AVPacket packet = [self.videoPacketQueue dequeuePacket];
+            if (packet.flags == AV_PKT_FLAG_DISCARD) {
+                avcodec_flush_buffers(self.context.videoCodecContext);
+                [self.videoFrameQueue flush];
+                [self.syncor unblock];
+                continue;
+            }
             if (packet.data != NULL && packet.stream_index >= 0) {
                 NSArray<SCFrame *> *frames = [self.currentDecoder decode:packet];
-                if (fabs(frames.lastObject.duration + frames.lastObject.position - self.videoSeekingTime) < 0.1) {
-                    [self.videoFrameQueue unblock];
-                    self.videoSeekingTime = INT_MIN;
-                    continue;
-                }
-                if (self.videoSeekingTime >= 0) {
-                    continue;
-                }
                 [self.videoFrameQueue enqueueFramesAndSort:frames];
             }
         }
@@ -247,16 +248,14 @@
         }
         @autoreleasepool {
             AVPacket packet = [self.audioPacketQueue dequeuePacket];
+            if (packet.flags == AV_PKT_FLAG_DISCARD) {
+                avcodec_flush_buffers(self.context.audioCodecContext);
+                [self.audioFrameQueue flush];
+                [self.syncor unblock];
+                continue;
+            }
             if (packet.data != NULL && packet.stream_index >= 0) {
                 NSArray<SCFrame *> *frames = [self.audioDecoder decode:packet];
-                if (fabs(frames.lastObject.duration + frames.lastObject.position - self.audioSeekingTime) < 0.1) {
-                    [self.audioFrameQueue unblock];
-                    self.audioSeekingTime = INT_MIN;
-                    continue;
-                }
-                if (self.audioSeekingTime >= 0) {
-                    continue;
-                }
                 [self.audioFrameQueue enqueueFramesAndSort:frames];
             }
         }
@@ -266,20 +265,20 @@
 #pragma mark - rendering
 
 - (void)rendering {
-    if (!self.syncor.videoFrame) {
-        self.syncor.videoFrame = [self.videoFrameQueue dequeueFrame];
+    if (!self.videoFrame) {
+        self.videoFrame = [self.videoFrameQueue dequeueFrame];
     }
-    if (!self.syncor.videoFrame) {
+    if (!self.videoFrame) {
         return;
     }
-    if (![self.syncor shouldRenderVideoFrameOrNot]) {
+    if (![self.syncor shouldRenderVideoFrame:self.videoFrame.position duration:self.videoFrame.duration]) {
         return;
     }
-    [self.render render:(id<SCRenderDataInterface>)self.syncor.videoFrame drawIn:self.mtkView];
+    [self.render render:(id<SCRenderDataInterface>)self.videoFrame drawIn:self.mtkView];
     if ([self.delegate respondsToSelector:@selector(controlCenter:didRender:duration:)] && !self.isSeeking) {
-        [self.delegate controlCenter:self didRender:self.syncor.videoFrame.position duration:self.context.duration];
+        [self.delegate controlCenter:self didRender:self.videoFrame.position duration:self.context.duration];
     }
-    self.syncor.videoFrame = nil;
+    self.videoFrame = nil;
 }
 
 #pragma mark - audio delegate
@@ -287,20 +286,19 @@
 - (void)fetchoutputData:(float *)outputData numberOfFrames:(UInt32)numberOfFrames numberOfChannels:(UInt32)numberOfChannels {
     @autoreleasepool {
         while (numberOfFrames > 0) {
-            if (!self.syncor.audioFrame) {
-                self.syncor.audioFrame = (SCAudioFrame *)[self.audioFrameQueue dequeueFrame];
-                if (!self.syncor.videoFrame && self.videoSeekingTime > 0) {
-                    self.syncor.audioFrame = nil;
+            if (!self.audioFrame) {
+                self.audioFrame = (SCAudioFrame *)[self.audioFrameQueue dequeueFrame];
+                if (self.audioFrame) {
+                    [self.syncor updateAudioClock:self.audioFrame.position];
                 }
-                [self.syncor updateAudioClock];
             }
-            if (!self.syncor.audioFrame) {
+            if (!self.audioFrame) {
                 memset(outputData, 0, numberOfFrames * numberOfChannels * sizeof(float));
                 return;
             }
             
-            const Byte * bytes = (Byte *)self.syncor.audioFrame->samples + self.syncor.audioFrame->output_offset;
-            const NSUInteger bytesLeft = self.syncor.audioFrame->length - self.syncor.audioFrame->output_offset;
+            const Byte * bytes = (Byte *)self.audioFrame->samples + self.audioFrame->output_offset;
+            const NSUInteger bytesLeft = self.audioFrame->length - self.audioFrame->output_offset;
             const NSUInteger frameSizeOf = numberOfChannels * sizeof(float);
             const NSUInteger bytesToCopy = MIN(numberOfFrames * frameSizeOf, bytesLeft);
             const NSUInteger framesToCopy = bytesToCopy / frameSizeOf;
@@ -310,9 +308,9 @@
             outputData += framesToCopy * numberOfChannels;
             
             if (bytesToCopy < bytesLeft) {
-                self.syncor.audioFrame->output_offset += bytesToCopy;
+                self.audioFrame->output_offset += bytesToCopy;
             } else {
-                self.syncor.audioFrame = nil;
+                self.audioFrame = nil;
             }
         }
     }

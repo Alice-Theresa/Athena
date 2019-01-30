@@ -8,21 +8,15 @@
 
 #import <Foundation/Foundation.h>
 
-@class SCFrame;
-@class SCAudioFrame;
-
 NS_ASSUME_NONNULL_BEGIN
 
 @interface SCSynchronizer : NSObject
 
-@property (nonatomic, strong, nullable) SCFrame *videoFrame;
-@property (nonatomic, strong, nullable) SCAudioFrame *audioFrame;
-
-- (void)updateAudioClock;
-- (BOOL)shouldRenderVideoFrameOrNot;
-
+- (void)updateAudioClock:(NSTimeInterval)position;
 - (BOOL)shouldRenderVideoFrame:(NSTimeInterval)position duration:(NSTimeInterval)duration;
-- (BOOL)checkShouldDiscardVideoFrame:(NSTimeInterval)position duration:(NSTimeInterval)duration;
+
+- (void)block;
+- (void)unblock;
 
 @end
 

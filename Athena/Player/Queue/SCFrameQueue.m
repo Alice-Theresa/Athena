@@ -96,6 +96,13 @@
     dispatch_semaphore_signal(self.semaphore);
 }
 
+- (void)flush {
+    dispatch_semaphore_wait(self.semaphore, DISPATCH_TIME_FOREVER);
+    [self.frames removeAllObjects];
+    self.count = 0;
+    dispatch_semaphore_signal(self.semaphore);
+}
+
 - (void)unblock {
     dispatch_semaphore_wait(self.semaphore, DISPATCH_TIME_FOREVER);
     self.isBlock = NO;
