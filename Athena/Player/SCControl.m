@@ -150,7 +150,6 @@
 
 - (void)seekingTime:(NSTimeInterval)percentage {
     self.videoSeekingTime = percentage * self.context.duration;
-    [self.syncor block];
     self.isSeeking = YES;
 }
 
@@ -225,7 +224,10 @@
             if (packet.flags == AV_PKT_FLAG_DISCARD) {
                 avcodec_flush_buffers(self.context.videoCodecContext);
                 [self.videoFrameQueue flush];
-                [self.syncor unblock];
+                SCFrame *frame = [[SCFrame alloc] init];
+                frame.duration = -1;
+                [self.videoFrameQueue enqueueFramesAndSort:@[frame]];
+                av_packet_unref(&packet);
                 continue;
             }
             if (packet.data != NULL && packet.stream_index >= 0) {
@@ -251,7 +253,10 @@
             if (packet.flags == AV_PKT_FLAG_DISCARD) {
                 avcodec_flush_buffers(self.context.audioCodecContext);
                 [self.audioFrameQueue flush];
-                [self.syncor unblock];
+                SCFrame *frame = [[SCFrame alloc] init];
+                frame.duration = -1;
+                [self.audioFrameQueue enqueueFramesAndSort:@[frame]];
+                av_packet_unref(&packet);
                 continue;
             }
             if (packet.data != NULL && packet.stream_index >= 0) {
@@ -271,6 +276,13 @@
     if (!self.videoFrame) {
         return;
     }
+    if (self.videoFrame.duration == -1) {
+        self.videoFrame = nil;
+        return;
+    }
+    while (self.videoFrame && [self.syncor shouldDiscardVideoFrame:self.videoFrame.position duration:self.videoFrame.duration]) {
+        self.videoFrame = [self.videoFrameQueue dequeueFrame];
+    }
     if (![self.syncor shouldRenderVideoFrame:self.videoFrame.position duration:self.videoFrame.duration]) {
         return;
     }
@@ -288,14 +300,17 @@
         while (numberOfFrames > 0) {
             if (!self.audioFrame) {
                 self.audioFrame = (SCAudioFrame *)[self.audioFrameQueue dequeueFrame];
-                if (self.audioFrame) {
-                    [self.syncor updateAudioClock:self.audioFrame.position];
-                }
             }
             if (!self.audioFrame) {
                 memset(outputData, 0, numberOfFrames * numberOfChannels * sizeof(float));
                 return;
             }
+            if (self.audioFrame.duration == -1) {
+                memset(outputData, 0, numberOfFrames * numberOfChannels * sizeof(float));
+                self.audioFrame = nil;
+                return;
+            }
+            [self.syncor updateAudioClock:self.audioFrame.position];
             
             const Byte * bytes = (Byte *)self.audioFrame->samples + self.audioFrame->output_offset;
             const NSUInteger bytesLeft = self.audioFrame->length - self.audioFrame->output_offset;

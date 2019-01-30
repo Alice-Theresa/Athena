@@ -14,7 +14,6 @@
 @property (nonatomic, assign) NSTimeInterval audioFramePlayTime;
 @property (nonatomic, assign) NSTimeInterval audioFramePosition;
 
-@property (nonatomic, assign) BOOL isBlock;
 @property (nonatomic, strong) dispatch_semaphore_t semaphore;
 @property (nonatomic, assign) NSUInteger lockCounter;
 
@@ -30,8 +29,10 @@
 }
 
 - (void)updateAudioClock:(NSTimeInterval)position {
-    self.audioFramePlayTime = [NSDate date].timeIntervalSince1970;
-    self.audioFramePosition = position;
+    if (!self.isBlock) {
+        self.audioFramePlayTime = [NSDate date].timeIntervalSince1970;
+        self.audioFramePosition = position;
+    }
 }
 
 - (BOOL)shouldRenderVideoFrame:(NSTimeInterval)position duration:(NSTimeInterval)duration {
@@ -40,6 +41,14 @@
     }
     NSTimeInterval time = [NSDate date].timeIntervalSince1970;
     if (self.audioFramePosition + time - self.audioFramePlayTime >= position + duration) {
+        return YES;
+    } else {
+        return NO;
+    }
+}
+
+- (BOOL)shouldDiscardVideoFrame:(NSTimeInterval)position duration:(NSTimeInterval)duration {
+    if (fabs(self.audioFramePosition - position) > 0.1) {
         return YES;
     } else {
         return NO;

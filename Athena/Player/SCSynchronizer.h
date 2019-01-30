@@ -12,8 +12,11 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface SCSynchronizer : NSObject
 
+@property (nonatomic, assign) BOOL isBlock;
+
 - (void)updateAudioClock:(NSTimeInterval)position;
 - (BOOL)shouldRenderVideoFrame:(NSTimeInterval)position duration:(NSTimeInterval)duration;
+- (BOOL)shouldDiscardVideoFrame:(NSTimeInterval)position duration:(NSTimeInterval)duration;
 
 - (void)block;
 - (void)unblock;
