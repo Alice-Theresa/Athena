@@ -34,7 +34,7 @@ NS_ASSUME_NONNULL_BEGIN
 - (instancetype)init NS_UNAVAILABLE;
 - (instancetype)initWithRenderView:(MTKView *)view;
 
-- (void)openFile:(NSString *)filename;
+- (void)openPath:(NSString *)filename;
 - (void)pause;
 - (void)resume;
 - (void)close;

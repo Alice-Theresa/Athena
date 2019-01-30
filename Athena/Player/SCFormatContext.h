@@ -17,6 +17,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 @property (nonatomic, assign, readonly) int videoIndex;
 @property (nonatomic, assign, readonly) int audioIndex;
+@property (nonatomic, assign, readonly) int subtitleIndex;
 
 @property (nonatomic, assign, readonly) NSTimeInterval videoTimebase;
 @property (nonatomic, assign, readonly) NSTimeInterval audioTimebase;
@@ -33,7 +34,7 @@ NS_ASSUME_NONNULL_BEGIN
 - (int)readFrame:(AVPacket *)packet;
 - (void)seekingTime:(NSTimeInterval)time;
 
-- (void)openFile:(NSString *)filename;
+- (void)openPath:(NSString *)path;
 - (void)closeFile;
 
 @end

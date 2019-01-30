@@ -11,7 +11,7 @@
 #import "SCAudioManager.h"
 #import "SCControl.h"
 
-
+#import "SCSyncor.h"
 #import "SCFrame.h"
 #import "SCAudioFrame.h"
 
@@ -23,7 +23,7 @@
 #import "SCPacketQueue.h"
 #import "SCRender.h"
 
-@interface SCControl () <SCAudioManagerDelegate>
+@interface SCControl () <SCAudioManagerDelegate, MTKViewDelegate>
 
 @property (nonatomic, strong) SCFormatContext *context;
 
@@ -44,16 +44,16 @@
 
 @property (nonatomic, strong) SCRender *render;
 @property (nonatomic, weak  ) MTKView *mtkView;
-@property (nonatomic, strong) CADisplayLink *displayLink;
 
+@property (nonatomic, strong) SCFrame *currentVideoFrame;
 @property (nonatomic, strong) SCAudioFrame *currentAudioFrame;
 
 @property (nonatomic, assign, readwrite) SCControlState controlState;
 
 @property (nonatomic, assign) BOOL isSeeking;
-@property (nonatomic, assign) NSTimeInterval interval;
 @property (nonatomic, assign) NSTimeInterval videoSeekingTime;
 @property (nonatomic, assign) NSTimeInterval audioSeekingTime;
+@property (nonatomic, strong) SCSyncor *clock;
 
 @end
 
@@ -67,9 +67,6 @@
     if (self = [super init]) {
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(appWillResignActive) name:UIApplicationWillResignActiveNotification object:nil];
         
-        _displayLink = [CADisplayLink displayLinkWithTarget:self selector:@selector(rendering)];
-        [_displayLink addToRunLoop:[NSRunLoop mainRunLoop] forMode:NSRunLoopCommonModes];
-        
         _videoFrameQueue  = [[SCFrameQueue alloc] init];
         _audioFrameQueue  = [[SCFrameQueue alloc] init];
         _videoPacketQueue = [[SCPacketQueue alloc] init];
@@ -81,9 +78,11 @@
         _mtkView.depthStencilPixelFormat = MTLPixelFormatInvalid;
         _mtkView.framebufferOnly = false;
         _mtkView.colorPixelFormat = MTLPixelFormatBGRA8Unorm;
+        _mtkView.delegate = self;
         
         _videoSeekingTime = INT_MIN;
         _audioSeekingTime = INT_MIN;
+        _clock = [[SCSyncor alloc] init];
     }
     return self;
 }
@@ -92,9 +91,9 @@
     [self pause];
 }
 
-- (void)openFile:(NSString *)filename {
+- (void)openPath:(NSString *)filename {
     _context = [[SCFormatContext alloc] init];
-    [_context openFile:filename];
+    [_context openPath:filename];
     
     _VTDecoder    = [[SCVTDecoder alloc] initWithFormatContext:_context];
     _videoDecoder = [[SCVideoDecoder alloc] initWithFormatContext:_context];
@@ -130,18 +129,17 @@
 - (void)pause {
     self.controlState = SCControlStatePaused;
     [[SCAudioManager shared] stop];
-    [self.displayLink setPaused:YES];
+    self.mtkView.paused = YES;
 }
 
 - (void)resume {
     self.controlState = SCControlStatePlaying;
     [[SCAudioManager shared] play];
-    [self.displayLink setPaused:NO];
+    self.mtkView.paused = NO;
 }
 
 - (void)close {
     self.controlState = SCControlStateClosed;
-    [self.displayLink invalidate];
     [self.controlQueue cancelAllOperations];
     [self.controlQueue waitUntilAllOperationsAreFinished];
     self.readPacketOperation = nil;
@@ -203,6 +201,8 @@
                 [self.videoPacketQueue enqueuePacket:packet];
             } else if (packet.stream_index == self.context.audioIndex) {
                 [self.audioPacketQueue enqueuePacket:packet];
+            } else if (packet.stream_index == self.context.subtitleIndex) {
+
             }
         }
     }
@@ -252,7 +252,7 @@
             AVPacket packet = [self.audioPacketQueue dequeuePacket];
             if (packet.data != NULL && packet.stream_index >= 0) {
                 NSArray<SCFrame *> *frames = [self.audioDecoder decode:packet];
-                if (fabs(frames.lastObject.duration + frames.lastObject.position - self.videoSeekingTime) < 0.1) {
+                if (fabs(frames.lastObject.duration + frames.lastObject.position - self.audioSeekingTime) < 0.1) {
                     [self.audioFrameQueue unblock];
                     self.audioSeekingTime = INT_MIN;
                     continue;
@@ -269,18 +269,27 @@
 #pragma mark - rendering
 
 - (void)rendering {
-    NSTimeInterval currentTime = [NSDate date].timeIntervalSince1970;
-    if (currentTime > self.interval) {
-        SCFrame *frame = [self.videoFrameQueue dequeueFrame];
-        if (frame == nil) {
-            return;
-        }
-        self.interval = frame.duration + currentTime;
-        [self.render render:(id<SCRenderDataInterface>)frame drawIn:self.mtkView];
-        if ([self.delegate respondsToSelector:@selector(controlCenter:didRender:duration:)] && !self.isSeeking) {
-            [self.delegate controlCenter:self didRender:frame.position duration:self.context.duration];
-        }
+    if (!self.currentVideoFrame) {
+        self.currentVideoFrame = [self.videoFrameQueue dequeueFrame];
     }
+//    NSLog(@"dequeue");
+    if (self.currentVideoFrame == nil) {
+        return;
+    }
+//    NSLog(@"render");
+    if (![self.clock shouldRenderVideoFrame:self.currentVideoFrame.position duration:self.currentVideoFrame.duration]) {
+        if ([self.clock checkShouldDiscardVideoFrame:self.currentVideoFrame.position duration:self.currentVideoFrame.duration]) {
+            self.currentVideoFrame = nil;
+            NSLog(@"discard");
+        }
+//        NSLog(@"pass");
+        return;
+    }
+    [self.render render:(id<SCRenderDataInterface>)self.currentVideoFrame drawIn:self.mtkView];
+    if ([self.delegate respondsToSelector:@selector(controlCenter:didRender:duration:)] && !self.isSeeking) {
+        [self.delegate controlCenter:self didRender:self.currentVideoFrame.position duration:self.context.duration];
+    }
+    self.currentVideoFrame = nil;
 }
 
 #pragma mark - audio delegate
@@ -290,6 +299,9 @@
         while (numberOfFrames > 0) {
             if (!self.currentAudioFrame) {
                 self.currentAudioFrame = (SCAudioFrame *)[self.audioFrameQueue dequeueFrame];
+                if (self.currentAudioFrame) {
+                    [self.clock updateAudioClock:[NSDate date].timeIntervalSince1970 position:self.currentAudioFrame.position];
+                }
             }
             if (!self.currentAudioFrame) {
                 memset(outputData, 0, numberOfFrames * numberOfChannels * sizeof(float));
@@ -314,5 +326,11 @@
         }
     }
 }
+
+- (void)drawInMTKView:(nonnull MTKView *)view {
+    [self rendering];
+}
+
+- (void)mtkView:(nonnull MTKView *)view drawableSizeWillChange:(CGSize)size {}
 
 @end

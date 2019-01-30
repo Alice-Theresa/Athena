@@ -17,6 +17,8 @@
 
 @property (nonatomic, assign, readwrite) int videoIndex;
 @property (nonatomic, assign, readwrite) int audioIndex;
+@property (nonatomic, assign, readwrite) int subtitleIndex;
+
 @property (nonatomic, assign, readwrite) NSTimeInterval videoTimebase;
 @property (nonatomic, assign, readwrite) NSTimeInterval audioTimebase;
 @property (nonatomic, assign, readwrite) NSTimeInterval duration;
@@ -33,6 +35,7 @@
     if (self = [super init]) {
         _videoIndex = -1;
         _audioIndex = -1;
+        _subtitleIndex = -1;
         [self setupDecoder];
     }
     return self;
@@ -47,9 +50,7 @@
     formatContext = avformat_alloc_context();
 }
 
-- (void)openFile:(NSString *)filename {
-    NSString *path = [[[NSBundle mainBundle] resourcePath] stringByAppendingPathComponent:filename];
-    
+- (void)openPath:(NSString *)path {
     if(avformat_open_input(&formatContext, [path UTF8String], NULL, NULL) != 0){
         printf("Couldn't open input stream.\n");
         return ;
@@ -89,6 +90,7 @@
     }
     self.videoIndex = self.videoTracks.firstObject.index;
     self.audioIndex = self.audioTracks.firstObject.index;
+    self.subtitleIndex = self.subtitleTracks.firstObject.index;
     
     AVStream *videoStream = formatContext->streams[self.videoIndex];
     AVStream *audioStream = formatContext->streams[self.audioIndex];

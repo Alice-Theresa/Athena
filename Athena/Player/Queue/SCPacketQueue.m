@@ -74,6 +74,8 @@
         av_packet_unref(&packet);
         release = release.next;
     }
+    self.header = nil;
+    self.tailer = nil;
     self.packetTotalSize = 0;
     self.count = 0;
     dispatch_semaphore_signal(self.semaphore);

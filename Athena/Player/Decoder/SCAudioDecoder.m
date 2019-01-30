@@ -61,8 +61,7 @@
                                             NULL);
     
     int result = swr_init(_audio_swr_context);
-    NSError *error = nil;
-    if (error || !_audio_swr_context) {
+    if (result < 0 || !_audio_swr_context) {
         if (_audio_swr_context) {
             swr_free(&_audio_swr_context);
         }
