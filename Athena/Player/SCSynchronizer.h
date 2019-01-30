@@ -1,5 +1,5 @@
 //
-//  SCSyncor.h
+//  SCSynchronizer.h
 //  Athena
 //
 //  Created by Theresa on 2019/01/30.
@@ -13,9 +13,14 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-@interface SCSyncor : NSObject
+@interface SCSynchronizer : NSObject
 
-- (void)updateAudioClock:(NSTimeInterval)frameStartTime position:(NSTimeInterval)position;
+@property (nonatomic, strong, nullable) SCFrame *videoFrame;
+@property (nonatomic, strong, nullable) SCAudioFrame *audioFrame;
+
+- (void)updateAudioClock;
+- (BOOL)shouldRenderVideoFrameOrNot;
+
 - (BOOL)shouldRenderVideoFrame:(NSTimeInterval)position duration:(NSTimeInterval)duration;
 - (BOOL)checkShouldDiscardVideoFrame:(NSTimeInterval)position duration:(NSTimeInterval)duration;
 

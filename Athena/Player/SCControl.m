@@ -11,7 +11,7 @@
 #import "SCAudioManager.h"
 #import "SCControl.h"
 
-#import "SCSyncor.h"
+#import "SCSynchronizer.h"
 #import "SCFrame.h"
 #import "SCAudioFrame.h"
 
@@ -45,15 +45,12 @@
 @property (nonatomic, strong) SCRender *render;
 @property (nonatomic, weak  ) MTKView *mtkView;
 
-@property (nonatomic, strong) SCFrame *currentVideoFrame;
-@property (nonatomic, strong) SCAudioFrame *currentAudioFrame;
-
 @property (nonatomic, assign, readwrite) SCControlState controlState;
 
 @property (nonatomic, assign) BOOL isSeeking;
 @property (nonatomic, assign) NSTimeInterval videoSeekingTime;
 @property (nonatomic, assign) NSTimeInterval audioSeekingTime;
-@property (nonatomic, strong) SCSyncor *clock;
+@property (nonatomic, strong) SCSynchronizer *syncor;
 
 @end
 
@@ -82,7 +79,7 @@
         
         _videoSeekingTime = INT_MIN;
         _audioSeekingTime = INT_MIN;
-        _clock = [[SCSyncor alloc] init];
+        _syncor = [[SCSynchronizer alloc] init];
     }
     return self;
 }
@@ -269,27 +266,20 @@
 #pragma mark - rendering
 
 - (void)rendering {
-    if (!self.currentVideoFrame) {
-        self.currentVideoFrame = [self.videoFrameQueue dequeueFrame];
+    if (!self.syncor.videoFrame) {
+        self.syncor.videoFrame = [self.videoFrameQueue dequeueFrame];
     }
-//    NSLog(@"dequeue");
-    if (self.currentVideoFrame == nil) {
+    if (!self.syncor.videoFrame) {
         return;
     }
-//    NSLog(@"render");
-    if (![self.clock shouldRenderVideoFrame:self.currentVideoFrame.position duration:self.currentVideoFrame.duration]) {
-        if ([self.clock checkShouldDiscardVideoFrame:self.currentVideoFrame.position duration:self.currentVideoFrame.duration]) {
-            self.currentVideoFrame = nil;
-            NSLog(@"discard");
-        }
-//        NSLog(@"pass");
+    if (![self.syncor shouldRenderVideoFrameOrNot]) {
         return;
     }
-    [self.render render:(id<SCRenderDataInterface>)self.currentVideoFrame drawIn:self.mtkView];
+    [self.render render:(id<SCRenderDataInterface>)self.syncor.videoFrame drawIn:self.mtkView];
     if ([self.delegate respondsToSelector:@selector(controlCenter:didRender:duration:)] && !self.isSeeking) {
-        [self.delegate controlCenter:self didRender:self.currentVideoFrame.position duration:self.context.duration];
+        [self.delegate controlCenter:self didRender:self.syncor.videoFrame.position duration:self.context.duration];
     }
-    self.currentVideoFrame = nil;
+    self.syncor.videoFrame = nil;
 }
 
 #pragma mark - audio delegate
@@ -297,19 +287,20 @@
 - (void)fetchoutputData:(float *)outputData numberOfFrames:(UInt32)numberOfFrames numberOfChannels:(UInt32)numberOfChannels {
     @autoreleasepool {
         while (numberOfFrames > 0) {
-            if (!self.currentAudioFrame) {
-                self.currentAudioFrame = (SCAudioFrame *)[self.audioFrameQueue dequeueFrame];
-                if (self.currentAudioFrame) {
-                    [self.clock updateAudioClock:[NSDate date].timeIntervalSince1970 position:self.currentAudioFrame.position];
+            if (!self.syncor.audioFrame) {
+                self.syncor.audioFrame = (SCAudioFrame *)[self.audioFrameQueue dequeueFrame];
+                if (!self.syncor.videoFrame && self.videoSeekingTime > 0) {
+                    self.syncor.audioFrame = nil;
                 }
+                [self.syncor updateAudioClock];
             }
-            if (!self.currentAudioFrame) {
+            if (!self.syncor.audioFrame) {
                 memset(outputData, 0, numberOfFrames * numberOfChannels * sizeof(float));
                 return;
             }
             
-            const Byte * bytes = (Byte *)self.currentAudioFrame->samples + self.currentAudioFrame->output_offset;
-            const NSUInteger bytesLeft = self.currentAudioFrame->length - self.currentAudioFrame->output_offset;
+            const Byte * bytes = (Byte *)self.syncor.audioFrame->samples + self.syncor.audioFrame->output_offset;
+            const NSUInteger bytesLeft = self.syncor.audioFrame->length - self.syncor.audioFrame->output_offset;
             const NSUInteger frameSizeOf = numberOfChannels * sizeof(float);
             const NSUInteger bytesToCopy = MIN(numberOfFrames * frameSizeOf, bytesLeft);
             const NSUInteger framesToCopy = bytesToCopy / frameSizeOf;
@@ -319,9 +310,9 @@
             outputData += framesToCopy * numberOfChannels;
             
             if (bytesToCopy < bytesLeft) {
-                self.currentAudioFrame->output_offset += bytesToCopy;
+                self.syncor.audioFrame->output_offset += bytesToCopy;
             } else {
-                self.currentAudioFrame = nil;
+                self.syncor.audioFrame = nil;
             }
         }
     }

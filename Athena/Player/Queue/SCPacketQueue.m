@@ -1,84 +1,65 @@
 //
-//  SCPacketQueue.m
+//  PacketQueue.m
 //  Athena
 //
-//  Created by Theresa on 2019/01/29.
-//  Copyright © 2019 Theresa. All rights reserved.
+//  Created by Theresa on 2018/12/27.
+//  Copyright © 2018 Theresa. All rights reserved.
 //
 
 #import "SCPacketQueue.h"
-#import "SCPacketNode.h"
 
 @interface SCPacketQueue ()
 
 @property (nonatomic, assign, readwrite) NSUInteger packetTotalSize;
-@property (nonatomic, assign, readwrite) NSInteger count;
-@property (nonatomic, strong) dispatch_semaphore_t semaphore;
 
-@property (nonatomic, strong) SCPacketNode *header;
-@property (nonatomic, strong) SCPacketNode *tailer;
+@property (nonatomic, strong) NSCondition *condition;
+@property (nonatomic, strong) NSMutableArray <NSValue *> *packets;
 
 @end
 
 @implementation SCPacketQueue
 
-- (void)dealloc {
-    NSLog(@"Packet Queue dealloc");
-}
-
 - (instancetype)init {
     if (self = [super init]) {
-        _semaphore = dispatch_semaphore_create(1);
+        self.packets = [NSMutableArray array];
+        self.condition = [[NSCondition alloc] init];
     }
     return self;
 }
 
 - (void)enqueuePacket:(AVPacket)packet {
-    dispatch_semaphore_wait(self.semaphore, DISPATCH_TIME_FOREVER);
-    
-    SCPacketNode *node = [[SCPacketNode alloc] initWithPacket:[NSValue value:&packet withObjCType:@encode(AVPacket)]];
-    if (self.count == 0) {
-        self.header = node;
-        self.tailer = node;
-    } else {
-        self.tailer.next = node;
-        self.tailer = node;
-    }
+    [self.condition lock];
     self.packetTotalSize += packet.size;
-    self.count++;
-    dispatch_semaphore_signal(self.semaphore);
+    NSValue *value = [NSValue value:&packet withObjCType:@encode(AVPacket)];
+    [self.packets addObject:value];
+    [self.condition unlock];
 }
 
 - (AVPacket)dequeuePacket {
-    dispatch_semaphore_wait(self.semaphore, DISPATCH_TIME_FOREVER);
+    [self.condition lock];
     AVPacket packet;
     packet.stream_index = -1;
-    if (self.count <= 0) {
-        dispatch_semaphore_signal(self.semaphore);
+    if (self.packets.count <= 0) {
+        [self.condition unlock];
         return packet;
     }
-    [self.header.packet getValue:&packet];
-    self.header = self.header.next;
+    [self.packets.firstObject getValue:&packet];
+    [self.packets removeObjectAtIndex:0];
     self.packetTotalSize -= packet.size;
-    self.count--;
-    dispatch_semaphore_signal(self.semaphore);
+    [self.condition unlock];
     return packet;
 }
 
 - (void)flush {
-    dispatch_semaphore_wait(self.semaphore, DISPATCH_TIME_FOREVER);
-    SCPacketNode *release = self.header;
-    while (release.packet) {
+    [self.condition lock];
+    for (NSValue * value in self.packets) {
         AVPacket packet;
-        [release.packet getValue:&packet];
+        [value getValue:&packet];
         av_packet_unref(&packet);
-        release = release.next;
     }
-    self.header = nil;
-    self.tailer = nil;
+    [self.packets removeAllObjects];
     self.packetTotalSize = 0;
-    self.count = 0;
-    dispatch_semaphore_signal(self.semaphore);
+    [self.condition unlock];
 }
 
 @end

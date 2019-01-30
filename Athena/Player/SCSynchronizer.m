@@ -1,14 +1,15 @@
 //
-//  SCSyncor.m
+//  SCSynchronizer.m
 //  Athena
 //
 //  Created by Theresa on 2019/01/30.
 //  Copyright © 2019 Theresa. All rights reserved.
 //
 
-#import "SCSyncor.h"
+#import "SCSynchronizer.h"
+#import "SCAudioFrame.h"
 
-@interface SCSyncor ()
+@interface SCSynchronizer ()
 
 //@property (nonatomic, assign) NSTimeInterval videoFrameStartTime;
 //@property (nonatomic, assign) NSTimeInterval videoFrameDuration;
@@ -18,7 +19,7 @@
 
 @end
 
-@implementation SCSyncor
+@implementation SCSynchronizer
 
 - (instancetype)init {
     if (self = [super init]) {
@@ -27,9 +28,20 @@
     return self;
 }
 
-- (void)updateAudioClock:(NSTimeInterval)frameStartTime position:(NSTimeInterval)position {
-    self.audioFrameStartTime = frameStartTime;
-    self.audioFramePosition  = position;
+- (void)updateAudioClock {
+    if (self.audioFrame) {
+        self.audioFrameStartTime = [NSDate date].timeIntervalSince1970;
+        self.audioFramePosition  = self.audioFrame.position;
+    }
+}
+
+- (BOOL)shouldRenderVideoFrameOrNot {
+    NSTimeInterval time = [NSDate date].timeIntervalSince1970;
+    if (self.audioFramePosition + time - self.audioFrameStartTime >= self.videoFrame.position + self.videoFrame.duration) {
+        return YES;
+    } else {
+        return NO;
+    }
 }
 
 - (BOOL)shouldRenderVideoFrame:(NSTimeInterval)position duration:(NSTimeInterval)duration {
