@@ -47,6 +47,7 @@
 
 @property (nonatomic, assign, readwrite) SCControlState controlState;
 
+//synchronize
 @property (nonatomic, assign) BOOL isSeeking;
 @property (nonatomic, assign) NSTimeInterval videoSeekingTime;
 @property (nonatomic, assign) NSTimeInterval audioSeekingTime;
@@ -80,8 +81,8 @@
         _mtkView.colorPixelFormat = MTLPixelFormatBGRA8Unorm;
         _mtkView.delegate = self;
         
-        _videoSeekingTime = DBL_MIN;
-        _audioSeekingTime = DBL_MIN;
+        _videoSeekingTime = -DBL_MAX;
+        _audioSeekingTime = -DBL_MAX;
         _syncor = [[SCSynchronizer alloc] init];
     }
     return self;
@@ -280,7 +281,7 @@
         return;
     }
     if (self.videoFrame.duration == -1) {
-        self.videoSeekingTime = DBL_MIN;
+        self.videoSeekingTime = -DBL_MAX;
         self.videoFrame = nil;
         return;
     }
@@ -312,7 +313,7 @@
             }
             if (self.audioFrame.duration == -1) {
                 memset(outputData, 0, numberOfFrames * numberOfChannels * sizeof(float));
-                self.audioSeekingTime = DBL_MIN;
+                self.audioSeekingTime = -DBL_MAX;
                 self.audioFrame = nil;
                 return;
             }
