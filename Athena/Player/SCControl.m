@@ -80,8 +80,8 @@
         _mtkView.colorPixelFormat = MTLPixelFormatBGRA8Unorm;
         _mtkView.delegate = self;
         
-        _videoSeekingTime = INT_MIN;
-        _audioSeekingTime = INT_MIN;
+        _videoSeekingTime = DBL_MIN;
+        _audioSeekingTime = DBL_MIN;
         _syncor = [[SCSynchronizer alloc] init];
     }
     return self;
@@ -280,16 +280,13 @@
         return;
     }
     if (self.videoFrame.duration == -1) {
-        self.videoSeekingTime = INT_MIN;
+        self.videoSeekingTime = DBL_MIN;
         self.videoFrame = nil;
         return;
     }
     if (self.videoSeekingTime > 0) {
         self.videoFrame = nil;
         return;
-    }
-    while (self.videoFrame && [self.syncor shouldDiscardVideoFrame:self.videoFrame.position duration:self.videoFrame.duration]) {
-        self.videoFrame = [self.videoFrameQueue dequeueFrame];
     }
     if (![self.syncor shouldRenderVideoFrame:self.videoFrame.position duration:self.videoFrame.duration]) {
         return;
@@ -315,7 +312,7 @@
             }
             if (self.audioFrame.duration == -1) {
                 memset(outputData, 0, numberOfFrames * numberOfChannels * sizeof(float));
-                self.audioSeekingTime = INT_MIN;
+                self.audioSeekingTime = DBL_MIN;
                 self.audioFrame = nil;
                 return;
             }

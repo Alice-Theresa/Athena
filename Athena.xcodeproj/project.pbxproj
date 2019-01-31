@@ -9,6 +9,7 @@
 /* Begin PBXBuildFile section */
 		5202621C21606DB800F1033B /* AudioDecodeViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 5202621A21606DB800F1033B /* AudioDecodeViewController.m */; };
 		5202621D21606DB800F1033B /* AudioDecodeViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 5202621B21606DB800F1033B /* AudioDecodeViewController.xib */; };
+		520B5BFE2202956500758299 /* 265.mkv in Resources */ = {isa = PBXBuildFile; fileRef = 520B5BFD2202956500758299 /* 265.mkv */; };
 		520EB41E22002AB2002243DC /* SCPacketNode.m in Sources */ = {isa = PBXBuildFile; fileRef = 520EB41D22002AB2002243DC /* SCPacketNode.m */; };
 		520EB42122002B9B002243DC /* SCPacketQueue.m in Sources */ = {isa = PBXBuildFile; fileRef = 520EB42022002B9B002243DC /* SCPacketQueue.m */; };
 		520EB42422003084002243DC /* SCTrack.m in Sources */ = {isa = PBXBuildFile; fileRef = 520EB42322003084002243DC /* SCTrack.m */; };
@@ -38,6 +39,7 @@
 		5290678D1F94BF94001A7BFA /* libfdk-aac.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 5290678C1F94BF8F001A7BFA /* libfdk-aac.a */; };
 		529067971F95A48A001A7BFA /* SharedQueue.m in Sources */ = {isa = PBXBuildFile; fileRef = 529067961F95A48A001A7BFA /* SharedQueue.m */; };
 		529067A11F96F13B001A7BFA /* MainViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 529067A01F96F13B001A7BFA /* MainViewController.m */; };
+		52999FFE22028FEB004E9F51 /* 264.mp4 in Resources */ = {isa = PBXBuildFile; fileRef = 52999FFD22028FEB004E9F51 /* 264.mp4 */; };
 		52AA25101F98951F0084771B /* VideoCaptureManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 52AA250F1F98951F0084771B /* VideoCaptureManager.m */; };
 		52AA25131F989C340084771B /* VideoEncodeViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 52AA25121F989C340084771B /* VideoEncodeViewController.m */; };
 		52AA25191F998ECF0084771B /* H264HardwareEncoder.m in Sources */ = {isa = PBXBuildFile; fileRef = 52AA25181F998ECF0084771B /* H264HardwareEncoder.m */; };
@@ -73,6 +75,7 @@
 		5202621921606DB800F1033B /* AudioDecodeViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AudioDecodeViewController.h; sourceTree = "<group>"; };
 		5202621A21606DB800F1033B /* AudioDecodeViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = AudioDecodeViewController.m; sourceTree = "<group>"; };
 		5202621B21606DB800F1033B /* AudioDecodeViewController.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = AudioDecodeViewController.xib; sourceTree = "<group>"; };
+		520B5BFD2202956500758299 /* 265.mkv */ = {isa = PBXFileReference; lastKnownFileType = file; name = 265.mkv; path = "../../../../Downloads/[Nekomoe kissaten&LoliHouse] Manaria Friends - 01 [WebRip 1080p HEVC-10bit AAC ASSx2].mkv/265.mkv"; sourceTree = "<group>"; };
 		520EB41C22002AB2002243DC /* SCPacketNode.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SCPacketNode.h; sourceTree = "<group>"; };
 		520EB41D22002AB2002243DC /* SCPacketNode.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = SCPacketNode.m; sourceTree = "<group>"; };
 		520EB41F22002B9B002243DC /* SCPacketQueue.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SCPacketQueue.h; sourceTree = "<group>"; };
@@ -134,6 +137,7 @@
 		529067961F95A48A001A7BFA /* SharedQueue.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = SharedQueue.m; sourceTree = "<group>"; };
 		5290679F1F96F13B001A7BFA /* MainViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = MainViewController.h; sourceTree = "<group>"; };
 		529067A01F96F13B001A7BFA /* MainViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = MainViewController.m; sourceTree = "<group>"; };
+		52999FFD22028FEB004E9F51 /* 264.mp4 */ = {isa = PBXFileReference; lastKnownFileType = file; name = 264.mp4; path = "../../../../Downloads/[Sakurato.sub][Tate no Yuusha no Nariagari][03][GB][720P]/264.mp4"; sourceTree = "<group>"; };
 		52AA250E1F98951F0084771B /* VideoCaptureManager.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = VideoCaptureManager.h; sourceTree = "<group>"; };
 		52AA250F1F98951F0084771B /* VideoCaptureManager.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = VideoCaptureManager.m; sourceTree = "<group>"; };
 		52AA25111F989C340084771B /* VideoEncodeViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = VideoEncodeViewController.h; sourceTree = "<group>"; };
@@ -392,6 +396,8 @@
 				529067961F95A48A001A7BFA /* SharedQueue.m */,
 				522136611F7F737500182B12 /* AppDelegate.h */,
 				522136621F7F737500182B12 /* AppDelegate.m */,
+				520B5BFD2202956500758299 /* 265.mkv */,
+				52999FFD22028FEB004E9F51 /* 264.mp4 */,
 				527D336121F559C000B9D959 /* Aimer.mkv */,
 				5214035C21EDE3F000CAF190 /* test.jpg */,
 				522136671F7F737500182B12 /* Main.storyboard */,
@@ -962,8 +968,10 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				520B5BFE2202956500758299 /* 265.mkv in Resources */,
 				527D336221F559C000B9D959 /* Aimer.mkv in Resources */,
 				5221366E1F7F737500182B12 /* LaunchScreen.storyboard in Resources */,
+				52999FFE22028FEB004E9F51 /* 264.mp4 in Resources */,
 				5202621D21606DB800F1033B /* AudioDecodeViewController.xib in Resources */,
 				52E1033A215E095F007783E6 /* AudioEncodeViewController.xib in Resources */,
 				5221366B1F7F737500182B12 /* Assets.xcassets in Resources */,
