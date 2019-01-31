@@ -205,7 +205,9 @@
             } else if (packet.stream_index == self.context.audioIndex) {
                 [self.audioPacketQueue enqueuePacket:packet];
             } else if (packet.stream_index == self.context.subtitleIndex) {
-
+                NSData *data = [[NSData alloc] initWithBytes:packet.data length:packet.size];
+                NSString *string = [[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding];
+                NSLog(@"%@", string);
             }
         }
     }
@@ -299,6 +301,12 @@
     self.videoFrame = nil;
 }
 
+- (void)drawInMTKView:(nonnull MTKView *)view {
+    [self rendering];
+}
+
+- (void)mtkView:(nonnull MTKView *)view drawableSizeWillChange:(CGSize)size {}
+
 #pragma mark - audio delegate
 
 - (void)fetchoutputData:(float *)outputData numberOfFrames:(UInt32)numberOfFrames numberOfChannels:(UInt32)numberOfChannels {
@@ -342,11 +350,5 @@
         }
     }
 }
-
-- (void)drawInMTKView:(nonnull MTKView *)view {
-    [self rendering];
-}
-
-- (void)mtkView:(nonnull MTKView *)view drawableSizeWillChange:(CGSize)size {}
 
 @end

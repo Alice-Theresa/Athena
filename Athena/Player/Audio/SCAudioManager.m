@@ -21,6 +21,9 @@
 
 @end
 
+static int const max_frame_size = 4096;
+static int const max_chan = 2;
+
 @implementation SCAudioManager
 
 + (instancetype)shared {
@@ -36,7 +39,7 @@
     if (self = [super init]) {
         _audioSession = [AVAudioSession sharedInstance];
         [_audioSession setCategory:AVAudioSessionCategoryPlayback error:nil];
-        _outData = (float *)calloc(4096 * 2, sizeof(float));
+        _outData = (float *)calloc(max_frame_size * max_chan, sizeof(float));
         [self initPlayer];
     }
     return self;

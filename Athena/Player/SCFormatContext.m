@@ -8,6 +8,7 @@
 
 #import "SCFormatContext.h"
 #import "SCTrack.h"
+#import "SCMetaData.h"
 
 @interface SCFormatContext () {
     AVFormatContext *formatContext;
@@ -66,13 +67,19 @@
     for (int i = 0; i < formatContext->nb_streams; i++) {
         switch (formatContext->streams[i]->codecpar->codec_type) {
             case AVMEDIA_TYPE_VIDEO:
-                [videoTracks addObject:[[SCTrack alloc] initWithIndex:i type:SCTrackTypeVideo]];
+                [videoTracks addObject:[[SCTrack alloc] initWithIndex:i
+                                                                 type:SCTrackTypeVideo
+                                                                 meta:[SCMetaData metadataWithAVDictionary:formatContext->streams[i]->metadata]]];
                 break;
             case AVMEDIA_TYPE_AUDIO:
-                [audioTracks addObject:[[SCTrack alloc] initWithIndex:i type:SCTrackTypeAudio]];
+                [audioTracks addObject:[[SCTrack alloc] initWithIndex:i
+                                                                 type:SCTrackTypeAudio
+                                                                 meta:[SCMetaData metadataWithAVDictionary:formatContext->streams[i]->metadata]]];
                 break;
             case AVMEDIA_TYPE_SUBTITLE:
-                [subtitleTracks addObject:[[SCTrack alloc] initWithIndex:i type:SCTrackTypeSubtitle]];
+                [subtitleTracks addObject:[[SCTrack alloc] initWithIndex:i
+                                                                    type:SCTrackTypeSubtitle
+                                                                    meta:[SCMetaData metadataWithAVDictionary:formatContext->streams[i]->metadata]]];
                 break;
             default:
                 break;
