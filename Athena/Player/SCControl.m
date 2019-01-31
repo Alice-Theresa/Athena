@@ -49,11 +49,11 @@
 
 @property (nonatomic, assign) BOOL isSeeking;
 @property (nonatomic, assign) NSTimeInterval videoSeekingTime;
+@property (nonatomic, assign) NSTimeInterval audioSeekingTime;
 @property (nonatomic, strong) SCSynchronizer *syncor;
 
 @property (nonatomic, strong) SCFrame *videoFrame;
 @property (nonatomic, strong) SCAudioFrame *audioFrame;
-
 
 @end
 
@@ -80,6 +80,8 @@
         _mtkView.colorPixelFormat = MTLPixelFormatBGRA8Unorm;
         _mtkView.delegate = self;
         
+        _videoSeekingTime = INT_MIN;
+        _audioSeekingTime = INT_MIN;
         _syncor = [[SCSynchronizer alloc] init];
     }
     return self;
@@ -150,6 +152,7 @@
 
 - (void)seekingTime:(NSTimeInterval)percentage {
     self.videoSeekingTime = percentage * self.context.duration;
+    self.audioSeekingTime = self.videoSeekingTime;
     self.isSeeking = YES;
 }
 
@@ -277,6 +280,11 @@
         return;
     }
     if (self.videoFrame.duration == -1) {
+        self.videoSeekingTime = INT_MIN;
+        self.videoFrame = nil;
+        return;
+    }
+    if (self.videoSeekingTime > 0) {
         self.videoFrame = nil;
         return;
     }
@@ -306,6 +314,12 @@
                 return;
             }
             if (self.audioFrame.duration == -1) {
+                memset(outputData, 0, numberOfFrames * numberOfChannels * sizeof(float));
+                self.audioSeekingTime = INT_MIN;
+                self.audioFrame = nil;
+                return;
+            }
+            if (self.audioSeekingTime > 0) {
                 memset(outputData, 0, numberOfFrames * numberOfChannels * sizeof(float));
                 self.audioFrame = nil;
                 return;

@@ -88,13 +88,13 @@
     return frame;
 }
 
-- (void)flushAndBlock {
-    dispatch_semaphore_wait(self.semaphore, DISPATCH_TIME_FOREVER);
-    [self.frames removeAllObjects];
-    self.count = 0;
-    self.isBlock = YES;
-    dispatch_semaphore_signal(self.semaphore);
-}
+//- (void)flushAndBlock {
+//    dispatch_semaphore_wait(self.semaphore, DISPATCH_TIME_FOREVER);
+//    [self.frames removeAllObjects];
+//    self.count = 0;
+//    self.isBlock = YES;
+//    dispatch_semaphore_signal(self.semaphore);
+//}
 
 - (void)flush {
     dispatch_semaphore_wait(self.semaphore, DISPATCH_TIME_FOREVER);
@@ -103,10 +103,10 @@
     dispatch_semaphore_signal(self.semaphore);
 }
 
-- (void)unblock {
-    dispatch_semaphore_wait(self.semaphore, DISPATCH_TIME_FOREVER);
-    self.isBlock = NO;
-    dispatch_semaphore_signal(self.semaphore);
-}
+//- (void)unblock {
+//    dispatch_semaphore_wait(self.semaphore, DISPATCH_TIME_FOREVER);
+//    self.isBlock = NO;
+//    dispatch_semaphore_signal(self.semaphore);
+//}
 
 @end

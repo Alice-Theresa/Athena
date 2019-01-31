@@ -24,12 +24,12 @@ NS_ASSUME_NONNULL_BEGIN
 /**
  clear queue and no more receive frames
  */
-- (void)flushAndBlock;
+//- (void)flushAndBlock;
 
 /**
  receive frames again
  */
-- (void)unblock;
+//- (void)unblock;
 
 @end
 

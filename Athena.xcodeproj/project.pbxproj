@@ -51,7 +51,6 @@
 		52E10333215E072D007783E6 /* MainModel.m in Sources */ = {isa = PBXBuildFile; fileRef = 52E10332215E072D007783E6 /* MainModel.m */; };
 		52E1033A215E095F007783E6 /* AudioEncodeViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 52E10339215E095F007783E6 /* AudioEncodeViewController.xib */; };
 		52EAE6E021F0542E00D9B90B /* SCI420VideoFrame.m in Sources */ = {isa = PBXBuildFile; fileRef = 52EAE6DF21F0542E00D9B90B /* SCI420VideoFrame.m */; };
-		765B6B7A2201C42A0073FF3A /* 265.mkv in Resources */ = {isa = PBXBuildFile; fileRef = 765B6B792201C42A0073FF3A /* 265.mkv */; };
 		765ED76B1F935ACA000CF16E /* libavutil.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 765ED6F21F935ACA000CF16E /* libavutil.a */; };
 		765ED76C1F935ACA000CF16E /* libavfilter.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 765ED6F31F935ACA000CF16E /* libavfilter.a */; };
 		765ED76D1F935ACA000CF16E /* libavcodec.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 765ED6F41F935ACA000CF16E /* libavcodec.a */; };
@@ -163,7 +162,6 @@
 		52E10339215E095F007783E6 /* AudioEncodeViewController.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = AudioEncodeViewController.xib; sourceTree = "<group>"; };
 		52EAE6DE21F0542E00D9B90B /* SCI420VideoFrame.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SCI420VideoFrame.h; sourceTree = "<group>"; };
 		52EAE6DF21F0542E00D9B90B /* SCI420VideoFrame.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = SCI420VideoFrame.m; sourceTree = "<group>"; };
-		765B6B792201C42A0073FF3A /* 265.mkv */ = {isa = PBXFileReference; lastKnownFileType = file; name = 265.mkv; path = ../../../Desktop/265.mkv; sourceTree = "<group>"; };
 		765ED6F21F935ACA000CF16E /* libavutil.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = libavutil.a; sourceTree = "<group>"; };
 		765ED6F31F935ACA000CF16E /* libavfilter.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = libavfilter.a; sourceTree = "<group>"; };
 		765ED6F41F935ACA000CF16E /* libavcodec.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = libavcodec.a; sourceTree = "<group>"; };
@@ -395,7 +393,6 @@
 				522136611F7F737500182B12 /* AppDelegate.h */,
 				522136621F7F737500182B12 /* AppDelegate.m */,
 				527D336121F559C000B9D959 /* Aimer.mkv */,
-				765B6B792201C42A0073FF3A /* 265.mkv */,
 				5214035C21EDE3F000CAF190 /* test.jpg */,
 				522136671F7F737500182B12 /* Main.storyboard */,
 				5221366A1F7F737500182B12 /* Assets.xcassets */,
@@ -965,7 +962,6 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				765B6B7A2201C42A0073FF3A /* 265.mkv in Resources */,
 				527D336221F559C000B9D959 /* Aimer.mkv in Resources */,
 				5221366E1F7F737500182B12 /* LaunchScreen.storyboard in Resources */,
 				5202621D21606DB800F1033B /* AudioDecodeViewController.xib in Resources */,

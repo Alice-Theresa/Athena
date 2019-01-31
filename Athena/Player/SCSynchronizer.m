@@ -29,16 +29,16 @@
 }
 
 - (void)updateAudioClock:(NSTimeInterval)position {
-    if (!self.isBlock) {
+//    if (!self.isBlock) {
         self.audioFramePlayTime = [NSDate date].timeIntervalSince1970;
         self.audioFramePosition = position;
-    }
+//    }
 }
 
 - (BOOL)shouldRenderVideoFrame:(NSTimeInterval)position duration:(NSTimeInterval)duration {
-    if (self.isBlock) {
-        return NO;
-    }
+//    if (self.isBlock) {
+//        return NO;
+//    }
     NSTimeInterval time = [NSDate date].timeIntervalSince1970;
     if (self.audioFramePosition + time - self.audioFramePlayTime >= position + duration) {
         return YES;
@@ -55,23 +55,23 @@
     }
 }
 
-- (void)block {
-    dispatch_semaphore_wait(self.semaphore, DISPATCH_TIME_FOREVER);
-    self.isBlock = YES;
-    self.lockCounter = 2;
-    dispatch_semaphore_signal(self.semaphore);
-}
-
-- (void)unblock {
-    dispatch_semaphore_wait(self.semaphore, DISPATCH_TIME_FOREVER);
-    if (self.lockCounter < 0) {
-        NSLog(@"error");
-    }
-    self.lockCounter--;
-    if (self.lockCounter == 0) {
-        self.isBlock = NO;
-    }
-    dispatch_semaphore_signal(self.semaphore);
-}
+//- (void)block {
+//    dispatch_semaphore_wait(self.semaphore, DISPATCH_TIME_FOREVER);
+//    self.isBlock = YES;
+//    self.lockCounter = 2;
+//    dispatch_semaphore_signal(self.semaphore);
+//}
+//
+//- (void)unblock {
+//    dispatch_semaphore_wait(self.semaphore, DISPATCH_TIME_FOREVER);
+//    if (self.lockCounter < 0) {
+//        NSLog(@"error");
+//    }
+//    self.lockCounter--;
+//    if (self.lockCounter == 0) {
+//        self.isBlock = NO;
+//    }
+//    dispatch_semaphore_signal(self.semaphore);
+//}
 
 @end
