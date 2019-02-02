@@ -14,9 +14,4 @@ player
 software | ✓     | ✓
 hardware | ✓     | 
 
-Todo:
-- Clock for Sync
-- Track select
-- Error handle
-- Audio setting
-- Subtitle render
+The player part is going to rewrite in swift, please visit [Yuu](https://github.com/Koito-Yuu/Yuu)
