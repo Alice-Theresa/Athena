@@ -10,15 +10,12 @@
 		5202621C21606DB800F1033B /* AudioDecodeViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 5202621A21606DB800F1033B /* AudioDecodeViewController.m */; };
 		5202621D21606DB800F1033B /* AudioDecodeViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 5202621B21606DB800F1033B /* AudioDecodeViewController.xib */; };
 		520B5C242202CD6C00758299 /* SCMetaData.m in Sources */ = {isa = PBXBuildFile; fileRef = 520B5C232202CD6C00758299 /* SCMetaData.m */; };
-		520B5C282202D6FB00758299 /* 265.mkv in Resources */ = {isa = PBXBuildFile; fileRef = 520B5C272202D6FA00758299 /* 265.mkv */; };
-		520B5C2A2202EA0300758299 /* sub.mkv in Resources */ = {isa = PBXBuildFile; fileRef = 520B5C292202EA0300758299 /* sub.mkv */; };
 		520EB41E22002AB2002243DC /* SCPacketNode.m in Sources */ = {isa = PBXBuildFile; fileRef = 520EB41D22002AB2002243DC /* SCPacketNode.m */; };
 		520EB42122002B9B002243DC /* SCPacketQueue.m in Sources */ = {isa = PBXBuildFile; fileRef = 520EB42022002B9B002243DC /* SCPacketQueue.m */; };
 		520EB42422003084002243DC /* SCTrack.m in Sources */ = {isa = PBXBuildFile; fileRef = 520EB42322003084002243DC /* SCTrack.m */; };
 		520EB42A220137FF002243DC /* SCSynchronizer.m in Sources */ = {isa = PBXBuildFile; fileRef = 520EB429220137FF002243DC /* SCSynchronizer.m */; };
 		5210136621CCE62A003D98F5 /* AAPLEAGLLayer.m in Sources */ = {isa = PBXBuildFile; fileRef = 5210136321CCE62A003D98F5 /* AAPLEAGLLayer.m */; };
 		5214035921EDCD0A00CAF190 /* SCRender.m in Sources */ = {isa = PBXBuildFile; fileRef = 5214035821EDCD0A00CAF190 /* SCRender.m */; };
-		5214035B21EDCE9E00CAF190 /* Mapping.metal in Sources */ = {isa = PBXBuildFile; fileRef = 5214035A21EDCE9E00CAF190 /* Mapping.metal */; };
 		5214035D21EDE3F000CAF190 /* test.jpg in Resources */ = {isa = PBXBuildFile; fileRef = 5214035C21EDE3F000CAF190 /* test.jpg */; };
 		5218B3A021E5CE3F00D9115D /* SCAudioDecoder.m in Sources */ = {isa = PBXBuildFile; fileRef = 5218B39F21E5CE3F00D9115D /* SCAudioDecoder.m */; };
 		521B7E7C21D7602900F5B689 /* SCControl.m in Sources */ = {isa = PBXBuildFile; fileRef = 521B7E7A21D7602800F5B689 /* SCControl.m */; };
@@ -54,6 +51,10 @@
 		52E10333215E072D007783E6 /* MainModel.m in Sources */ = {isa = PBXBuildFile; fileRef = 52E10332215E072D007783E6 /* MainModel.m */; };
 		52E1033A215E095F007783E6 /* AudioEncodeViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 52E10339215E095F007783E6 /* AudioEncodeViewController.xib */; };
 		52EAE6E021F0542E00D9B90B /* SCI420VideoFrame.m in Sources */ = {isa = PBXBuildFile; fileRef = 52EAE6DF21F0542E00D9B90B /* SCI420VideoFrame.m */; };
+		7625A1112207290100578C0B /* Frame.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7625A1102207290100578C0B /* Frame.swift */; };
+		7625A1132207330000578C0B /* FrameQueue.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7625A1122207330000578C0B /* FrameQueue.swift */; };
+		7656D2AE220717DA00E5FB2A /* Mapping.metal in Sources */ = {isa = PBXBuildFile; fileRef = 7656D2AB220717D900E5FB2A /* Mapping.metal */; };
+		7656D2B62207195100E5FB2A /* Render.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7656D2B52207195100E5FB2A /* Render.swift */; };
 		765ED76B1F935ACA000CF16E /* libavutil.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 765ED6F21F935ACA000CF16E /* libavutil.a */; };
 		765ED76C1F935ACA000CF16E /* libavfilter.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 765ED6F31F935ACA000CF16E /* libavfilter.a */; };
 		765ED76D1F935ACA000CF16E /* libavcodec.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 765ED6F41F935ACA000CF16E /* libavcodec.a */; };
@@ -72,14 +73,25 @@
 		76F2D7D821F375DB0088445C /* libyuv.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 76F2D7D721F375DB0088445C /* libyuv.a */; };
 /* End PBXBuildFile section */
 
+/* Begin PBXCopyFilesBuildPhase section */
+		76D7E7DA220708A200B994E4 /* Embed Frameworks */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "";
+			dstSubfolderSpec = 10;
+			files = (
+			);
+			name = "Embed Frameworks";
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXCopyFilesBuildPhase section */
+
 /* Begin PBXFileReference section */
 		5202621921606DB800F1033B /* AudioDecodeViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AudioDecodeViewController.h; sourceTree = "<group>"; };
 		5202621A21606DB800F1033B /* AudioDecodeViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = AudioDecodeViewController.m; sourceTree = "<group>"; };
 		5202621B21606DB800F1033B /* AudioDecodeViewController.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = AudioDecodeViewController.xib; sourceTree = "<group>"; };
 		520B5C222202CD6C00758299 /* SCMetaData.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SCMetaData.h; sourceTree = "<group>"; };
 		520B5C232202CD6C00758299 /* SCMetaData.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = SCMetaData.m; sourceTree = "<group>"; };
-		520B5C272202D6FA00758299 /* 265.mkv */ = {isa = PBXFileReference; lastKnownFileType = file; name = 265.mkv; path = ../../../265.mkv; sourceTree = "<group>"; };
-		520B5C292202EA0300758299 /* sub.mkv */ = {isa = PBXFileReference; lastKnownFileType = file; name = sub.mkv; path = "../../../../Downloads/[Kamigami] Kaze ga Tsuyoku Fuiteiru - 14 [1080p x265 Ma10p AAC].mkv/sub.mkv"; sourceTree = "<group>"; };
 		520EB41C22002AB2002243DC /* SCPacketNode.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SCPacketNode.h; sourceTree = "<group>"; };
 		520EB41D22002AB2002243DC /* SCPacketNode.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = SCPacketNode.m; sourceTree = "<group>"; };
 		520EB41F22002B9B002243DC /* SCPacketQueue.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SCPacketQueue.h; sourceTree = "<group>"; };
@@ -92,9 +104,7 @@
 		5210136521CCE62A003D98F5 /* AAPLEAGLLayer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AAPLEAGLLayer.h; sourceTree = "<group>"; };
 		5214035721EDCD0A00CAF190 /* SCRender.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SCRender.h; sourceTree = "<group>"; };
 		5214035821EDCD0A00CAF190 /* SCRender.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = SCRender.m; sourceTree = "<group>"; };
-		5214035A21EDCE9E00CAF190 /* Mapping.metal */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.metal; path = Mapping.metal; sourceTree = "<group>"; };
 		5214035C21EDE3F000CAF190 /* test.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; path = test.jpg; sourceTree = "<group>"; };
-		5214036021EF28A400CAF190 /* SCShaderType.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SCShaderType.h; sourceTree = "<group>"; };
 		5218B39E21E5CE3F00D9115D /* SCAudioDecoder.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SCAudioDecoder.h; sourceTree = "<group>"; };
 		5218B39F21E5CE3F00D9115D /* SCAudioDecoder.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = SCAudioDecoder.m; sourceTree = "<group>"; };
 		521B7E7A21D7602800F5B689 /* SCControl.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SCControl.m; sourceTree = "<group>"; };
@@ -123,7 +133,6 @@
 		526F497F21D0DE110023E6C3 /* SCVTDecoder.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = SCVTDecoder.m; sourceTree = "<group>"; };
 		526F498721D213D10023E6C3 /* SCFormatContext.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SCFormatContext.h; sourceTree = "<group>"; };
 		526F498821D213D10023E6C3 /* SCFormatContext.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = SCFormatContext.m; sourceTree = "<group>"; };
-		527D334021F1777D00B9D959 /* SCRenderDataInterface.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SCRenderDataInterface.h; sourceTree = "<group>"; };
 		527D336121F559C000B9D959 /* Aimer.mkv */ = {isa = PBXFileReference; lastKnownFileType = file; path = Aimer.mkv; sourceTree = "<group>"; };
 		527D337121F5AF9800B9D959 /* SCPlayerViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SCPlayerViewController.h; sourceTree = "<group>"; };
 		527D337221F5AF9800B9D959 /* SCPlayerViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = SCPlayerViewController.m; sourceTree = "<group>"; };
@@ -169,6 +178,11 @@
 		52E10339215E095F007783E6 /* AudioEncodeViewController.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = AudioEncodeViewController.xib; sourceTree = "<group>"; };
 		52EAE6DE21F0542E00D9B90B /* SCI420VideoFrame.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SCI420VideoFrame.h; sourceTree = "<group>"; };
 		52EAE6DF21F0542E00D9B90B /* SCI420VideoFrame.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = SCI420VideoFrame.m; sourceTree = "<group>"; };
+		7625A1102207290100578C0B /* Frame.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Frame.swift; sourceTree = "<group>"; };
+		7625A1122207330000578C0B /* FrameQueue.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FrameQueue.swift; sourceTree = "<group>"; };
+		7656D2AB220717D900E5FB2A /* Mapping.metal */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.metal; path = Mapping.metal; sourceTree = "<group>"; };
+		7656D2AC220717D900E5FB2A /* SCShaderType.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SCShaderType.h; sourceTree = "<group>"; };
+		7656D2B52207195100E5FB2A /* Render.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Render.swift; sourceTree = "<group>"; };
 		765ED6F21F935ACA000CF16E /* libavutil.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = libavutil.a; sourceTree = "<group>"; };
 		765ED6F31F935ACA000CF16E /* libavfilter.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = libavfilter.a; sourceTree = "<group>"; };
 		765ED6F41F935ACA000CF16E /* libavcodec.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = libavcodec.a; sourceTree = "<group>"; };
@@ -291,6 +305,7 @@
 		765ED7811F938781000CF16E /* libiconv.2.4.0.tbd */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.text-based-dylib-definition"; name = libiconv.2.4.0.tbd; path = usr/lib/libiconv.2.4.0.tbd; sourceTree = SDKROOT; };
 		765ED7831F93878B000CF16E /* libbz2.1.0.tbd */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.text-based-dylib-definition"; name = libbz2.1.0.tbd; path = usr/lib/libbz2.1.0.tbd; sourceTree = SDKROOT; };
 		765ED7851F938795000CF16E /* libz.1.2.8.tbd */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.text-based-dylib-definition"; name = libz.1.2.8.tbd; path = usr/lib/libz.1.2.8.tbd; sourceTree = SDKROOT; };
+		76ADEA0022071AE900984184 /* Bridge-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "Bridge-Header.h"; sourceTree = "<group>"; };
 		76C3E2DA21FD63ED00EDC6AB /* SCFrameQueue.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SCFrameQueue.h; sourceTree = "<group>"; };
 		76C3E2DB21FD63ED00EDC6AB /* SCFrameQueue.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = SCFrameQueue.m; sourceTree = "<group>"; };
 		76C3E2DD21FD65E900EDC6AB /* SCFrameNode.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SCFrameNode.h; sourceTree = "<group>"; };
@@ -399,8 +414,7 @@
 				529067961F95A48A001A7BFA /* SharedQueue.m */,
 				522136611F7F737500182B12 /* AppDelegate.h */,
 				522136621F7F737500182B12 /* AppDelegate.m */,
-				520B5C292202EA0300758299 /* sub.mkv */,
-				520B5C272202D6FA00758299 /* 265.mkv */,
+				76ADEA0022071AE900984184 /* Bridge-Header.h */,
 				527D336121F559C000B9D959 /* Aimer.mkv */,
 				5214035C21EDE3F000CAF190 /* test.jpg */,
 				522136671F7F737500182B12 /* Main.storyboard */,
@@ -581,10 +595,11 @@
 		52EAE6D521F02A0100D9B90B /* Player */ = {
 			isa = PBXGroup;
 			children = (
+				7625A10F2207232900578C0B /* Deprecated */,
+				52EAE6DA21F03C8200D9B90B /* Audio */,
 				520EB41B22002A72002243DC /* Queue */,
 				52EAE6DC21F03CA600D9B90B /* Decoder */,
 				52EAE6DB21F03C8900D9B90B /* Render */,
-				52EAE6DA21F03C8200D9B90B /* Audio */,
 				52EAE6D921F03C6000D9B90B /* Model */,
 				521B7E7B21D7602800F5B689 /* SCControl.h */,
 				521B7E7A21D7602800F5B689 /* SCControl.m */,
@@ -615,6 +630,8 @@
 				520EB42322003084002243DC /* SCTrack.m */,
 				520B5C222202CD6C00758299 /* SCMetaData.h */,
 				520B5C232202CD6C00758299 /* SCMetaData.m */,
+				7625A1102207290100578C0B /* Frame.swift */,
+				7625A1122207330000578C0B /* FrameQueue.swift */,
 			);
 			path = Model;
 			sourceTree = "<group>";
@@ -631,13 +648,9 @@
 		52EAE6DB21F03C8900D9B90B /* Render */ = {
 			isa = PBXGroup;
 			children = (
-				5214035721EDCD0A00CAF190 /* SCRender.h */,
-				5214035821EDCD0A00CAF190 /* SCRender.m */,
-				527D334021F1777D00B9D959 /* SCRenderDataInterface.h */,
-				5214036021EF28A400CAF190 /* SCShaderType.h */,
-				5214035A21EDCE9E00CAF190 /* Mapping.metal */,
-				5210136521CCE62A003D98F5 /* AAPLEAGLLayer.h */,
-				5210136321CCE62A003D98F5 /* AAPLEAGLLayer.m */,
+				7656D2B52207195100E5FB2A /* Render.swift */,
+				7656D2AB220717D900E5FB2A /* Mapping.metal */,
+				7656D2AC220717D900E5FB2A /* SCShaderType.h */,
 			);
 			path = Render;
 			sourceTree = "<group>";
@@ -654,6 +667,17 @@
 				527D338121F8406E00B9D959 /* SCDecoderInterface.h */,
 			);
 			path = Decoder;
+			sourceTree = "<group>";
+		};
+		7625A10F2207232900578C0B /* Deprecated */ = {
+			isa = PBXGroup;
+			children = (
+				5214035721EDCD0A00CAF190 /* SCRender.h */,
+				5214035821EDCD0A00CAF190 /* SCRender.m */,
+				5210136521CCE62A003D98F5 /* AAPLEAGLLayer.h */,
+				5210136321CCE62A003D98F5 /* AAPLEAGLLayer.m */,
+			);
+			path = Deprecated;
 			sourceTree = "<group>";
 		};
 		765ED66E1F935A70000CF16E /* FFmpeg-iOS */ = {
@@ -925,6 +949,7 @@
 				5221365A1F7F737500182B12 /* Sources */,
 				5221365B1F7F737500182B12 /* Frameworks */,
 				5221365C1F7F737500182B12 /* Resources */,
+				76D7E7DA220708A200B994E4 /* Embed Frameworks */,
 			);
 			buildRules = (
 			);
@@ -941,11 +966,12 @@
 		522136561F7F737500182B12 /* Project object */ = {
 			isa = PBXProject;
 			attributes = {
-				LastUpgradeCheck = 0900;
+				LastUpgradeCheck = 1010;
 				ORGANIZATIONNAME = Theresa;
 				TargetAttributes = {
 					5221365D1F7F737500182B12 = {
 						CreatedOnToolsVersion = 9.0;
+						LastSwiftMigration = 1010;
 						ProvisioningStyle = Automatic;
 					};
 				};
@@ -973,13 +999,11 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				520B5C282202D6FB00758299 /* 265.mkv in Resources */,
 				527D336221F559C000B9D959 /* Aimer.mkv in Resources */,
 				5221366E1F7F737500182B12 /* LaunchScreen.storyboard in Resources */,
 				5202621D21606DB800F1033B /* AudioDecodeViewController.xib in Resources */,
 				52E1033A215E095F007783E6 /* AudioEncodeViewController.xib in Resources */,
 				5221366B1F7F737500182B12 /* Assets.xcassets in Resources */,
-				520B5C2A2202EA0300758299 /* sub.mkv in Resources */,
 				522136691F7F737500182B12 /* Main.storyboard in Resources */,
 				5214035D21EDE3F000CAF190 /* test.jpg in Resources */,
 			);
@@ -993,8 +1017,9 @@
 			buildActionMask = 2147483647;
 			files = (
 				52296C0F21E6D98D006585FE /* SCFrame.m in Sources */,
-				5214035B21EDCE9E00CAF190 /* Mapping.metal in Sources */,
 				522136661F7F737500182B12 /* AudioEncodeViewController.m in Sources */,
+				7656D2AE220717DA00E5FB2A /* Mapping.metal in Sources */,
+				7625A1132207330000578C0B /* FrameQueue.swift in Sources */,
 				52E04394215E270B003CB1C5 /* AudioDecoder.m in Sources */,
 				5218B3A021E5CE3F00D9115D /* SCAudioDecoder.m in Sources */,
 				529067971F95A48A001A7BFA /* SharedQueue.m in Sources */,
@@ -1007,6 +1032,7 @@
 				76C3E2DC21FD63ED00EDC6AB /* SCFrameQueue.m in Sources */,
 				52AA25131F989C340084771B /* VideoEncodeViewController.m in Sources */,
 				522136711F7F737500182B12 /* main.m in Sources */,
+				7656D2B62207195100E5FB2A /* Render.swift in Sources */,
 				529067A11F96F13B001A7BFA /* MainViewController.m in Sources */,
 				52E10333215E072D007783E6 /* MainModel.m in Sources */,
 				52ACC2CD21E358D900ABB193 /* SCVideoDecoder.m in Sources */,
@@ -1022,6 +1048,7 @@
 				527D337421F5AF9800B9D959 /* SCPlayerViewController.m in Sources */,
 				520EB42422003084002243DC /* SCTrack.m in Sources */,
 				5210136621CCE62A003D98F5 /* AAPLEAGLLayer.m in Sources */,
+				7625A1112207290100578C0B /* Frame.swift in Sources */,
 				527D337921F5C23F00B9D959 /* SCPlayerControlView.m in Sources */,
 				52296C1621E742D0006585FE /* SCAudioManager.m in Sources */,
 				521B7E8521D7604D00F5B689 /* SCNV12VideoFrame.m in Sources */,
@@ -1070,6 +1097,7 @@
 				CLANG_WARN_BOOL_CONVERSION = YES;
 				CLANG_WARN_COMMA = YES;
 				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
 				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
 				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
 				CLANG_WARN_EMPTY_BODY = YES;
@@ -1077,6 +1105,7 @@
 				CLANG_WARN_INFINITE_RECURSION = YES;
 				CLANG_WARN_INT_CONVERSION = YES;
 				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
 				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
 				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
 				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
@@ -1125,6 +1154,7 @@
 				CLANG_WARN_BOOL_CONVERSION = YES;
 				CLANG_WARN_COMMA = YES;
 				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
 				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
 				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
 				CLANG_WARN_EMPTY_BODY = YES;
@@ -1132,6 +1162,7 @@
 				CLANG_WARN_INFINITE_RECURSION = YES;
 				CLANG_WARN_INT_CONVERSION = YES;
 				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
 				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
 				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
 				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
@@ -1156,6 +1187,7 @@
 				IPHONEOS_DEPLOYMENT_TARGET = 11.0;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				SDKROOT = iphoneos;
+				SWIFT_COMPILATION_MODE = wholemodule;
 				VALIDATE_PRODUCT = YES;
 			};
 			name = Release;
@@ -1163,8 +1195,12 @@
 		522136751F7F737500182B12 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CLANG_ALLOW_NON_MODULAR_INCLUDES_IN_FRAMEWORK_MODULES = YES;
+				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_STYLE = Automatic;
+				DEFINES_MODULE = YES;
 				DEVELOPMENT_TEAM = RJX3H8KBAF;
 				ENABLE_BITCODE = NO;
 				HEADER_SEARCH_PATHS = "$(SRCROOT)/3rd/FFmpeg-iOS/include";
@@ -1180,6 +1216,9 @@
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = com.Theresa.Athena;
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_OBJC_BRIDGING_HEADER = "Athena/Bridge-Header.h";
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+				SWIFT_VERSION = 4.2;
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};
 			name = Debug;
@@ -1187,8 +1226,12 @@
 		522136761F7F737500182B12 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CLANG_ALLOW_NON_MODULAR_INCLUDES_IN_FRAMEWORK_MODULES = YES;
+				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_STYLE = Automatic;
+				DEFINES_MODULE = YES;
 				DEVELOPMENT_TEAM = RJX3H8KBAF;
 				ENABLE_BITCODE = NO;
 				HEADER_SEARCH_PATHS = "$(SRCROOT)/3rd/FFmpeg-iOS/include";
@@ -1204,6 +1247,8 @@
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = com.Theresa.Athena;
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_OBJC_BRIDGING_HEADER = "Athena/Bridge-Header.h";
+				SWIFT_VERSION = 4.2;
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};
 			name = Release;

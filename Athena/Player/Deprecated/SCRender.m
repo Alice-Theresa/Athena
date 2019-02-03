@@ -8,6 +8,7 @@
 
 #import <AVFoundation/AVUtilities.h>
 #import "SCRender.h"
+#import "Athena-Swift.h"
 #import "SCShaderType.h"
 
 @interface SCRender ()
@@ -33,17 +34,17 @@
     return self;
 }
 
-- (void)render:(id<SCRenderDataInterface>)frame drawIn:(MTKView *)mtkView {
-    if ([frame conformsToProtocol:@protocol(SCRenderDataNV12Interface)]) {
-        [self renderNV12:(id<SCRenderDataNV12Interface>)frame drawIn:mtkView];
-    } else if ([frame conformsToProtocol:@protocol(SCRenderDataI420Interface)]) {
-        [self renderI420:(id<SCRenderDataI420Interface>)frame drawIn:mtkView];
+- (void)render:(id<RenderData>)frame drawIn:(MTKView *)mtkView {
+    if ([frame conformsToProtocol:@protocol(RenderDataNV12)]) {
+        [self renderNV12:(id<RenderDataNV12>)frame drawIn:mtkView];
+    } else if ([frame conformsToProtocol:@protocol(RenderDataI420)]) {
+        [self renderI420:(id<RenderDataI420>)frame drawIn:mtkView];
     } else {
         NSLog(@"error: no corresponding method");
     }
 }
 
-- (void)renderNV12:(id<SCRenderDataNV12Interface>)frame drawIn:(MTKView *)mtkView {
+- (void)renderNV12:(id<RenderDataNV12>)frame drawIn:(MTKView *)mtkView {
     CVMetalTextureCacheRef textureCache;
     CVMetalTextureCacheCreate(0, nil, self.device, nil, &textureCache);
     
@@ -99,7 +100,7 @@
     }
 }
 
-- (void)renderI420:(id<SCRenderDataI420Interface>)frame drawIn:(MTKView *)mtkView {
+- (void)renderI420:(id<RenderDataI420>)frame drawIn:(MTKView *)mtkView {
     size_t width = frame.width;
     size_t height = frame.height;
     

@@ -9,7 +9,6 @@
 #import "SCVideoDecoder.h"
 #import "SharedQueue.h"
 #import "SCFormatContext.h"
-#import "SCNV12VideoFrame.h"
 #import "SCI420VideoFrame.h"
 
 @interface SCVideoDecoder () {
