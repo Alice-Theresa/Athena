@@ -10,6 +10,7 @@
 #import "SCVTDecoder.h"
 #import "SCFormatContext.h"
 #import "SCNV12VideoFrame.h"
+#import "Athena-Swift.h"
 
 static void didDecompress(void *decompressionOutputRefCon,
                           void *sourceFrameRefCon,
@@ -131,9 +132,12 @@ static void didDecompress(void *decompressionOutputRefCon,
         }
         CFRelease(blockBuffer);
     }
-    SCNV12VideoFrame *videoFrame = [[SCNV12VideoFrame alloc] initWithAVPixelBuffer:outputPixelBuffer];
-    videoFrame.position = packet.pts * self.context.videoTimebase;
-    videoFrame.duration = packet.duration * self.context.videoTimebase;
+//    SCNV12VideoFrame *videoFrame = [[SCNV12VideoFrame alloc] initWithAVPixelBuffer:outputPixelBuffer];
+//    videoFrame.position = packet.pts * self.context.videoTimebase;
+//    videoFrame.duration = packet.duration * self.context.videoTimebase;
+    NV12VideoFrame *videoFrame = [[NV12VideoFrame alloc] initWithPosition:packet.pts * self.context.videoTimebase
+                                                                 duration:packet.duration * self.context.videoTimebase
+                                                              pixelBuffer:outputPixelBuffer];
     av_packet_unref(&packet);
     return @[videoFrame];
 }

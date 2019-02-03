@@ -59,8 +59,8 @@ import MetalKit
     public func render(frame: RenderData, drawIn view: MTKView) {
         if let frame = frame as? RenderDataNV12 {
             renderNV12(frame, drawIn: view)
-        } else if let _ = frame as? RenderDataI420 {
-            fatalError()
+        } else if let frame = frame as? RenderDataI420 {
+            renderI420(frame, drawIn: view)
         } else {
             fatalError()
         }
@@ -130,15 +130,17 @@ import MetalKit
         let uTexture = device.makeTexture(descriptor: uvDescriptor)
         let vTexture = device.makeTexture(descriptor: uvDescriptor)
         
-        //todo
+        yTexture?.replace(region: yRegion, mipmapLevel: 0, withBytes: frame.luma_channel_pixels, bytesPerRow: width)
+        uTexture?.replace(region: uvRegion, mipmapLevel: 0, withBytes: frame.chromaB_channel_pixels, bytesPerRow: width / 2)
+        vTexture?.replace(region: uvRegion, mipmapLevel: 0, withBytes: frame.chromaR_channel_pixels, bytesPerRow: width / 2)
         
         guard let descriptor = view.currentRenderPassDescriptor,
             let currentDrawable = view.currentDrawable,
             let commandBuffer = commandQueue.makeCommandBuffer(),
             let encoder = commandBuffer.makeRenderCommandEncoder(descriptor: descriptor) else { return }
         
-        //todo
-        
+        encoder.setRenderPipelineState(try! device.makeRenderPipelineState(descriptor: yuvPipelineDescriptor))
+        encoder.setVertexBuffer(createBuffer(contentSize: CGSize(width: width, height: height), viewBounds: view.bounds), offset: 0, index: 0)
         encoder.setFragmentTexture(yTexture, index: Int(SCTextureIndexY.rawValue))
         encoder.setFragmentTexture(uTexture, index: Int(SCTextureIndexU.rawValue))
         encoder.setFragmentTexture(vTexture, index: Int(SCTextureIndexV.rawValue))
@@ -166,11 +168,7 @@ import MetalKit
                                       SCVertex(position: float2(Float(-1 * normalizedSamplingSize.width), Float( 1 * normalizedSamplingSize.height))),
                                       SCVertex(position: float2(Float( 1 * normalizedSamplingSize.width), Float( 1 * normalizedSamplingSize.height)))]
         var vertexData = Data(bytes: quadVertices, count: MemoryLayout.size(ofValue: quadVertices))
-//        let vertexBuffer = self.device.makeBuffer(length: vertexData.count, options: .storageModeShared)
         let vertexBuffer = self.device.makeBuffer(bytes: quadVertices, length: vertexData.count * 4, options: .storageModeShared)
-//        if let vertexBuffer = vertexBuffer {
-//            memcpy(vertexBuffer.contents(), vertexData.withUnsafeMutableBytes({ ptr: UnsafePointer<Int> -> Void }), vertexData.count)
-//        }
         return vertexBuffer
     }
 }

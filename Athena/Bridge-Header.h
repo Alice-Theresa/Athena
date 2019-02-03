@@ -10,5 +10,6 @@
 #define Bridge_Header_h
 
 #import "SCShaderType.h"
+#import <libavformat/avformat.h>
 
 #endif /* Bridge_Header_h */

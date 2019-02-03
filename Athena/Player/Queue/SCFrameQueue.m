@@ -85,15 +85,6 @@
     return frame;
 }
 
-- (void)flushAndBlock {
-    dispatch_semaphore_wait(self.semaphore, DISPATCH_TIME_FOREVER);
-    self.header = nil;
-    self.tailer = nil;
-    self.count = 0;
-    self.isBlock = YES;
-    dispatch_semaphore_signal(self.semaphore);
-}
-
 - (void)flush {
     dispatch_semaphore_wait(self.semaphore, DISPATCH_TIME_FOREVER);
     self.header = nil;
@@ -102,10 +93,5 @@
     dispatch_semaphore_signal(self.semaphore);
 }
 
-- (void)unblock {
-    dispatch_semaphore_wait(self.semaphore, DISPATCH_TIME_FOREVER);
-    self.isBlock = NO;
-    dispatch_semaphore_signal(self.semaphore);
-}
 
 @end

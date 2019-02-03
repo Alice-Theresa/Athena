@@ -14,4 +14,4 @@ player
 software | ✓     | ✓
 hardware | ✓     | 
 
-The player part is going to rewrite in swift, please visit [Yuu](https://github.com/Koito-Yuu/Yuu)
+The player part is going to rewrite in swift.
