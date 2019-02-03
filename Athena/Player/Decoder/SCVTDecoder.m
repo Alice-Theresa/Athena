@@ -139,6 +139,7 @@ static void didDecompress(void *decompressionOutputRefCon,
                                                                  duration:packet.duration * self.context.videoTimebase
                                                               pixelBuffer:outputPixelBuffer];
     av_packet_unref(&packet);
+    CVPixelBufferRelease(outputPixelBuffer);
     return @[videoFrame];
 }
 

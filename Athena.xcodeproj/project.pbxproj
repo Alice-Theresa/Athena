@@ -180,6 +180,7 @@
 		52EAE6DF21F0542E00D9B90B /* SCI420VideoFrame.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = SCI420VideoFrame.m; sourceTree = "<group>"; };
 		7625A1102207290100578C0B /* Frame.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Frame.swift; sourceTree = "<group>"; };
 		7625A1122207330000578C0B /* FrameQueue.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FrameQueue.swift; sourceTree = "<group>"; };
+		7625A1142207404F00578C0B /* SCRenderDataInterface.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SCRenderDataInterface.h; sourceTree = "<group>"; };
 		7656D2AB220717D900E5FB2A /* Mapping.metal */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.metal; path = Mapping.metal; sourceTree = "<group>"; };
 		7656D2AC220717D900E5FB2A /* SCShaderType.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SCShaderType.h; sourceTree = "<group>"; };
 		7656D2B52207195100E5FB2A /* Render.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Render.swift; sourceTree = "<group>"; };
@@ -365,10 +366,10 @@
 			children = (
 				520EB41C22002AB2002243DC /* SCPacketNode.h */,
 				520EB41D22002AB2002243DC /* SCPacketNode.m */,
-				76C3E2DD21FD65E900EDC6AB /* SCFrameNode.h */,
-				76C3E2DE21FD65E900EDC6AB /* SCFrameNode.m */,
 				520EB41F22002B9B002243DC /* SCPacketQueue.h */,
 				520EB42022002B9B002243DC /* SCPacketQueue.m */,
+				76C3E2DD21FD65E900EDC6AB /* SCFrameNode.h */,
+				76C3E2DE21FD65E900EDC6AB /* SCFrameNode.m */,
 				76C3E2DA21FD63ED00EDC6AB /* SCFrameQueue.h */,
 				76C3E2DB21FD63ED00EDC6AB /* SCFrameQueue.m */,
 			);
@@ -672,6 +673,7 @@
 		7625A10F2207232900578C0B /* Deprecated */ = {
 			isa = PBXGroup;
 			children = (
+				7625A1142207404F00578C0B /* SCRenderDataInterface.h */,
 				5214035721EDCD0A00CAF190 /* SCRender.h */,
 				5214035821EDCD0A00CAF190 /* SCRender.m */,
 				5210136521CCE62A003D98F5 /* AAPLEAGLLayer.h */,

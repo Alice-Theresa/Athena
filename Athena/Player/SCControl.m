@@ -35,7 +35,7 @@
 
 @property (nonatomic, strong) SCPacketQueue *videoPacketQueue;
 @property (nonatomic, strong) SCPacketQueue *audioPacketQueue;
-@property (nonatomic, strong) SCFrameQueue *videoFrameQueue;
+@property (nonatomic, strong) FrameQueue *videoFrameQueue;
 @property (nonatomic, strong) SCFrameQueue *audioFrameQueue;
 
 @property (nonatomic, strong) NSInvocationOperation *readPacketOperation;
@@ -69,7 +69,7 @@
     if (self = [super init]) {
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(appWillResignActive) name:UIApplicationWillResignActiveNotification object:nil];
         
-        _videoFrameQueue  = [[SCFrameQueue alloc] init];
+        _videoFrameQueue  = [[FrameQueue alloc] init];
         _audioFrameQueue  = [[SCFrameQueue alloc] init];
         _videoPacketQueue = [[SCPacketQueue alloc] init];
         _audioPacketQueue = [[SCPacketQueue alloc] init];
@@ -100,7 +100,7 @@
     _VTDecoder    = [[SCVTDecoder alloc] initWithFormatContext:_context];
     _videoDecoder = [[SCVideoDecoder alloc] initWithFormatContext:_context];
     _audioDecoder = [[SCAudioDecoder alloc] initWithFormatContext:_context];
-    _currentDecoder = _videoDecoder;
+    _currentDecoder = _VTDecoder;
     [SCAudioManager shared].delegate = self;
     [self start];
 }
@@ -233,13 +233,13 @@
                 [self.videoFrameQueue flush];
                 SCFrame *frame = [[SCFrame alloc] init];
                 frame.duration = -1;
-                [self.videoFrameQueue enqueueFramesAndSort:@[frame]];
+                [self.videoFrameQueue enqueueAndSort:@[frame]];
                 av_packet_unref(&packet);
                 continue;
             }
             if (packet.data != NULL && packet.stream_index >= 0) {
                 NSArray<SCFrame *> *frames = [self.currentDecoder decode:packet];
-                [self.videoFrameQueue enqueueFramesAndSort:frames];
+                [self.videoFrameQueue enqueueAndSort:frames];
             }
         }
     }
@@ -278,7 +278,7 @@
 
 - (void)rendering {
     if (!self.videoFrame) {
-        self.videoFrame = [self.videoFrameQueue dequeueFrame];
+        self.videoFrame = [self.videoFrameQueue dequeue];
     }
     if (!self.videoFrame) {
         return;

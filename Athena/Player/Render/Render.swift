@@ -30,8 +30,7 @@ import MetalKit
     private let commandQueue: MTLCommandQueue
     private let library: MTLLibrary
     
-    private var yTexture: CVMetalTexture?
-    private var uvTexture: CVMetalTexture?
+    private var textureCache: CVMetalTextureCache?
     
     private lazy var nv12PipelineDescriptor: MTLRenderPipelineDescriptor = {
         let descriptor = MTLRenderPipelineDescriptor()
@@ -53,6 +52,7 @@ import MetalKit
         device = MTLCreateSystemDefaultDevice()!
         commandQueue = device.makeCommandQueue()!
         library = device.makeDefaultLibrary()!
+        CVMetalTextureCacheCreate(kCFAllocatorDefault, nil, device, nil, &textureCache)
     }
     
     @objc(render:drawIn:)
@@ -67,12 +67,13 @@ import MetalKit
     }
     
     private func renderNV12(_ frame: RenderDataNV12, drawIn view: MTKView) {
-        var textureCache: CVMetalTextureCache?
-        CVMetalTextureCacheCreate(kCFAllocatorDefault, nil, self.device, nil, &textureCache)
         guard let _textureCache = textureCache else { return }
         
         let width = frame.width
         let height = frame.height
+        
+        var yTexture: CVMetalTexture?
+        var uvTexture: CVMetalTexture?
         
         var result = CVMetalTextureCacheCreateTextureFromImage(kCFAllocatorDefault,
                                                                _textureCache,
@@ -82,7 +83,7 @@ import MetalKit
                                                                CVPixelBufferGetWidthOfPlane(frame.pixelBuffer, 0),
                                                                CVPixelBufferGetHeightOfPlane(frame.pixelBuffer, 0),
                                                                0,
-                                                               &self.yTexture)
+                                                               &yTexture)
         if (result != kCVReturnSuccess) {
             print(result)
         }
@@ -94,13 +95,12 @@ import MetalKit
                                                            CVPixelBufferGetWidthOfPlane(frame.pixelBuffer, 1),
                                                            CVPixelBufferGetHeightOfPlane(frame.pixelBuffer, 1),
                                                            1,
-                                                           &self.uvTexture)
+                                                           &uvTexture)
         if (result != kCVReturnSuccess) {
             print(result)
         }
-        let yTexture = CVMetalTextureGetTexture(self.yTexture!)
-        let uvTexture = CVMetalTextureGetTexture(self.uvTexture!)
-        
+        let textureV = CVMetalTextureGetTexture(yTexture!)
+        let textureUV = CVMetalTextureGetTexture(uvTexture!)
         guard let descriptor = view.currentRenderPassDescriptor,
             let currentDrawable = view.currentDrawable,
             let commandBuffer = commandQueue.makeCommandBuffer(),
@@ -108,8 +108,8 @@ import MetalKit
         
         encoder.setRenderPipelineState(try! device.makeRenderPipelineState(descriptor: nv12PipelineDescriptor))
         encoder.setVertexBuffer(createBuffer(contentSize: CGSize(width: width, height: height), viewBounds: view.bounds), offset: 0, index: 0)
-        encoder.setFragmentTexture(yTexture, index: Int(SCTextureIndexY.rawValue))
-        encoder.setFragmentTexture(uvTexture, index: Int(SCTextureIndexUV.rawValue))
+        encoder.setFragmentTexture(textureV, index: Int(SCTextureIndexY.rawValue))
+        encoder.setFragmentTexture(textureUV, index: Int(SCTextureIndexUV.rawValue))
         encoder.drawPrimitives(type: .triangleStrip, vertexStart: 0, vertexCount: 4)
         encoder.endEncoding()
         commandBuffer.present(currentDrawable)
