@@ -8,7 +8,7 @@
 
 #import <Metal/Metal.h>
 #import <MetalKit/MetalKit.h>
-#import "SCRenderDataInterface.h"
+#import "Athena-Swift.h"
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -16,7 +16,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 @property (nonatomic, strong) id<MTLDevice> device;
 
-- (void)render:(id<SCRenderDataInterface>)frame drawIn:(MTKView *)mtkView;
+- (void)render:(id<RenderData>)frame drawIn:(MTKView *)mtkView;
 
 @end
 

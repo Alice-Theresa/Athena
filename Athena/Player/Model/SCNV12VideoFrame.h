@@ -8,11 +8,11 @@
 
 #import <AVFoundation/AVFoundation.h>
 #import "SCFrame.h"
-#import "SCRenderDataInterface.h"
+#import "Athena-Swift.h"
 
 NS_ASSUME_NONNULL_BEGIN
 
-@interface SCNV12VideoFrame : SCFrame <SCRenderDataNV12Interface>
+@interface SCNV12VideoFrame : SCFrame <RenderDataNV12>
 
 @property (nonatomic, assign, readonly) NSUInteger width;
 @property (nonatomic, assign, readonly) NSUInteger height;

@@ -10,7 +10,7 @@
 #import <libavformat/avformat.h>
 
 NS_ASSUME_NONNULL_BEGIN
-
+/*
 @protocol SCRenderDataInterface <NSObject>
 
 @property (nonatomic, assign, readonly) NSUInteger width;
@@ -34,6 +34,6 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (instancetype)initWithFrameData:(AVFrame *)frame width:(int)width height:(int)height;
 
-@end
+@end*/
 
 NS_ASSUME_NONNULL_END

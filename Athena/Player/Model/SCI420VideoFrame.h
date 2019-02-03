@@ -8,7 +8,7 @@
 
 #import <libavformat/avformat.h>
 #import "SCFrame.h"
-#import "SCRenderDataInterface.h"
+#import "Athena-Swift.h"
 
 typedef NS_ENUM(int, SGYUVChannel) {
     SGYUVChannelLuma = 0,
@@ -19,7 +19,7 @@ typedef NS_ENUM(int, SGYUVChannel) {
 
 NS_ASSUME_NONNULL_BEGIN
 
-@interface SCI420VideoFrame : SCFrame <SCRenderDataI420Interface>
+@interface SCI420VideoFrame : SCFrame <RenderDataI420>
 
 @property (nonatomic, assign, readonly) NSUInteger width;
 @property (nonatomic, assign, readonly) NSUInteger height;

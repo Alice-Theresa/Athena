@@ -21,7 +21,8 @@
 #import "SCDecoderInterface.h"
 #import "SCFrameQueue.h"
 #import "SCPacketQueue.h"
-#import "SCRender.h"
+
+#import "Athena-Swift.h"
 
 @interface SCControl () <SCAudioManagerDelegate, MTKViewDelegate>
 
@@ -42,7 +43,7 @@
 @property (nonatomic, strong) NSInvocationOperation *audioDecodeOperation;
 @property (nonatomic, strong) NSOperationQueue *controlQueue;
 
-@property (nonatomic, strong) SCRender *render;
+@property (nonatomic, strong) Render *render;
 @property (nonatomic, weak  ) MTKView *mtkView;
 
 @property (nonatomic, assign, readwrite) SCControlState controlState;
@@ -72,7 +73,7 @@
         _audioFrameQueue  = [[SCFrameQueue alloc] init];
         _videoPacketQueue = [[SCPacketQueue alloc] init];
         _audioPacketQueue = [[SCPacketQueue alloc] init];
-        _render           = [[SCRender alloc] init];
+        _render           = [[Render alloc] init];
         
         _mtkView = view;
         _mtkView.device = _render.device;
@@ -294,7 +295,7 @@
     if (![self.syncor shouldRenderVideoFrame:self.videoFrame.position duration:self.videoFrame.duration]) {
         return;
     }
-    [self.render render:(id<SCRenderDataInterface>)self.videoFrame drawIn:self.mtkView];
+    [self.render render:(id<RenderData>)self.videoFrame drawIn:self.mtkView];
     if ([self.delegate respondsToSelector:@selector(controlCenter:didRender:duration:)] && !self.isSeeking) {
         [self.delegate controlCenter:self didRender:self.videoFrame.position duration:self.context.duration];
     }
