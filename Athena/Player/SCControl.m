@@ -100,7 +100,7 @@
     _VTDecoder    = [[SCVTDecoder alloc] initWithFormatContext:_context];
     _videoDecoder = [[SCVideoDecoder alloc] initWithFormatContext:_context];
     _audioDecoder = [[SCAudioDecoder alloc] initWithFormatContext:_context];
-    _currentDecoder = _VTDecoder;
+    _currentDecoder = _videoDecoder;
     [SCAudioManager shared].delegate = self;
     [self start];
 }

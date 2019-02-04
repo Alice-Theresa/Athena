@@ -621,8 +621,6 @@
 			children = (
 				52296C0A21E6037B006585FE /* SCAudioFrame.h */,
 				52296C0B21E6037B006585FE /* SCAudioFrame.m */,
-				52EAE6DE21F0542E00D9B90B /* SCI420VideoFrame.h */,
-				52EAE6DF21F0542E00D9B90B /* SCI420VideoFrame.m */,
 				520EB42222003084002243DC /* SCTrack.h */,
 				520EB42322003084002243DC /* SCTrack.m */,
 				520B5C222202CD6C00758299 /* SCMetaData.h */,
@@ -671,21 +669,47 @@
 		7625A10F2207232900578C0B /* Deprecated */ = {
 			isa = PBXGroup;
 			children = (
+				763EE4EE2207E52F0090A0A3 /* Render */,
+				763EE4ED2207E5260090A0A3 /* Queue */,
+				763EE4EC2207E5160090A0A3 /* Model */,
+			);
+			path = Deprecated;
+			sourceTree = "<group>";
+		};
+		763EE4EC2207E5160090A0A3 /* Model */ = {
+			isa = PBXGroup;
+			children = (
 				52296C0D21E6D98D006585FE /* SCFrame.h */,
 				52296C0E21E6D98D006585FE /* SCFrame.m */,
+				52EAE6DE21F0542E00D9B90B /* SCI420VideoFrame.h */,
+				52EAE6DF21F0542E00D9B90B /* SCI420VideoFrame.m */,
+				521B7E7E21D7604C00F5B689 /* SCNV12VideoFrame.h */,
+				521B7E8221D7604D00F5B689 /* SCNV12VideoFrame.m */,
+			);
+			path = Model;
+			sourceTree = "<group>";
+		};
+		763EE4ED2207E5260090A0A3 /* Queue */ = {
+			isa = PBXGroup;
+			children = (
 				76C3E2DD21FD65E900EDC6AB /* SCFrameNode.h */,
 				76C3E2DE21FD65E900EDC6AB /* SCFrameNode.m */,
 				76C3E2DA21FD63ED00EDC6AB /* SCFrameQueue.h */,
 				76C3E2DB21FD63ED00EDC6AB /* SCFrameQueue.m */,
-				521B7E7E21D7604C00F5B689 /* SCNV12VideoFrame.h */,
-				521B7E8221D7604D00F5B689 /* SCNV12VideoFrame.m */,
+			);
+			path = Queue;
+			sourceTree = "<group>";
+		};
+		763EE4EE2207E52F0090A0A3 /* Render */ = {
+			isa = PBXGroup;
+			children = (
 				7625A1142207404F00578C0B /* SCRenderDataInterface.h */,
 				5214035721EDCD0A00CAF190 /* SCRender.h */,
 				5214035821EDCD0A00CAF190 /* SCRender.m */,
 				5210136521CCE62A003D98F5 /* AAPLEAGLLayer.h */,
 				5210136321CCE62A003D98F5 /* AAPLEAGLLayer.m */,
 			);
-			path = Deprecated;
+			path = Render;
 			sourceTree = "<group>";
 		};
 		765ED66E1F935A70000CF16E /* FFmpeg-iOS */ = {

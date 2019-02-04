@@ -11,8 +11,8 @@
 
 @implementation SCI420VideoFrame {
     size_t channel_pixels_buffer_size[SGYUVChannelCount];
-    int channel_lenghts[SGYUVChannelCount];
-    int channel_linesize[SGYUVChannelCount];
+//    int channel_lenghts[SGYUVChannelCount];
+//    int channel_linesize[SGYUVChannelCount];
 }
 
 - (instancetype)initWithFrameData:(AVFrame *)frame width:(int)width height:(int)height {
@@ -31,9 +31,9 @@
     int linesize_u = frame->linesize[SGYUVChannelChromaB];
     int linesize_v = frame->linesize[SGYUVChannelChromaR];
     
-    channel_linesize[SGYUVChannelLuma] = linesize_y;
-    channel_linesize[SGYUVChannelChromaB] = linesize_u;
-    channel_linesize[SGYUVChannelChromaR] = linesize_v;
+//    channel_linesize[SGYUVChannelLuma] = linesize_y;
+//    channel_linesize[SGYUVChannelChromaB] = linesize_u;
+//    channel_linesize[SGYUVChannelChromaR] = linesize_v;
     
     UInt8 *buffer_y = self.luma_channel_pixels;
     UInt8 *buffer_u = self.chromaB_channel_pixels;
@@ -44,7 +44,7 @@
     size_t buffer_size_v = channel_pixels_buffer_size[SGYUVChannelChromaR];
     
     int need_size_y = SGYUVChannelFilterNeedSize(linesize_y, width, height, 1);
-    channel_lenghts[SGYUVChannelLuma] = need_size_y;
+//    channel_lenghts[SGYUVChannelLuma] = need_size_y;
     if (buffer_size_y < need_size_y) {
         if (buffer_size_y > 0 && buffer_y != NULL) {
             free(buffer_y);
@@ -53,7 +53,7 @@
         _luma_channel_pixels = malloc(need_size_y);
     }
     int need_size_u = SGYUVChannelFilterNeedSize(linesize_u, width / 2, height / 2, 1);
-    channel_lenghts[SGYUVChannelChromaB] = need_size_u;
+//    channel_lenghts[SGYUVChannelChromaB] = need_size_u;
     if (buffer_size_u < need_size_u) {
         if (buffer_size_u > 0 && buffer_u != NULL) {
             free(buffer_u);
@@ -62,7 +62,7 @@
         _chromaB_channel_pixels = malloc(need_size_u);
     }
     int need_size_v = SGYUVChannelFilterNeedSize(linesize_v, width / 2, height / 2, 1);
-    channel_lenghts[SGYUVChannelChromaR] = need_size_v;
+//    channel_lenghts[SGYUVChannelChromaR] = need_size_v;
     if (buffer_size_v < need_size_v) {
         if (buffer_size_v > 0 && buffer_v != NULL) {
             free(buffer_v);
