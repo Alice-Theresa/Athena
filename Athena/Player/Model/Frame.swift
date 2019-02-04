@@ -9,12 +9,12 @@
 import MetalKit
 import Foundation
 
-protocol Frame {
+@objc public protocol Frame: NSObjectProtocol {
     var position: TimeInterval { get }
     var duration: TimeInterval { get }
 }
 
-class MarkerFrame: Frame {
+@objc class MarkerFrame: NSObject, Frame {
     var position: TimeInterval = -.greatestFiniteMagnitude
     var duration: TimeInterval = -.greatestFiniteMagnitude
 }
