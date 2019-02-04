@@ -1,5 +1,5 @@
 //
-//  VTDecoder.swift
+//  VideoDecoder.swift
 //  Athena
 //
 //  Created by Theresa on 2019/2/4.
@@ -9,8 +9,15 @@
 import Foundation
 import VideoToolbox
 
-class VTDecoder {
-    weak var formatContext: SCFormatContext?
+protocol VideoDecoder {
+    var context: SCFormatContext? { get }
+    
+    func decode(packet: AVPacket) -> NSArray
+}
+
+class VTDecoder: VideoDecoder {
+    
+    weak var context: SCFormatContext?
     
     var session: VTDecompressionSession?
     var formatDescription: CMVideoFormatDescription?
@@ -23,10 +30,18 @@ class VTDecoder {
     }
     
     init(formatContext: SCFormatContext) {
-        self.formatContext = formatContext
+        context = formatContext
+    }
+    
+    func decode(packet: AVPacket) -> NSArray {
+        fatalError()
     }
     
     static func CFDictionarySetObject(dict: CFMutableDictionary, key: UnsafeRawPointer, value: UnsafeRawPointer) {
         CFDictionarySetValue(dict, key, value)
     }
 }
+
+//class FFDecoder: VideoDecoder {
+//
+//}

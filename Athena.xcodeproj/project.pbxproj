@@ -53,8 +53,9 @@
 		52EAE6E021F0542E00D9B90B /* SCI420VideoFrame.m in Sources */ = {isa = PBXBuildFile; fileRef = 52EAE6DF21F0542E00D9B90B /* SCI420VideoFrame.m */; };
 		7625A1112207290100578C0B /* Frame.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7625A1102207290100578C0B /* Frame.swift */; };
 		7625A1132207330000578C0B /* FrameQueue.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7625A1122207330000578C0B /* FrameQueue.swift */; };
-		7625A1162207B80900578C0B /* VTDecoder.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7625A1152207B80900578C0B /* VTDecoder.swift */; };
 		7625A1182207BBC200578C0B /* PacketQueue.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7625A1172207BBC200578C0B /* PacketQueue.swift */; };
+		763EE4F02207E74E0090A0A3 /* VideoDecoder.swift in Sources */ = {isa = PBXBuildFile; fileRef = 763EE4EF2207E74E0090A0A3 /* VideoDecoder.swift */; };
+		763EE4F22207E7560090A0A3 /* AudioDecoder.swift in Sources */ = {isa = PBXBuildFile; fileRef = 763EE4F12207E7560090A0A3 /* AudioDecoder.swift */; };
 		7656D2AE220717DA00E5FB2A /* Mapping.metal in Sources */ = {isa = PBXBuildFile; fileRef = 7656D2AB220717D900E5FB2A /* Mapping.metal */; };
 		7656D2B62207195100E5FB2A /* Render.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7656D2B52207195100E5FB2A /* Render.swift */; };
 		765ED76B1F935ACA000CF16E /* libavutil.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 765ED6F21F935ACA000CF16E /* libavutil.a */; };
@@ -183,8 +184,9 @@
 		7625A1102207290100578C0B /* Frame.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Frame.swift; sourceTree = "<group>"; };
 		7625A1122207330000578C0B /* FrameQueue.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FrameQueue.swift; sourceTree = "<group>"; };
 		7625A1142207404F00578C0B /* SCRenderDataInterface.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SCRenderDataInterface.h; sourceTree = "<group>"; };
-		7625A1152207B80900578C0B /* VTDecoder.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VTDecoder.swift; sourceTree = "<group>"; };
 		7625A1172207BBC200578C0B /* PacketQueue.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PacketQueue.swift; sourceTree = "<group>"; };
+		763EE4EF2207E74E0090A0A3 /* VideoDecoder.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VideoDecoder.swift; sourceTree = "<group>"; };
+		763EE4F12207E7560090A0A3 /* AudioDecoder.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AudioDecoder.swift; sourceTree = "<group>"; };
 		7656D2AB220717D900E5FB2A /* Mapping.metal */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.metal; path = Mapping.metal; sourceTree = "<group>"; };
 		7656D2AC220717D900E5FB2A /* SCShaderType.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SCShaderType.h; sourceTree = "<group>"; };
 		7656D2B52207195100E5FB2A /* Render.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Render.swift; sourceTree = "<group>"; };
@@ -661,7 +663,8 @@
 				5218B39E21E5CE3F00D9115D /* SCAudioDecoder.h */,
 				5218B39F21E5CE3F00D9115D /* SCAudioDecoder.m */,
 				527D338121F8406E00B9D959 /* SCDecoderInterface.h */,
-				7625A1152207B80900578C0B /* VTDecoder.swift */,
+				763EE4EF2207E74E0090A0A3 /* VideoDecoder.swift */,
+				763EE4F12207E7560090A0A3 /* AudioDecoder.swift */,
 			);
 			path = Decoder;
 			sourceTree = "<group>";
@@ -1061,6 +1064,7 @@
 				520B5C242202CD6C00758299 /* SCMetaData.m in Sources */,
 				520EB42122002B9B002243DC /* SCPacketQueue.m in Sources */,
 				520EB42A220137FF002243DC /* SCSynchronizer.m in Sources */,
+				763EE4F02207E74E0090A0A3 /* VideoDecoder.swift in Sources */,
 				76C3E2DC21FD63ED00EDC6AB /* SCFrameQueue.m in Sources */,
 				52AA25131F989C340084771B /* VideoEncodeViewController.m in Sources */,
 				522136711F7F737500182B12 /* main.m in Sources */,
@@ -1072,10 +1076,10 @@
 				5214035921EDCD0A00CAF190 /* SCRender.m in Sources */,
 				52EAE6E021F0542E00D9B90B /* SCI420VideoFrame.m in Sources */,
 				522136791F7F738F00182B12 /* AudioCaptureManager.m in Sources */,
+				763EE4F22207E7560090A0A3 /* AudioDecoder.swift in Sources */,
 				521B7E7C21D7602900F5B689 /* SCControl.m in Sources */,
 				52296C0C21E6037B006585FE /* SCAudioFrame.m in Sources */,
 				52AA25101F98951F0084771B /* VideoCaptureManager.m in Sources */,
-				7625A1162207B80900578C0B /* VTDecoder.swift in Sources */,
 				52B338571F7F9BE2003BEFFB /* AACHardEncoder.m in Sources */,
 				526F498021D0DE110023E6C3 /* SCVTDecoder.m in Sources */,
 				527D337421F5AF9800B9D959 /* SCPlayerViewController.m in Sources */,

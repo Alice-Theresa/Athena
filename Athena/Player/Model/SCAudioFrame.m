@@ -13,15 +13,15 @@
 }
 
 - (void)setSamplesLength:(NSUInteger)samplesLength {
-    if (self->buffer_size < samplesLength) {
-        if (self->buffer_size > 0 && self->samples != NULL) {
-            free(self->samples);
+    if (buffer_size < samplesLength) {
+        if (buffer_size > 0 && samples != NULL) {
+            free(samples);
         }
-        self->buffer_size = samplesLength;
-        self->samples = malloc(buffer_size);
+        buffer_size = samplesLength;
+        samples = malloc(buffer_size);
     }
-    self->length = (int)samplesLength;
-    self->output_offset = 0;
+    length = (int)samplesLength;
+    output_offset = 0;
 }
 
 - (void)dealloc {
