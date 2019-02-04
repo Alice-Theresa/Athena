@@ -69,7 +69,7 @@
         self.counter = 0;
     }
     self.counter++;
-    int position = av_frame_get_best_effort_timestamp(_temp_frame) * self.context.videoTimebase + _temp_frame->repeat_pict * self.context.videoTimebase * 0.5;
+    NSTimeInterval position = av_frame_get_best_effort_timestamp(_temp_frame) * self.context.videoTimebase + _temp_frame->repeat_pict * self.context.videoTimebase * 0.5;
     I420VideoFrame *videoFrame = [[I420VideoFrame alloc] initWithPosition:position
                                                                  duration:av_frame_get_pkt_duration(_temp_frame) * self.context.videoTimebase
                                                                     width:self.context.videoCodecContext->width
