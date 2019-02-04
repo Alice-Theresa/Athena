@@ -231,9 +231,7 @@
             if (packet.flags == AV_PKT_FLAG_DISCARD) {
                 avcodec_flush_buffers(self.context.videoCodecContext);
                 [self.videoFrameQueue flush];
-                SCFrame *frame = [[SCFrame alloc] init];
-                frame.duration = -1;
-                [self.videoFrameQueue enqueueAndSort:@[frame]];
+                [self.videoFrameQueue enqueueAndSort:@[[[MarkerFrame alloc] init]]];
                 av_packet_unref(&packet);
                 continue;
             }
@@ -283,7 +281,7 @@
     if (!self.videoFrame) {
         return;
     }
-    if (self.videoFrame.duration == -1) {
+    if ([self.videoFrame isMemberOfClass:[MarkerFrame class]]) {
         self.videoSeekingTime = -DBL_MAX;
         self.videoFrame = nil;
         return;

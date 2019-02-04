@@ -14,7 +14,7 @@ import Foundation
     var duration: TimeInterval { get }
 }
 
-class MarkerFrame: NSObject, Frame {
+@objc class MarkerFrame: NSObject, Frame {
     var position: TimeInterval = -.greatestFiniteMagnitude
     var duration: TimeInterval = -.greatestFiniteMagnitude
 }
