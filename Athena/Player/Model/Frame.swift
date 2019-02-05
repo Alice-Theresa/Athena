@@ -9,10 +9,6 @@
 import MetalKit
 import Foundation
 
-enum Test: Int {
-    case Y = 0
-}
-
 @objc public protocol Frame: NSObjectProtocol {
     var position: TimeInterval { get }
     var duration: TimeInterval { get }
@@ -76,8 +72,8 @@ enum Test: Int {
         chromaR_channel_pixels = UnsafeMutablePointer<UInt8>.allocate(capacity: needsize_v)
         
         I420VideoFrame.copyData(width: width, height: height, src: frame.pointee.data.0!, des: luma_channel_pixels, dataSize: needsize_y)
-        I420VideoFrame.copyData(width: width/2, height: height/2, src: frame.pointee.data.1!, des: chromaB_channel_pixels, dataSize: needsize_u)
-        I420VideoFrame.copyData(width: width/2, height: height/2, src: frame.pointee.data.2!, des: chromaR_channel_pixels, dataSize: needsize_v)
+        I420VideoFrame.copyData(width: width / 2, height: height / 2, src: frame.pointee.data.1!, des: chromaB_channel_pixels, dataSize: needsize_u)
+        I420VideoFrame.copyData(width: width / 2, height: height / 2, src: frame.pointee.data.2!, des: chromaR_channel_pixels, dataSize: needsize_v)
     }
     
     static func checkSize(width: Int, height: Int, lineSize: Int) -> Int {
