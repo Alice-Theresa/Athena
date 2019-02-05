@@ -30,7 +30,7 @@
 
 @property (nonatomic, strong) SCVTDecoder *VTDecoder;
 @property (nonatomic, strong) SCVideoDecoder *videoDecoder;
-@property (nonatomic, strong) id<SCDecoderInterface> currentDecoder;
+@property (nonatomic, strong) FFDecoder *currentDecoder;
 @property (nonatomic, strong) SCAudioDecoder *audioDecoder;
 
 @property (nonatomic, strong) SCPacketQueue *videoPacketQueue;
@@ -98,7 +98,7 @@
     [_context openPath:filename];
     
     _VTDecoder    = [[SCVTDecoder alloc] initWithFormatContext:_context];
-    _videoDecoder = [[SCVideoDecoder alloc] initWithFormatContext:_context];
+    _videoDecoder = [[FFDecoder alloc] initWithFormatContext:_context];
     _audioDecoder = [[SCAudioDecoder alloc] initWithFormatContext:_context];
     _currentDecoder = _videoDecoder;
     [SCAudioManager shared].delegate = self;
@@ -236,7 +236,7 @@
                 continue;
             }
             if (packet.data != NULL && packet.stream_index >= 0) {
-                NSArray<SCFrame *> *frames = [self.currentDecoder decode:packet];
+                NSArray<SCFrame *> *frames = [self.currentDecoder decodeWithPacket:packet];
                 [self.videoFrameQueue enqueueAndSort:frames];
             }
         }
