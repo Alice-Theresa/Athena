@@ -28,9 +28,9 @@
 
 @property (nonatomic, strong) SCFormatContext *context;
 
-@property (nonatomic, strong) SCVTDecoder *VTDecoder;
-@property (nonatomic, strong) SCVideoDecoder *videoDecoder;
-@property (nonatomic, strong) FFDecoder *currentDecoder;
+@property (nonatomic, strong) VTDecoder *VTDecoder;
+@property (nonatomic, strong) FFDecoder *videoDecoder;
+@property (nonatomic, strong) id<VideoDecoder> currentDecoder;
 @property (nonatomic, strong) SCAudioDecoder *audioDecoder;
 
 @property (nonatomic, strong) SCPacketQueue *videoPacketQueue;
@@ -97,10 +97,10 @@
     _context = [[SCFormatContext alloc] init];
     [_context openPath:filename];
     
-    _VTDecoder    = [[SCVTDecoder alloc] initWithFormatContext:_context];
+    _VTDecoder    = [[VTDecoder alloc] initWithFormatContext:_context];
     _videoDecoder = [[FFDecoder alloc] initWithFormatContext:_context];
     _audioDecoder = [[SCAudioDecoder alloc] initWithFormatContext:_context];
-    _currentDecoder = _videoDecoder;
+    _currentDecoder = _VTDecoder;
     [SCAudioManager shared].delegate = self;
     [self start];
 }

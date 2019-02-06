@@ -7,17 +7,18 @@
 //
 
 #import "SCDecoderInterface.h"
+#import "Athena-Swift.h"
 
 @class SCFrame;
 @class SCFormatContext;
 
 NS_ASSUME_NONNULL_BEGIN
 
-@interface SCVTDecoder : NSObject <SCDecoderInterface>
+@interface SCVTDecoder : NSObject <VideoDecoder>
 
 - (instancetype)init NS_UNAVAILABLE;
 - (instancetype)initWithFormatContext:(SCFormatContext *)formatContext;
-- (NSArray<SCFrame *> *)decode:(AVPacket)packet;
+- (NSArray<SCFrame *> *)decodeWithPacket:(AVPacket)packet;
 
 @end
 
