@@ -12,5 +12,9 @@
 #import "SCShaderType.h"
 #import <libavformat/avformat.h>
 #import "SCFormatContext.h"
+#import "SCAudioManager.h"
+#import "SCAudioDecoder.h"
+#import "SCPacketQueue.h"
+#import "SCFrameQueue.h"
 
 #endif /* Bridge_Header_h */

@@ -15,19 +15,6 @@ import VideoToolbox
     func decode(packet: AVPacket) -> NSArray
 }
 
-//func callback(decompressionOutputRefCon: UnsafeMutableRawPointer,
-//              sourceFrameRefCon: UnsafeMutableRawPointer,
-//              status: OSStatus,
-//              infoFlags: VTDecodeInfoFlags,
-//              imageBuffer: CVImageBuffer?,
-//              presentationTimeStamp: CMTime,
-//              presentationDuration: CMTime) {
-//    let outputPixelBuffer = sourceFrameRefCon.assumingMemoryBound(to: CVPixelBuffer.self);
-//    if let imageBuffer = imageBuffer {
-//        outputPixelBuffer.pointee = imageBuffer
-//    }
-//}
-
 @objc class VTDecoder: NSObject, VideoDecoder {
     
     weak var context: SCFormatContext?
@@ -151,8 +138,6 @@ import VideoToolbox
         av_packet_unref(&packet);
         return NSArray(array: [])
     }
-        
-    
     
     func createFormatDescription(codec_type: CMVideoCodecType, width: Int32, height: Int32, extradata: UnsafePointer<UInt8>, extradata_size: Int32) -> CMFormatDescription? {
         let par = NSMutableDictionary()
@@ -175,7 +160,6 @@ import VideoToolbox
         return formatDescription
     }
 }
-
 
 @objc class FFDecoder: NSObject, VideoDecoder {
     weak var context: SCFormatContext?
@@ -225,6 +209,3 @@ import VideoToolbox
     }
 
 }
-
-
-
