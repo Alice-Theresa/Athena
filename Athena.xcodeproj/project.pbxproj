@@ -658,13 +658,20 @@
 			children = (
 				526F497E21D0DE110023E6C3 /* SCVTDecoder.h */,
 				526F497F21D0DE110023E6C3 /* SCVTDecoder.m */,
-				52ACC2CB21E358D900ABB193 /* SCVideoDecoder.h */,
-				52ACC2CC21E358D900ABB193 /* SCVideoDecoder.m */,
 				5218B39E21E5CE3F00D9115D /* SCAudioDecoder.h */,
 				5218B39F21E5CE3F00D9115D /* SCAudioDecoder.m */,
-				527D338121F8406E00B9D959 /* SCDecoderInterface.h */,
 				763EE4EF2207E74E0090A0A3 /* VideoDecoder.swift */,
 				763EE4F12207E7560090A0A3 /* AudioDecoder.swift */,
+			);
+			path = Decoder;
+			sourceTree = "<group>";
+		};
+		7608F09B2209F1AA001D7086 /* Decoder */ = {
+			isa = PBXGroup;
+			children = (
+				527D338121F8406E00B9D959 /* SCDecoderInterface.h */,
+				52ACC2CB21E358D900ABB193 /* SCVideoDecoder.h */,
+				52ACC2CC21E358D900ABB193 /* SCVideoDecoder.m */,
 			);
 			path = Decoder;
 			sourceTree = "<group>";
@@ -672,6 +679,7 @@
 		7625A10F2207232900578C0B /* Deprecated */ = {
 			isa = PBXGroup;
 			children = (
+				7608F09B2209F1AA001D7086 /* Decoder */,
 				763EE4EE2207E52F0090A0A3 /* Render */,
 				763EE4ED2207E5260090A0A3 /* Queue */,
 				763EE4EC2207E5160090A0A3 /* Model */,

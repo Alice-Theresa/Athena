@@ -29,8 +29,8 @@
 @property (nonatomic, strong) SCFormatContext *context;
 
 @property (nonatomic, strong) SCVTDecoder *VTDecoder;
-@property (nonatomic, strong) SCVideoDecoder *videoDecoder;
-@property (nonatomic, strong) FFDecoder *currentDecoder;
+@property (nonatomic, strong) FFDecoder *videoDecoder;
+@property (nonatomic, strong) id<VideoDecoder> currentDecoder;
 @property (nonatomic, strong) SCAudioDecoder *audioDecoder;
 
 @property (nonatomic, strong) SCPacketQueue *videoPacketQueue;

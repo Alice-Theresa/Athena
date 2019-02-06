@@ -9,7 +9,7 @@
 import Foundation
 import VideoToolbox
 
-protocol VideoDecoder {
+@objc protocol VideoDecoder {
     var context: SCFormatContext? { get }
     
     func decode(packet: AVPacket) -> NSArray
@@ -22,7 +22,10 @@ private func callback(decompressionOutputRefCon: UnsafeMutableRawPointer,
                       imageBuffer: CVImageBuffer?,
                       presentationTimeStamp: CMTime,
                       presentationDuration: CMTime) {
-    
+    var outputPixelBuffer = sourceFrameRefCon.assumingMemoryBound(to: CVPixelBuffer.self);
+    if let imageBuffer = imageBuffer {
+        outputPixelBuffer = UnsafeMutablePointer(Unmanaged.passRetained(imageBuffer).toOpaque())
+    }
 }
 
 class VTDecoder: VideoDecoder {
@@ -47,17 +50,65 @@ class VTDecoder: VideoDecoder {
         if let _ = session {
             return true
         }
-        return false
+        let codecContext = context.videoCodecContext
+        let extradata = codecContext.pointee.extradata
+        let dataSize = codecContext.pointee.extradata_size
+        
+        guard let data = extradata else { return false }
+        if dataSize < 7 || data[0] != 1 {
+            return false
+        } else {
+            formatDescription = createFormatDescription(codec_type: kCMVideoCodecType_H264,
+                                                        width: codecContext.pointee.width,
+                                                        height: codecContext.pointee.height,
+                                                        extradata: data,
+                                                        extradata_size: dataSize)
+            guard let desc = formatDescription else { return false }
+            let destinationPixelBufferAttributes = NSMutableDictionary()
+            destinationPixelBufferAttributes.setValue(NSNumber(value: kCVPixelFormatType_420YpCbCr8BiPlanarVideoRange), forKey: kCVPixelBufferPixelFormatTypeKey as String)
+            var callBackRecord = VTDecompressionOutputCallbackRecord()
+            callBackRecord.decompressionOutputCallback = callback as? VTDecompressionOutputCallback
+            callBackRecord.decompressionOutputRefCon = Unmanaged.passUnretained(self).toOpaque()
+            let status = VTDecompressionSessionCreate(allocator: kCFAllocatorDefault,
+                                                      formatDescription: desc,
+                                                      decoderSpecification: NSMutableDictionary(),
+                                                      imageBufferAttributes: destinationPixelBufferAttributes,
+                                                      outputCallback: &callBackRecord,
+                                                      decompressionSessionOut: &session)
+            if status != noErr {
+                return false
+            } else {
+                return true
+            }
+        }
     }
     
     func decode(packet: AVPacket) -> NSArray {
         fatalError()
     }
     
-    static func CFDictionarySetObject(dict: CFMutableDictionary, key: UnsafeRawPointer, value: UnsafeRawPointer) {
-        CFDictionarySetValue(dict, key, value)
+    func createFormatDescription(codec_type: CMVideoCodecType, width: Int32, height: Int32, extradata: UnsafePointer<UInt8>, extradata_size: Int32) -> CMFormatDescription? {
+        let par = NSMutableDictionary()
+        par.setObject(0 as NSNumber, forKey: "HorizontalSpacing" as NSString)
+        par.setObject(0 as NSNumber, forKey: "VerticalSpacing" as NSString)
+        
+        let atoms = NSMutableDictionary()
+        atoms.setObject(NSData(bytes: extradata, length: Int(extradata_size)), forKey: "avcC" as NSString)
+        
+        let extensions = NSMutableDictionary()
+        extensions.setObject(par, forKey: "CVPixelAspectRatio" as NSString)
+        extensions.setObject(atoms, forKey: "SampleDescriptionExtensionAtoms" as NSString)
+        extensions.setObject("avcC" as NSString, forKey: "FormatName" as NSString)
+        extensions.setObject("left" as NSString, forKey: "CVImageBufferChromaLocationBottomField" as NSString)
+        extensions.setObject("left" as NSString, forKey: "CVImageBufferChromaLocationTopField" as NSString)
+        extensions.setObject(0 as NSNumber, forKey: "FullRangeVideo" as NSString)
+        
+        var formatDescription: CMFormatDescription?
+        CMVideoFormatDescriptionCreate(allocator: nil, codecType: CMVideoCodecType(codec_type), width: width, height: height, extensions: extensions, formatDescriptionOut: &formatDescription)
+        return formatDescription
     }
 }
+
 
 @objc class FFDecoder: NSObject, VideoDecoder {
     weak var context: SCFormatContext?
@@ -80,10 +131,11 @@ class VTDecoder: VideoDecoder {
         while result >= 0 {
             result = avcodec_receive_frame(context.videoCodecContext, temp_frame)
             if result < 0 {
-                fatalError() //todo
+                break
             } else {
-                let frame = videoFrameFromTempFrame(packetSize: Int(packet.size))
-                array.add(frame)
+                if let frame = videoFrameFromTempFrame(packetSize: Int(packet.size)) {
+                    array.add(frame)
+                }
             }
         }
         av_packet_unref(&packet)
@@ -106,3 +158,6 @@ class VTDecoder: VideoDecoder {
     }
 
 }
+
+
+

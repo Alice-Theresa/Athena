@@ -110,7 +110,7 @@ static void didDecompress(void *decompressionOutputRefCon,
     }
 }
 
-- (NSArray<SCFrame *> *)decode:(AVPacket)packet {
+- (NSArray<SCFrame *> *)decodeWithPacket:(AVPacket)packet {
     CVPixelBufferRef outputPixelBuffer = NULL;
     CMBlockBufferRef blockBuffer = NULL;
     OSStatus status = CMBlockBufferCreateWithMemoryBlock(kCFAllocatorDefault, (void *)packet.data, packet.size, kCFAllocatorNull,
