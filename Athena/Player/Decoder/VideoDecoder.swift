@@ -15,25 +15,42 @@ import VideoToolbox
     func decode(packet: AVPacket) -> NSArray
 }
 
-private func callback(decompressionOutputRefCon: UnsafeMutableRawPointer,
-                      sourceFrameRefCon: UnsafeMutableRawPointer,
-                      status: OSStatus,
-                      infoFlags: VTDecodeInfoFlags,
-                      imageBuffer: CVImageBuffer?,
-                      presentationTimeStamp: CMTime,
-                      presentationDuration: CMTime) {
-    var outputPixelBuffer = sourceFrameRefCon.assumingMemoryBound(to: CVPixelBuffer.self);
-    if let imageBuffer = imageBuffer {
-        outputPixelBuffer = UnsafeMutablePointer(Unmanaged.passRetained(imageBuffer).toOpaque())
-    }
-}
+//func callback(decompressionOutputRefCon: UnsafeMutableRawPointer,
+//              sourceFrameRefCon: UnsafeMutableRawPointer,
+//              status: OSStatus,
+//              infoFlags: VTDecodeInfoFlags,
+//              imageBuffer: CVImageBuffer?,
+//              presentationTimeStamp: CMTime,
+//              presentationDuration: CMTime) {
+//    let outputPixelBuffer = sourceFrameRefCon.assumingMemoryBound(to: CVPixelBuffer.self);
+//    if let imageBuffer = imageBuffer {
+//        outputPixelBuffer.pointee = imageBuffer
+//    }
+//}
 
-class VTDecoder: VideoDecoder {
+@objc class VTDecoder: NSObject, VideoDecoder {
     
     weak var context: SCFormatContext?
     
     var session: VTDecompressionSession?
     var formatDescription: CMVideoFormatDescription?
+    
+    var callback: VTDecompressionOutputCallback = {(
+        decompressionOutputRefCon: UnsafeMutableRawPointer?,
+        sourceFrameRefCon: UnsafeMutableRawPointer?,
+        status: OSStatus,
+        infoFlags: VTDecodeInfoFlags,
+        imageBuffer: CVImageBuffer?,
+        presentationTimeStamp: CMTime,
+        presentationDuration: CMTime) in
+        guard let source = sourceFrameRefCon else {
+            return
+        }
+        let outputPixelBuffer = source.assumingMemoryBound(to: CVPixelBuffer.self);
+        if let imageBuffer = imageBuffer {
+            outputPixelBuffer.pointee = imageBuffer
+        }
+    }
     
     deinit {
         if let session = session {
@@ -42,8 +59,10 @@ class VTDecoder: VideoDecoder {
         }
     }
     
-    init(formatContext: SCFormatContext) {
+    @objc init(formatContext: SCFormatContext) {
         context = formatContext
+        super.init()
+        tryInitDecoder(context: formatContext)
     }
     
     func tryInitDecoder(context: SCFormatContext) -> Bool {
@@ -67,7 +86,7 @@ class VTDecoder: VideoDecoder {
             let destinationPixelBufferAttributes = NSMutableDictionary()
             destinationPixelBufferAttributes.setValue(NSNumber(value: kCVPixelFormatType_420YpCbCr8BiPlanarVideoRange), forKey: kCVPixelBufferPixelFormatTypeKey as String)
             var callBackRecord = VTDecompressionOutputCallbackRecord()
-            callBackRecord.decompressionOutputCallback = callback as? VTDecompressionOutputCallback
+            callBackRecord.decompressionOutputCallback = callback
             callBackRecord.decompressionOutputRefCon = Unmanaged.passUnretained(self).toOpaque()
             let status = VTDecompressionSessionCreate(allocator: kCFAllocatorDefault,
                                                       formatDescription: desc,
@@ -83,9 +102,57 @@ class VTDecoder: VideoDecoder {
         }
     }
     
-    func decode(packet: AVPacket) -> NSArray {
-        fatalError()
+    @objc func decode(packet: AVPacket) -> NSArray {
+        var packet = packet
+        var outputPixelBuffer: CVPixelBuffer?
+        var blockBuffer: CMBlockBuffer?
+        var status = CMBlockBufferCreateWithMemoryBlock(allocator: kCFAllocatorDefault,
+                                                        memoryBlock: packet.data,
+                                                        blockLength: Int(packet.size),
+                                                        blockAllocator: kCFAllocatorNull,
+                                                        customBlockSource: nil,
+                                                        offsetToData: 0,
+                                                        dataLength: Int(packet.size),
+                                                        flags: 0,
+                                                        blockBufferOut: &blockBuffer)
+        if status == kCMBlockBufferNoErr {
+            var sampleBuffer: CMSampleBuffer?
+            status = CMSampleBufferCreate(allocator: kCFAllocatorDefault,
+                                          dataBuffer: blockBuffer,
+                                          dataReady: true,
+                                          makeDataReadyCallback: nil,
+                                          refcon: nil,
+                                          formatDescription: formatDescription,
+                                          sampleCount: 1,
+                                          sampleTimingEntryCount: 0,
+                                          sampleTimingArray: nil,
+                                          sampleSizeEntryCount: 0,
+                                          sampleSizeArray: nil,
+                                          sampleBufferOut: &sampleBuffer)
+            if (status == kCMBlockBufferNoErr) {
+                if let sampleBuffer = sampleBuffer, let session = session {
+                    var flagsOut: VTDecodeInfoFlags = []
+                    let decodeStatus = VTDecompressionSessionDecodeFrame(session, sampleBuffer: sampleBuffer, flags: [], frameRefcon: &outputPixelBuffer, infoFlagsOut: &flagsOut)
+                    if(decodeStatus == kVTInvalidSessionErr) {
+                        
+                    } else if(decodeStatus == kVTVideoDecoderBadDataErr) {
+                        
+                    } else if(decodeStatus != noErr) {
+                        
+                    }
+                    if let outputPixelBuffer = outputPixelBuffer, let context = context {
+                        let videoFrame = NV12VideoFrame(position: Double(packet.pts) * context.videoTimebase, duration: Double(packet.duration) * context.videoTimebase, pixelBuffer: outputPixelBuffer)
+                        av_packet_unref(&packet);
+                        return NSArray(array: [videoFrame])
+                    }
+                }
+            }
+        }
+        av_packet_unref(&packet);
+        return NSArray(array: [])
     }
+        
+    
     
     func createFormatDescription(codec_type: CMVideoCodecType, width: Int32, height: Int32, extradata: UnsafePointer<UInt8>, extradata_size: Int32) -> CMFormatDescription? {
         let par = NSMutableDictionary()
