@@ -19,6 +19,25 @@ import Foundation
     var duration: TimeInterval = -.greatestFiniteMagnitude
 }
 
+@objc class AudioFrame: NSObject, Frame {
+    var position: TimeInterval
+    var duration: TimeInterval
+    
+    var samples: UnsafeMutablePointer<Float>?
+//    let length: Int
+//    let outputOffset: Int
+//    let bufferSize: Int
+    
+    deinit {
+        free(samples)
+    }
+    
+    init(position: TimeInterval, duration: TimeInterval, samplesLength: UInt) {
+        self.position = position
+        self.duration = duration
+    }
+}
+
 @objc class NV12VideoFrame: NSObject, Frame, RenderDataNV12 {
     let width: Int
     let height: Int
