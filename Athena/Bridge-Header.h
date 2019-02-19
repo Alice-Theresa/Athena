@@ -9,12 +9,19 @@
 #ifndef Bridge_Header_h
 #define Bridge_Header_h
 
-#import "SCShaderType.h"
 #import <libavformat/avformat.h>
+#import <libavcodec/avcodec.h>
+#import <libswscale/swscale.h>
+#import <libswresample/swresample.h>
+#import <libavutil/pixdesc.h>
+
 #import "SCFormatContext.h"
 #import "SCAudioManager.h"
 #import "SCAudioDecoder.h"
 #import "SCPacketQueue.h"
 #import "SCFrameQueue.h"
+#import "SCShaderType.h"
+
+
 
 #endif /* Bridge_Header_h */

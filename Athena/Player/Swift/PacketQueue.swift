@@ -44,6 +44,7 @@ fileprivate class PacketNode {
             var packet: AVPacket?
             while let next = header.next {
 //                av_packet_unref(&packet)
+            
             }
         }
         packetTotalSize = 0
