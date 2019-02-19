@@ -52,6 +52,7 @@ import VideoToolbox
         tryInitDecoder(context: formatContext)
     }
     
+    @discardableResult
     func tryInitDecoder(context: SCFormatContext) -> Bool {
         if let _ = session {
             return true
