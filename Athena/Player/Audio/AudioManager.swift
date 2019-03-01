@@ -10,16 +10,16 @@ import Foundation
 import AVFoundation
 import Accelerate
 
-protocol AudioManagerDelegate: NSObjectProtocol {
+@objc protocol AudioManagerDelegate: NSObjectProtocol {
     func fetch(outputData: UnsafeMutablePointer<Float>, numberOfFrames: UInt32, numberOfChannels: UInt32)
 }
 
-class AudioManager: NSObject {
-    weak var delegate: AudioManagerDelegate?
-    var outData = UnsafeMutablePointer<Float>.allocate(capacity: 1)
+@objc class AudioManager: NSObject {
+    @objc weak var delegate: AudioManagerDelegate?
+    var outData = UnsafeMutablePointer<Float>.allocate(capacity: 4096 * 2)
     
     var audioUnit: AudioUnit!
-    let audioSession: AVAudioSession
+    let audioSession = AVAudioSession.sharedInstance()
     
     var callback: AURenderCallback = {(
         inRefCon: UnsafeMutableRawPointer,
@@ -27,30 +27,47 @@ class AudioManager: NSObject {
         inTimeStamp: UnsafePointer<AudioTimeStamp>,
         inBusNumber: UInt32,
         inNumberFrames:UInt32,
-        ioData: UnsafeMutablePointer<AudioBufferList>?) in
+        ioData: UnsafeMutablePointer<AudioBufferList>?) -> OSStatus in
         
         if let ioData = ioData {
             for iBuffer in 0..<ioData.pointee.mNumberBuffers {
-                memset(ioData.pointee.mBuffers[iBuffer].mData, 0, ioData.pointee.mBuffers[iBuffer].mDataByteSize)
+                memset(ioData[Int(iBuffer)].mBuffers.mData, 0, Int(ioData[Int(iBuffer)].mBuffers.mDataByteSize))
             }
-            return noErr
+            let player = Unmanaged<AudioManager>.fromOpaque(inRefCon).takeUnretainedValue()
+            if let delegate = player.delegate {
+                delegate.fetch(outputData: player.outData, numberOfFrames: inNumberFrames, numberOfChannels: 2)
+                var scale = Float(INT16_MAX)
+                vDSP_vsmul(player.outData, 1, &scale, player.outData, 1, vDSP_Length(inNumberFrames * 2));
+                for iBuffer in 0..<ioData.pointee.mNumberBuffers {
+                    let thisNumChannels = ioData[Int(iBuffer)].mBuffers.mNumberChannels
+                    for iChannel in 0..<thisNumChannels {
+                        vDSP_vfix16(player.outData + Int(iChannel),
+                                    2,
+                                    ioData[Int(iBuffer)].mBuffers.mData!.assumingMemoryBound(to: Int16.self) + Int(iChannel),
+                                    vDSP_Stride(thisNumChannels),
+                                    vDSP_Length(inNumberFrames))
+                    }
+                }
+                return noErr
+            }
+            
         }
         
-        return Int32(1)
+        return noErr
     }
     
-    private override init() {
-        audioSession =  .sharedInstance()
+    @objc public override init() {
         do {
             try audioSession.setPreferredSampleRate(44_100)
             // https://stackoverflow.com/questions/51010390/avaudiosession-setcategory-swift-4-2-ios-12-play-sound-on-silent
             if #available(iOS 10.0, *) {
-                try audioSession.setCategory(.playAndRecord, mode: .default, options: [.allowBluetooth])
+                try audioSession.setCategory(.playback, mode: .default, options: [])
             } else {
-                audioSession.perform(NSSelectorFromString("setCategory:withOptions:error:"), with: AVAudioSession.Category.playAndRecord, with:  [AVAudioSession.CategoryOptions.allowBluetooth])
+                audioSession.perform(NSSelectorFromString("setCategory:withOptions:error:"), with: AVAudioSession.Category.playAndRecord, with:  [AVAudioSession.CategoryOptions.defaultToSpeaker])
             }
             try audioSession.setActive(true)
         } catch {
+            print("error")
         }
         super.init()
         initPlayer()
@@ -74,28 +91,32 @@ class AudioManager: NSObject {
                                                        mChannelsPerFrame: 2,
                                                        mBitsPerChannel: 16,
                                                        mReserved: 0)
-        let _ = AudioUnitSetProperty(audioUnit,
+        var result = AudioUnitSetProperty(audioUnit,
                                           kAudioUnitProperty_StreamFormat,
                                           kAudioUnitScope_Input,
                                           0,
                                           &outputFormat,
                                           UInt32(MemoryLayout.size(ofValue: outputFormat)))
+        print(result)
         var callbackStruct = AURenderCallbackStruct()
         callbackStruct.inputProc = callback
-        callbackStruct.inputProcRefCon = nil
-        let _ = AudioUnitSetProperty(audioUnit,
-                                      kAudioOutputUnitProperty_SetInputCallback,
-                                      kAudioUnitScope_Global,
-                                      1,
+        callbackStruct.inputProcRefCon = UnsafeMutableRawPointer(Unmanaged.passUnretained(self).toOpaque())
+        result = AudioUnitSetProperty(audioUnit,
+                                      kAudioUnitProperty_SetRenderCallback,
+                                      kAudioUnitScope_Input,
+                                      0,
                                       &callbackStruct,
                                       UInt32(MemoryLayout<AURenderCallbackStruct>.size));
+        print(result)
+        result = AudioUnitInitialize(audioUnit)
+        print(result)
     }
     
-    func play() {
+    @objc func play() {
         AudioOutputUnitStart(audioUnit)
     }
 
-    func stop() {
+    @objc func stop() {
         AudioOutputUnitStop(audioUnit)
     }
 }

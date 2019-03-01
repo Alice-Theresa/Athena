@@ -8,7 +8,7 @@
 
 #import <libavformat/avformat.h>
 #import "SCFormatContext.h"
-#import "SCAudioManager.h"
+//#import "SCAudioManager.h"
 #import "SCControl.h"
 
 #import "SCSynchronizer.h"
@@ -24,7 +24,7 @@
 
 #import "Athena-Swift.h"
 
-@interface SCControl () <SCAudioManagerDelegate, MTKViewDelegate>
+@interface SCControl () <AudioManagerDelegate, MTKViewDelegate>
 
 @property (nonatomic, strong) SCFormatContext *context;
 
@@ -57,6 +57,8 @@
 @property (nonatomic, strong) SCFrame *videoFrame;
 @property (nonatomic, strong) SCAudioFrame *audioFrame;
 
+@property (nonatomic, strong) AudioManager *manager;
+
 @end
 
 @implementation SCControl
@@ -85,6 +87,7 @@
         _videoSeekingTime = -DBL_MAX;
         _audioSeekingTime = -DBL_MAX;
         _syncor = [[SCSynchronizer alloc] init];
+        _manager = [[AudioManager alloc] init];
     }
     return self;
 }
@@ -101,7 +104,8 @@
     _videoDecoder = [[FFDecoder alloc] initWithFormatContext:_context];
     _audioDecoder = [[SCAudioDecoder alloc] initWithFormatContext:_context];
     _currentDecoder = _VTDecoder;
-    [SCAudioManager shared].delegate = self;
+//    [SCAudioManager shared].delegate = self;
+    self.manager.delegate = self;
     [self start];
 }
 
@@ -124,19 +128,22 @@
     [self.controlQueue addOperation:self.videoDecodeOperation];
     [self.controlQueue addOperation:self.audioDecodeOperation];
     
-    [[SCAudioManager shared] play];
+//    [[SCAudioManager shared] play];
+    [self.manager play];
     self.controlState = SCControlStatePlaying;
 }
 
 - (void)pause {
     self.controlState = SCControlStatePaused;
-    [[SCAudioManager shared] stop];
+//    [[SCAudioManager shared] stop];
+     [self.manager stop];
     self.mtkView.paused = YES;
 }
 
 - (void)resume {
     self.controlState = SCControlStatePlaying;
-    [[SCAudioManager shared] play];
+//    [[SCAudioManager shared] play];
+     [self.manager play];
     self.mtkView.paused = NO;
 }
 
@@ -148,7 +155,8 @@
     self.videoDecodeOperation = nil;
     self.audioDecodeOperation = nil;
     [self flushQueue];
-    [[SCAudioManager shared] stop];
+//    [[SCAudioManager shared] stop];
+    [self.manager stop];
     [self.context closeFile];
 }
 
@@ -308,7 +316,7 @@
 
 #pragma mark - audio delegate
 
-- (void)fetchoutputData:(float *)outputData numberOfFrames:(UInt32)numberOfFrames numberOfChannels:(UInt32)numberOfChannels {
+- (void)fetchWithOutputData:(float * _Nonnull)outputData numberOfFrames:(uint32_t)numberOfFrames numberOfChannels:(uint32_t)numberOfChannels {
     @autoreleasepool {
         while (numberOfFrames > 0) {
             if (!self.audioFrame) {

@@ -31,9 +31,9 @@ class Controller: NSObject {
     private let videoPacketQueue: SCPacketQueue
     private let audioPacketQueue: SCPacketQueue
     
-    private let readPacketOperation: Operation
-    private let videoDecodeOperation: Operation
-    private let audioDecodeOperation: Operation
+    private let readPacketOperation: BlockOperation
+    private let videoDecodeOperation: BlockOperation
+    private let audioDecodeOperation: BlockOperation
     private let controlQueue: OperationQueue
     
     private weak var mtkView: MTKView?
@@ -55,9 +55,9 @@ class Controller: NSObject {
         videoFrameQueue = FrameQueue()
         audioFrameQueue = SCFrameQueue()
         
-        readPacketOperation = Operation()
-        videoDecodeOperation = Operation()
-        audioDecodeOperation = Operation()
+        readPacketOperation = BlockOperation()
+        videoDecodeOperation = BlockOperation()
+        audioDecodeOperation = BlockOperation()
         controlQueue = OperationQueue()
         
         context = SCFormatContext()
@@ -67,6 +67,21 @@ class Controller: NSObject {
     
     func open(path: String) {
         
+    }
+    
+    func start() {
+        readPacketOperation.addExecutionBlock {
+            
+        }
+        videoDecodeOperation.addExecutionBlock {
+            
+        }
+        audioDecodeOperation.addExecutionBlock {
+            
+        }
+        controlQueue.addOperation(readPacketOperation)
+        controlQueue.addOperation(videoDecodeOperation)
+        controlQueue.addOperation(audioDecodeOperation)
     }
     
     func pause() {
