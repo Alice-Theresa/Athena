@@ -36,6 +36,10 @@ import Foundation
         self.position = position
         self.duration = duration
     }
+    
+    func setting(samplesLength: Int) {
+        
+    }
 }
 
 @objc class NV12VideoFrame: NSObject, Frame, RenderDataNV12 {

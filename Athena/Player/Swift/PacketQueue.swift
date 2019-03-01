@@ -42,9 +42,16 @@ fileprivate class PacketNode {
         semaphore.wait()
         if let header = header {
             var packet: AVPacket?
+            header.packet.getValue(&packet)
+            if var packet = packet {
+                av_packet_unref(&packet)
+            }
             while let next = header.next {
-//                av_packet_unref(&packet)
-            
+                next.packet.getValue(&packet)
+                if var packet = packet {
+                    av_packet_unref(&packet)
+                }
+                self.header = next
             }
         }
         packetTotalSize = 0

@@ -603,7 +603,6 @@
 			isa = PBXGroup;
 			children = (
 				7625A10F2207232900578C0B /* Deprecated */,
-				52EAE6DA21F03C8200D9B90B /* Audio */,
 				520EB41B22002A72002243DC /* Queue */,
 				52EAE6DC21F03CA600D9B90B /* Decoder */,
 				52EAE6D921F03C6000D9B90B /* Model */,
@@ -640,7 +639,6 @@
 			children = (
 				52296C1421E742D0006585FE /* SCAudioManager.h */,
 				52296C1521E742D0006585FE /* SCAudioManager.m */,
-				7608F09F220AADFF001D7086 /* AudioManager.swift */,
 			);
 			path = Audio;
 			sourceTree = "<group>";
@@ -671,6 +669,7 @@
 			children = (
 				763EE4EF2207E74E0090A0A3 /* VideoDecoder.swift */,
 				763EE4F12207E7560090A0A3 /* AudioDecoder.swift */,
+				7608F09F220AADFF001D7086 /* AudioManager.swift */,
 				7656D2B52207195100E5FB2A /* Render.swift */,
 				7656D2AB220717D900E5FB2A /* Mapping.metal */,
 				7656D2AC220717D900E5FB2A /* SCShaderType.h */,
@@ -685,6 +684,7 @@
 		7625A10F2207232900578C0B /* Deprecated */ = {
 			isa = PBXGroup;
 			children = (
+				52EAE6DA21F03C8200D9B90B /* Audio */,
 				7608F09B2209F1AA001D7086 /* Decoder */,
 				763EE4EE2207E52F0090A0A3 /* Render */,
 				763EE4ED2207E5260090A0A3 /* Queue */,

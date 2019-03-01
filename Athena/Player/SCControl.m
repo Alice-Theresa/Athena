@@ -8,7 +8,6 @@
 
 #import <libavformat/avformat.h>
 #import "SCFormatContext.h"
-//#import "SCAudioManager.h"
 #import "SCControl.h"
 
 #import "SCSynchronizer.h"
@@ -57,7 +56,7 @@
 @property (nonatomic, strong) SCFrame *videoFrame;
 @property (nonatomic, strong) SCAudioFrame *audioFrame;
 
-@property (nonatomic, strong) AudioManager *manager;
+@property (nonatomic, strong) AudioManager *audioManager;
 
 @end
 
@@ -87,7 +86,7 @@
         _videoSeekingTime = -DBL_MAX;
         _audioSeekingTime = -DBL_MAX;
         _syncor = [[SCSynchronizer alloc] init];
-        _manager = [[AudioManager alloc] init];
+        _audioManager = [[AudioManager alloc] init];
     }
     return self;
 }
@@ -104,8 +103,7 @@
     _videoDecoder = [[FFDecoder alloc] initWithFormatContext:_context];
     _audioDecoder = [[SCAudioDecoder alloc] initWithFormatContext:_context];
     _currentDecoder = _VTDecoder;
-//    [SCAudioManager shared].delegate = self;
-    self.manager.delegate = self;
+    self.audioManager.delegate = self;
     [self start];
 }
 
@@ -128,22 +126,19 @@
     [self.controlQueue addOperation:self.videoDecodeOperation];
     [self.controlQueue addOperation:self.audioDecodeOperation];
     
-//    [[SCAudioManager shared] play];
-    [self.manager play];
+    [self.audioManager play];
     self.controlState = SCControlStatePlaying;
 }
 
 - (void)pause {
     self.controlState = SCControlStatePaused;
-//    [[SCAudioManager shared] stop];
-     [self.manager stop];
+     [self.audioManager stop];
     self.mtkView.paused = YES;
 }
 
 - (void)resume {
     self.controlState = SCControlStatePlaying;
-//    [[SCAudioManager shared] play];
-     [self.manager play];
+     [self.audioManager play];
     self.mtkView.paused = NO;
 }
 
@@ -155,8 +150,7 @@
     self.videoDecodeOperation = nil;
     self.audioDecodeOperation = nil;
     [self flushQueue];
-//    [[SCAudioManager shared] stop];
-    [self.manager stop];
+    [self.audioManager stop];
     [self.context closeFile];
 }
 
