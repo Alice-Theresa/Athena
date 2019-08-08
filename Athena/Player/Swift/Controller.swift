@@ -17,12 +17,12 @@ enum ControlState: Int {
     case Closed
 }
 
-class Controller: NSObject {
+@objc class Controller: NSObject {
     
     private let context: SCFormatContext
     
-    private var VTDecoder: VTDecoder?
-    private var FFDecoder: FFDecoder?
+    private var vtDecoder: VTDecoder?
+    private var ffDecoder: FFDecoder?
     private var videoDecoder: VideoDecoder?
     private var audioDecoder: SCAudioDecoder?
     
@@ -43,14 +43,13 @@ class Controller: NSObject {
     
     private var isSeeking: Bool
     private var videoSeekingTime: TimeInterval
+    private var videoFrame: Frame?
     
     deinit {
         
     }
     
-    init(renderView: MTKView) {
-        
-        mtkView = renderView
+    @objc init(renderView: MTKView) {
         
         videoPacketQueue = SCPacketQueue()
         audioPacketQueue = SCPacketQueue()
@@ -66,19 +65,30 @@ class Controller: NSObject {
         render = Render()
         isSeeking = false
         videoSeekingTime = 0
+        
+        mtkView = renderView
+        mtkView!.device = render.device
+        mtkView!.depthStencilPixelFormat = .invalid
+        mtkView!.framebufferOnly = false
+        mtkView!.colorPixelFormat = .bgra8Unorm
+
         super.init()
+        mtkView!.delegate = self
     }
     
-    func open(path: String) {
-        
+    @objc func open(path: NSString) {
+        context.openPath(String(path))
+        vtDecoder = VTDecoder(formatContext: context)
+        videoDecoder = vtDecoder
+        start()
     }
     
     func start() {
         readPacketOperation.addExecutionBlock {
-            
+            self.readPacket()
         }
         videoDecodeOperation.addExecutionBlock {
-            
+            self.decodeVideoFrame()
         }
         audioDecodeOperation.addExecutionBlock {
             
@@ -182,7 +192,24 @@ class Controller: NSObject {
     }
     
     func rendering() {
-        
+        if let playFrame = videoFrame {
+            if playFrame.isMember(of: MarkerFrame.self) {
+                videoSeekingTime = -1
+                videoFrame = nil
+                return
+            }
+            if videoSeekingTime > 0 {
+                videoFrame = nil
+                return
+            }
+            render.render(frame: playFrame as! RenderData, drawIn: mtkView!)
+            videoFrame = nil
+        } else {
+            videoFrame = videoFrameQueue.dequeue()
+            if videoFrame == nil {
+                return
+            }
+        }
     }
 }
 
