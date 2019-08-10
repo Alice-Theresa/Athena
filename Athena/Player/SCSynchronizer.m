@@ -7,7 +7,6 @@
 //
 
 #import "SCSynchronizer.h"
-#import "SCAudioFrame.h"
 
 @interface SCSynchronizer ()
 

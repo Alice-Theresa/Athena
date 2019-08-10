@@ -23,22 +23,30 @@ import Foundation
     var position: TimeInterval
     var duration: TimeInterval
     
-    var samples: UnsafeMutablePointer<Float>?
-//    let length: Int
-//    let outputOffset: Int
-//    let bufferSize: Int
+    @objc var samples: UnsafeMutableRawPointer!
+    @objc var length: Int = 0
+    @objc var outputOffset: Int = 0
+    var bufferSize: Int = 0
     
     deinit {
         free(samples)
     }
     
-    init(position: TimeInterval, duration: TimeInterval, samplesLength: UInt) {
+    @objc init(position: TimeInterval, duration: TimeInterval) {
         self.position = position
         self.duration = duration
     }
     
-    func setting(samplesLength: Int) {
-        
+    @objc func setting(samplesLength: Int) {
+        if bufferSize < samplesLength {
+            if (bufferSize > 0 && samples != nil) {
+                free(samples)
+            }
+            bufferSize = samplesLength
+            samples = malloc(bufferSize)
+        }
+        length = samplesLength
+        outputOffset = 0
     }
 }
 

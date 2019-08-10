@@ -20,8 +20,8 @@
 @property (nonatomic, strong) MTKView *mtkView;
 @property (nonatomic, strong) SCPlayerControlView *controlView;
 
-@property (nonatomic, strong) Controller *controler;
-//@property (nonatomic, strong) SCControl *controler;
+//@property (nonatomic, strong) Controller *controler;
+@property (nonatomic, strong) SCControl *controler;
 @property (nonatomic, assign) BOOL isHideContainer;
 @property (nonatomic, assign) BOOL isTouchSlider;
 
@@ -33,7 +33,7 @@
     [super viewDidLoad];
     [self setup];
     NSString *path = [[[NSBundle mainBundle] resourcePath] stringByAppendingPathComponent:@"Aimer.mkv"];
-    [self.controler openWithPath:path];
+    [self.controler openPath:path];
 }
 
 - (void)viewWillAppear:(BOOL)animated {
@@ -48,7 +48,7 @@
 
 - (void)viewDidDisappear:(BOOL)animated {
     [super viewDidDisappear:animated];
-//    [self.controler close];
+    [self.controler close];
 }
 
 - (void)setup {
@@ -58,8 +58,8 @@
     [self.view addSubview:self.mtkView];
     [self.mtkView addSubview:self.controlView];
     
-    self.controler = [[Controller alloc] initWithRenderView:self.mtkView];
-//    self.controler.delegate = self;
+    self.controler = [[SCControl alloc] initWithRenderView:self.mtkView];
+    self.controler.delegate = self;
     
     [self.controlView.actionButton addTarget:self action:@selector(resumeOrPause) forControlEvents:UIControlEventTouchUpInside];
     [self.controlView.backButton addTarget:self action:@selector(popVC) forControlEvents:UIControlEventTouchUpInside];

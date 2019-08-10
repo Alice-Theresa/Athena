@@ -8,10 +8,10 @@
 
 #import "SCAudioDecoder.h"
 #import "SCFormatContext.h"
-#import "SCAudioFrame.h"
 
 #include <libswresample/swresample.h>
 #import <Accelerate/Accelerate.h>
+#import "Athena-Swift.h"
 
 @interface SCAudioDecoder () {
     
@@ -34,7 +34,7 @@
 - (void)dealloc {
     av_frame_free(&_temp_frame);
     swr_free(&_audio_swr_context);
-    NSLog(@"Audio Decoder dealloc");    
+    NSLog(@"Audio Decoder dealloc");
 }
 
 - (instancetype)initWithFormatContext:(SCFormatContext *)formatContext {
@@ -86,7 +86,7 @@
             }
             break;
         }
-        SCAudioFrame *frame = [self innerDecode:packet.size];
+        AudioFrame *frame = [self innerDecode:packet.size];
         if (frame) {
             [array addObject:frame];
         }
@@ -95,7 +95,7 @@
     return [array copy];
 }
 
-- (SCAudioFrame *)innerDecode:(int)packetSize {
+- (AudioFrame *)innerDecode:(int)packetSize {
     if (!_temp_frame->data[0]) {
         return nil;
     }
@@ -124,21 +124,19 @@
         @[][1];
     }
     
-    SCAudioFrame *audioFrame = [[SCAudioFrame alloc] init];
-//    audioFrame.packetSize = packetSize;
-    audioFrame.position = av_frame_get_best_effort_timestamp(_temp_frame) * self.context.audioTimebase;
-    audioFrame.duration = av_frame_get_pkt_duration(_temp_frame) * self.context.audioTimebase;
-    
+    NSTimeInterval position = av_frame_get_best_effort_timestamp(_temp_frame) * self.context.audioTimebase;
+    NSTimeInterval duration = av_frame_get_pkt_duration(_temp_frame) * self.context.audioTimebase;
+    AudioFrame *audioFrame = [[AudioFrame alloc] initWithPosition:position duration:duration];
     if (audioFrame.duration == 0) {
-        audioFrame.duration = audioFrame->length / (sizeof(float) * _channelCount * _samplingRate);
+        audioFrame.duration = audioFrame.length / (sizeof(float) * _channelCount * _samplingRate);
     }
     
     const NSUInteger numberOfElements = numberOfFrames * self->_channelCount;
-    [audioFrame setSamplesLength:numberOfElements * sizeof(float)];
+    [audioFrame settingWithSamplesLength:numberOfElements * sizeof(float)];
     
     float scale = 1.0 / (float)INT16_MAX ;
-    vDSP_vflt16((SInt16 *)audioDataBuffer, 1, audioFrame->samples, 1, numberOfElements);
-    vDSP_vsmul(audioFrame->samples, 1, &scale, audioFrame->samples, 1, numberOfElements);
+    vDSP_vflt16((SInt16 *)audioDataBuffer, 1, audioFrame.samples, 1, numberOfElements);
+    vDSP_vsmul(audioFrame.samples, 1, &scale, audioFrame.samples, 1, numberOfElements);
     
     return audioFrame;
 }

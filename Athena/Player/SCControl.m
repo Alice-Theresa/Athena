@@ -12,7 +12,6 @@
 
 #import "SCSynchronizer.h"
 #import "SCFrame.h"
-#import "SCAudioFrame.h"
 
 #import "SCAudioDecoder.h"
 #import "SCVTDecoder.h"
@@ -35,7 +34,7 @@
 @property (nonatomic, strong) SCPacketQueue *videoPacketQueue;
 @property (nonatomic, strong) SCPacketQueue *audioPacketQueue;
 @property (nonatomic, strong) FrameQueue *videoFrameQueue;
-@property (nonatomic, strong) SCFrameQueue *audioFrameQueue;
+@property (nonatomic, strong) FrameQueue *audioFrameQueue;
 
 @property (nonatomic, strong) NSInvocationOperation *readPacketOperation;
 @property (nonatomic, strong) NSInvocationOperation *videoDecodeOperation;
@@ -54,7 +53,7 @@
 @property (nonatomic, strong) SCSynchronizer *syncor;
 
 @property (nonatomic, strong) SCFrame *videoFrame;
-@property (nonatomic, strong) SCAudioFrame *audioFrame;
+@property (nonatomic, strong) AudioFrame *audioFrame;
 
 @property (nonatomic, strong) AudioManager *audioManager;
 
@@ -71,7 +70,7 @@
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(appWillResignActive) name:UIApplicationWillResignActiveNotification object:nil];
         
         _videoFrameQueue  = [[FrameQueue alloc] init];
-        _audioFrameQueue  = [[SCFrameQueue alloc] init];
+        _audioFrameQueue  = [[FrameQueue alloc] init];
         _videoPacketQueue = [[SCPacketQueue alloc] init];
         _audioPacketQueue = [[SCPacketQueue alloc] init];
         _render           = [[Render alloc] init];
@@ -260,15 +259,16 @@
             if (packet.flags == AV_PKT_FLAG_DISCARD) {
                 avcodec_flush_buffers(self.context.audioCodecContext);
                 [self.audioFrameQueue flush];
-                SCFrame *frame = [[SCFrame alloc] init];
-                frame.duration = -1;
-                [self.audioFrameQueue enqueueFramesAndSort:@[frame]];
+//                Frame *frame = [[Frame alloc] init];
+//                frame.duration = -1;
+//                [self.audioFrameQueue enqueueFramesAndSort:@[frame]];
+                [self.audioFrameQueue enqueueAndSort:@[[[MarkerFrame alloc] init]]];
                 av_packet_unref(&packet);
                 continue;
             }
             if (packet.data != NULL && packet.stream_index >= 0) {
                 NSArray<SCFrame *> *frames = [self.audioDecoder decode:packet];
-                [self.audioFrameQueue enqueueFramesAndSort:frames];
+                [self.audioFrameQueue enqueueAndSort:frames];
             }
         }
     }
@@ -314,7 +314,7 @@
     @autoreleasepool {
         while (numberOfFrames > 0) {
             if (!self.audioFrame) {
-                self.audioFrame = (SCAudioFrame *)[self.audioFrameQueue dequeueFrame];
+                self.audioFrame = (AudioFrame *)[self.audioFrameQueue dequeue];
             }
             if (!self.audioFrame) {
                 memset(outputData, 0, numberOfFrames * numberOfChannels * sizeof(float));
@@ -333,8 +333,8 @@
             }
             [self.syncor updateAudioClock:self.audioFrame.position];
             
-            const Byte * bytes = (Byte *)self.audioFrame->samples + self.audioFrame->output_offset;
-            const NSUInteger bytesLeft = self.audioFrame->length - self.audioFrame->output_offset;
+            const Byte * bytes = (Byte *)self.audioFrame.samples + self.audioFrame.outputOffset;
+            const NSUInteger bytesLeft = self.audioFrame.length - self.audioFrame.outputOffset;
             const NSUInteger frameSizeOf = numberOfChannels * sizeof(float);
             const NSUInteger bytesToCopy = MIN(numberOfFrames * frameSizeOf, bytesLeft);
             const NSUInteger framesToCopy = bytesToCopy / frameSizeOf;
@@ -344,7 +344,7 @@
             outputData += framesToCopy * numberOfChannels;
             
             if (bytesToCopy < bytesLeft) {
-                self.audioFrame->output_offset += bytesToCopy;
+                self.audioFrame.outputOffset += bytesToCopy;
             } else {
                 self.audioFrame = nil;
             }
