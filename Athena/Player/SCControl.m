@@ -29,7 +29,7 @@
 @property (nonatomic, strong) VTDecoder *VTDecoder;
 @property (nonatomic, strong) FFDecoder *videoDecoder;
 @property (nonatomic, strong) id<VideoDecoder> currentDecoder;
-@property (nonatomic, strong) SCAudioDecoder *audioDecoder;
+@property (nonatomic, strong) AudioDecoder *audioDecoder;
 
 @property (nonatomic, strong) SCPacketQueue *videoPacketQueue;
 @property (nonatomic, strong) SCPacketQueue *audioPacketQueue;
@@ -100,7 +100,7 @@
     
     _VTDecoder    = [[VTDecoder alloc] initWithFormatContext:_context];
     _videoDecoder = [[FFDecoder alloc] initWithFormatContext:_context];
-    _audioDecoder = [[SCAudioDecoder alloc] initWithFormatContext:_context];
+    _audioDecoder = [[AudioDecoder alloc] initWithFormatContext:_context];
     _currentDecoder = _VTDecoder;
     self.audioManager.delegate = self;
     [self start];
@@ -267,7 +267,7 @@
                 continue;
             }
             if (packet.data != NULL && packet.stream_index >= 0) {
-                NSArray<SCFrame *> *frames = [self.audioDecoder decode:packet];
+                NSArray<SCFrame *> *frames = [self.audioDecoder decodeWithPacket:packet];
                 [self.audioFrameQueue enqueueAndSort:frames];
             }
         }

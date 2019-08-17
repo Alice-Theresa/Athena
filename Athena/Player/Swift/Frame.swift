@@ -23,7 +23,7 @@ import Foundation
     var position: TimeInterval
     var duration: TimeInterval
     
-    @objc var samples: UnsafeMutableRawPointer!
+    @objc var samples: UnsafeMutableRawPointer?
     @objc var length: Int = 0
     @objc var outputOffset: Int = 0
     var bufferSize: Int = 0
