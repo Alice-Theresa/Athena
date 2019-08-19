@@ -70,18 +70,18 @@
     }
     self.counter++;
     NSTimeInterval position = av_frame_get_best_effort_timestamp(_temp_frame) * self.context.videoTimebase + _temp_frame->repeat_pict * self.context.videoTimebase * 0.5;
-    I420VideoFrame *videoFrame = [[I420VideoFrame alloc] initWithPosition:position
-                                                                 duration:av_frame_get_pkt_duration(_temp_frame) * self.context.videoTimebase
-                                                                    width:self.context.videoCodecContext->width
-                                                                   height:self.context.videoCodecContext->height
-                                                                    frame:_temp_frame];
+//    I420VideoFrame *videoFrame = [[I420VideoFrame alloc] initWithPosition:position
+//                                                                 duration:av_frame_get_pkt_duration(_temp_frame) * self.context.videoTimebase
+//                                                                    width:self.context.videoCodecContext->width
+//                                                                   height:self.context.videoCodecContext->height
+//                                                                    frame:_temp_frame];
 //    SCI420VideoFrame *videoFrame = [[SCI420VideoFrame alloc] initWithFrameData:_temp_frame
 //                                                                         width:self.context.videoCodecContext->width
 //                                                                        height:self.context.videoCodecContext->height];
 //    videoFrame.position = av_frame_get_best_effort_timestamp(_temp_frame) * self.context.videoTimebase;
 //    videoFrame.position += _temp_frame->repeat_pict * self.context.videoTimebase * 0.5;
 //    videoFrame.duration = av_frame_get_pkt_duration(_temp_frame) * self.context.videoTimebase;
-    return videoFrame;
+    return nil;
 }
 
 @end

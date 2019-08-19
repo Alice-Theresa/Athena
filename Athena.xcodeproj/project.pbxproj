@@ -78,6 +78,7 @@
 		9424CE8922FD5DD40098D693 /* Aimer.mkv in Resources */ = {isa = PBXBuildFile; fileRef = 9424CE8822FD5DD30098D693 /* Aimer.mkv */; };
 		9494127F230AA5C000ACA808 /* YuuFormatContext.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9494127E230AA5C000ACA808 /* YuuFormatContext.swift */; };
 		94941281230AA7BE00ACA808 /* FormatContext.swift in Sources */ = {isa = PBXBuildFile; fileRef = 94941280230AA7BE00ACA808 /* FormatContext.swift */; };
+		94941283230AA8D800ACA808 /* YuuFrame.swift in Sources */ = {isa = PBXBuildFile; fileRef = 94941282230AA8D800ACA808 /* YuuFrame.swift */; };
 		94D624DE230A507D00D41B8B /* YuuPacket.swift in Sources */ = {isa = PBXBuildFile; fileRef = 94D624DD230A507D00D41B8B /* YuuPacket.swift */; };
 /* End PBXBuildFile section */
 
@@ -348,6 +349,7 @@
 		9424CE8822FD5DD30098D693 /* Aimer.mkv */ = {isa = PBXFileReference; lastKnownFileType = file; path = Aimer.mkv; sourceTree = "<group>"; };
 		9494127E230AA5C000ACA808 /* YuuFormatContext.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = YuuFormatContext.swift; sourceTree = "<group>"; };
 		94941280230AA7BE00ACA808 /* FormatContext.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FormatContext.swift; sourceTree = "<group>"; };
+		94941282230AA8D800ACA808 /* YuuFrame.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = YuuFrame.swift; sourceTree = "<group>"; };
 		94D624DD230A507D00D41B8B /* YuuPacket.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = YuuPacket.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -664,6 +666,7 @@
 				763EE4EF2207E74E0090A0A3 /* VideoDecoder.swift */,
 				9494127E230AA5C000ACA808 /* YuuFormatContext.swift */,
 				94D624DD230A507D00D41B8B /* YuuPacket.swift */,
+				94941282230AA8D800ACA808 /* YuuFrame.swift */,
 			);
 			path = Swift;
 			sourceTree = "<group>";
@@ -1105,6 +1108,7 @@
 				52E04397215E2988003CB1C5 /* AudioPlayerManager.m in Sources */,
 				7608F09D220AA4B7001D7086 /* Controller.swift in Sources */,
 				526F498921D213D10023E6C3 /* SCFormatContext.m in Sources */,
+				94941283230AA8D800ACA808 /* YuuFrame.swift in Sources */,
 				520EB41E22002AB2002243DC /* SCPacketNode.m in Sources */,
 				52AA25191F998ECF0084771B /* H264HardwareEncoder.m in Sources */,
 				52DAD7C01FA07EA000D355CE /* H264SoftwareEncoder.m in Sources */,

@@ -84,15 +84,15 @@ import Foundation
         chromaR_channel_pixels.deallocate()
     }
     
-    @objc init(position: TimeInterval, duration: TimeInterval, width: Int, height: Int, frame: UnsafeMutablePointer<AVFrame>) {
+    @objc init(position: TimeInterval, duration: TimeInterval, width: Int, height: Int, frame: YuuFrame) {
         self.position = position
         self.duration = duration
         self.width = width
         self.height = height
         
-        let linesize_y = Int(frame.pointee.linesize.0)
-        let linesize_u = Int(frame.pointee.linesize.1)
-        let linesize_v = Int(frame.pointee.linesize.2)
+        let linesize_y = Int(frame.linesize[0])
+        let linesize_u = Int(frame.linesize[1])
+        let linesize_v = Int(frame.linesize[2])
         
         let needsize_y = I420VideoFrame.checkSize(width: width, height: height, lineSize: linesize_y)
         let needsize_u = I420VideoFrame.checkSize(width: width/2, height: height/2, lineSize: linesize_u)
@@ -102,9 +102,9 @@ import Foundation
         chromaB_channel_pixels = UnsafeMutablePointer<UInt8>.allocate(capacity: needsize_u)
         chromaR_channel_pixels = UnsafeMutablePointer<UInt8>.allocate(capacity: needsize_v)
         
-        I420VideoFrame.copyData(width: width, height: height, src: frame.pointee.data.0!, des: luma_channel_pixels, dataSize: needsize_y)
-        I420VideoFrame.copyData(width: width / 2, height: height / 2, src: frame.pointee.data.1!, des: chromaB_channel_pixels, dataSize: needsize_u)
-        I420VideoFrame.copyData(width: width / 2, height: height / 2, src: frame.pointee.data.2!, des: chromaR_channel_pixels, dataSize: needsize_v)
+        I420VideoFrame.copyData(width: width, height: height, src: frame.data[0]!, des: luma_channel_pixels, dataSize: needsize_y)
+        I420VideoFrame.copyData(width: width / 2, height: height / 2, src: frame.data[1]!, des: chromaB_channel_pixels, dataSize: needsize_u)
+        I420VideoFrame.copyData(width: width / 2, height: height / 2, src: frame.data[2]!, des: chromaR_channel_pixels, dataSize: needsize_v)
     }
     
     static func checkSize(width: Int, height: Int, lineSize: Int) -> Int {

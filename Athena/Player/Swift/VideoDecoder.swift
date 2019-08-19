@@ -166,15 +166,14 @@ import VideoToolbox
 
 @objc class FFDecoder: NSObject, VideoDecoder {
     weak var context: SCFormatContext?
-    var temp_frame: UnsafeMutablePointer<AVFrame>
+    var temp_frame: YuuFrame
     
     @objc init(formatContext: SCFormatContext) {
         context = formatContext
-        temp_frame = av_frame_alloc()
+        temp_frame = YuuFrame()
     }
     
     @objc func decode(packet: YuuPacket) -> NSArray {
-        var packet = packet
         let defaultArray = NSArray()
         let array = NSMutableArray()
         guard let _ = packet.data, let context = context else { return defaultArray }
@@ -183,7 +182,7 @@ import VideoToolbox
             return defaultArray
         }
         while result >= 0 {
-            result = avcodec_receive_frame(context.videoCodecContext, temp_frame)
+            result = avcodec_receive_frame(context.videoCodecContext, temp_frame.cFramePtr)
             if result < 0 {
                 break
             } else {
@@ -198,12 +197,12 @@ import VideoToolbox
     }
     
     func videoFrameFromTempFrame(packetSize: Int) -> I420VideoFrame?  {
-        guard let _ = temp_frame.pointee.data.0,
-            let _ = temp_frame.pointee.data.1,
-            let _ = temp_frame.pointee.data.2,
+        guard let _ = temp_frame.data[0],
+            let _ = temp_frame.data[1],
+            let _ = temp_frame.data[2],
             let context = context else { return nil }
-        let position = Double(av_frame_get_best_effort_timestamp(temp_frame)) * context.videoTimebase + Double(temp_frame.pointee.repeat_pict) * context.videoTimebase * 0.5
-        let duration = Double(av_frame_get_pkt_duration(temp_frame)) * context.videoTimebase
+        let position = Double(av_frame_get_best_effort_timestamp(temp_frame.cFramePtr)) * context.videoTimebase + Double(temp_frame.repeatPicture) * context.videoTimebase * 0.5
+        let duration = Double(av_frame_get_pkt_duration(temp_frame.cFramePtr)) * context.videoTimebase
         let videoFrame = I420VideoFrame(position: position,
                                         duration: duration,
                                         width: Int(context.videoCodecContext.pointee.width),
