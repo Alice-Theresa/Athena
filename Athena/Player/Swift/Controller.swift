@@ -24,10 +24,10 @@ enum ControlState: Int {
     private var vtDecoder: VTDecoder?
     private var ffDecoder: FFDecoder?
     private var videoDecoder: VideoDecoder?
-    private var audioDecoder: SCAudioDecoder?
+    private var audioDecoder: AudioDecoder?
     
     private let videoFrameQueue: FrameQueue
-    private let audioFrameQueue: SCFrameQueue
+    private let audioFrameQueue: FrameQueue
     private let videoPacketQueue: SCPacketQueue
     private let audioPacketQueue: SCPacketQueue
     
@@ -44,6 +44,8 @@ enum ControlState: Int {
     private var isSeeking: Bool
     private var videoSeekingTime: TimeInterval
     private var videoFrame: Frame?
+    private var audioFrame: AudioFrame?
+    private var audioManager: AudioManager
     
     deinit {
         
@@ -54,7 +56,7 @@ enum ControlState: Int {
         videoPacketQueue = SCPacketQueue()
         audioPacketQueue = SCPacketQueue()
         videoFrameQueue = FrameQueue()
-        audioFrameQueue = SCFrameQueue()
+        audioFrameQueue = FrameQueue()
         
         readPacketOperation = BlockOperation()
         videoDecodeOperation = BlockOperation()
@@ -72,14 +74,17 @@ enum ControlState: Int {
         mtkView!.framebufferOnly = false
         mtkView!.colorPixelFormat = .bgra8Unorm
 
+        audioManager = AudioManager()
         super.init()
         mtkView!.delegate = self
+        audioManager.delegate = self
     }
     
     @objc func open(path: NSString) {
         context.openPath(String(path))
         vtDecoder = VTDecoder(formatContext: context)
         videoDecoder = vtDecoder
+        audioDecoder = AudioDecoder(formatContext: context)
         start()
     }
     
@@ -91,11 +96,12 @@ enum ControlState: Int {
             self.decodeVideoFrame()
         }
         audioDecodeOperation.addExecutionBlock {
-            
+            self.decodeAudioFrame()
         }
         controlQueue.addOperation(readPacketOperation)
         controlQueue.addOperation(videoDecodeOperation)
         controlQueue.addOperation(audioDecodeOperation)
+        audioManager.play()
     }
     
     func pause() {
@@ -106,7 +112,8 @@ enum ControlState: Int {
         
     }
     
-    func close() {
+    @objc func close() {
+        audioManager.stop()
         state = .Closed
         controlQueue.cancelAllOperations()
         controlQueue.waitUntilAllOperationsAreFinished()
@@ -191,6 +198,31 @@ enum ControlState: Int {
         }
     }
     
+    func decodeAudioFrame() {
+        while state != .Closed {
+            if state == .Paused {
+                Thread.sleep(forTimeInterval: 0.03)
+                continue
+            }
+            if audioFrameQueue.count > 10 {
+                Thread.sleep(forTimeInterval: 0.03)
+                continue
+            }
+            var packet = audioPacketQueue.dequeuePacket()
+            if packet.flags == AV_PKT_FLAG_DISCARD {
+                avcodec_flush_buffers(context.audioCodecContext)
+                audioFrameQueue.flush()
+                audioFrameQueue.enqueueAndSort(frames: NSArray.init(object: MarkerFrame.init()))
+                av_packet_unref(&packet);
+                continue;
+            }
+            if packet.data != nil && packet.stream_index >= 0 {
+                let frames = audioDecoder!.decode(packet: packet)
+                audioFrameQueue.enqueueAndSort(frames: frames)
+            }
+        }
+    }
+    
     func rendering() {
         if let playFrame = videoFrame {
             if playFrame.isMember(of: MarkerFrame.self) {
@@ -219,4 +251,46 @@ extension Controller: MTKViewDelegate {
     }
     
     func mtkView(_ view: MTKView, drawableSizeWillChange size: CGSize) {}
+}
+
+extension Controller: AudioManagerDelegate {
+    func fetch(outputData: UnsafeMutablePointer<Float>, numberOfFrames: UInt32, numberOfChannels: UInt32) {
+        var nof = numberOfFrames
+        var od = outputData
+        while nof > 0 {
+            if let frame = audioFrame {
+                if frame.duration == -1 {
+                    memset(od, 0, Int(nof * numberOfChannels) * MemoryLayout<Float>.size);
+//                    audioSeekingTime = -DBL_MAX;
+                    audioFrame = nil
+                    return
+                }
+//                if (self.audioSeekingTime > 0) {
+//                }
+                let bytes: UnsafeMutablePointer<UInt8> = frame.samples!.assumingMemoryBound(to: UInt8.self) + frame.outputOffset
+                let bytesLeft = frame.length - frame.outputOffset
+                let frameSizeOf = Int(numberOfChannels) * MemoryLayout<Float>.size
+                let  bytesToCopy = min(Int(nof) * frameSizeOf, bytesLeft)
+                let  framesToCopy = bytesToCopy / frameSizeOf
+                memcpy(od, bytes, bytesToCopy)
+                nof = nof - UInt32(framesToCopy)
+                od = od.advanced(by: framesToCopy * Int(numberOfChannels))
+                
+                if (bytesToCopy < bytesLeft) {
+                    frame.outputOffset = frame.outputOffset + bytesToCopy
+                } else {
+                    audioFrame = nil
+                }
+            } else {
+                if let af = audioFrameQueue.dequeue() {
+                    self.audioFrame = af as? AudioFrame
+                } else {
+                    memset(od, 0, Int(numberOfFrames * numberOfChannels) * MemoryLayout<Float>.size)
+                    return
+                }
+            }
+        }
+    }
+    
+    
 }

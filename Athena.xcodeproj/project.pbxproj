@@ -604,7 +604,6 @@
 			children = (
 				7625A10F2207232900578C0B /* Deprecated */,
 				520EB41B22002A72002243DC /* Queue */,
-				52EAE6DC21F03CA600D9B90B /* Decoder */,
 				52EAE6D921F03C6000D9B90B /* Model */,
 				7608F09E220AADB0001D7086 /* Swift */,
 				521B7E7B21D7602800F5B689 /* SCControl.h */,
@@ -639,13 +638,6 @@
 				52296C1521E742D0006585FE /* SCAudioManager.m */,
 			);
 			path = Audio;
-			sourceTree = "<group>";
-		};
-		52EAE6DC21F03CA600D9B90B /* Decoder */ = {
-			isa = PBXGroup;
-			children = (
-			);
-			path = Decoder;
 			sourceTree = "<group>";
 		};
 		7608F09B2209F1AA001D7086 /* Decoder */ = {

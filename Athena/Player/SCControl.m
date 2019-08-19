@@ -259,9 +259,6 @@
             if (packet.flags == AV_PKT_FLAG_DISCARD) {
                 avcodec_flush_buffers(self.context.audioCodecContext);
                 [self.audioFrameQueue flush];
-//                Frame *frame = [[Frame alloc] init];
-//                frame.duration = -1;
-//                [self.audioFrameQueue enqueueFramesAndSort:@[frame]];
                 [self.audioFrameQueue enqueueAndSort:@[[[MarkerFrame alloc] init]]];
                 av_packet_unref(&packet);
                 continue;
