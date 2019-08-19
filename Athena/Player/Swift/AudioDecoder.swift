@@ -55,12 +55,11 @@ import Accelerate
         }
     }
     
-    @objc func decode(packet: AVPacket) -> NSArray {
-        var packet = packet
+    @objc func decode(packet: YuuPacket) -> NSArray {
         let defaultArray = NSArray()
         let array = NSMutableArray()
         guard let _ = packet.data, let context = context else { return defaultArray }
-        var result = avcodec_send_packet(context.audioCodecContext, &packet)
+        var result = avcodec_send_packet(context.audioCodecContext, packet.cPacketPtr)
         if result < 0 {
             return defaultArray
         }
@@ -73,7 +72,7 @@ import Accelerate
                 array.add(frame)
             }
         }
-        av_packet_unref(&packet)
+        packet.unref()
         return array.copy() as! NSArray
     }
     

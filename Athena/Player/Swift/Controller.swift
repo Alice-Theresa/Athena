@@ -28,8 +28,8 @@ enum ControlState: Int {
     
     private let videoFrameQueue: FrameQueue
     private let audioFrameQueue: FrameQueue
-    private let videoPacketQueue: SCPacketQueue
-    private let audioPacketQueue: SCPacketQueue
+    private let videoPacketQueue: PacketQueue
+    private let audioPacketQueue: PacketQueue
     
     private let readPacketOperation: BlockOperation
     private let videoDecodeOperation: BlockOperation
@@ -53,8 +53,8 @@ enum ControlState: Int {
     
     @objc init(renderView: MTKView) {
         
-        videoPacketQueue = SCPacketQueue()
-        audioPacketQueue = SCPacketQueue()
+        videoPacketQueue = PacketQueue()
+        audioPacketQueue = PacketQueue()
         videoFrameQueue = FrameQueue()
         audioFrameQueue = FrameQueue()
         
@@ -146,7 +146,7 @@ enum ControlState: Int {
                 Thread.sleep(forTimeInterval: 0.03)
                 continue
             }
-            if videoPacketQueue.packetTotalSize + audioPacketQueue.packetTotalSize > 10 * 1024 * 1024 {
+            if videoPacketQueue.packetTotalSize + Int(audioPacketQueue.packetTotalSize) > 10 * 1024 * 1024 {
                 Thread.sleep(forTimeInterval: 0.03)
                 continue
             }
@@ -158,16 +158,16 @@ enum ControlState: Int {
                 isSeeking = false
                 continue
             }
-            let packet: UnsafeMutablePointer<AVPacket> = av_packet_alloc()
-            let result = context.readFrame(packet)
+            let packet = YuuPacket()
+            let result = context.readFrame(packet.cPacketPtr)
             if result < 0 {
                 finished = true
                 break
             } else {
-                if packet.pointee.stream_index == context.videoIndex {
-                    videoPacketQueue.enqueue(packet.pointee)
-                } else if packet.pointee.stream_index == context.audioIndex {
-                    audioPacketQueue.enqueue(packet.pointee)
+                if packet.streamIndex == context.videoIndex {
+                    videoPacketQueue.enqueue(packet: packet)
+                } else if packet.streamIndex == context.audioIndex {
+                    audioPacketQueue.enqueue(packet: packet)
                 }
             }
         }
@@ -183,16 +183,16 @@ enum ControlState: Int {
                 Thread.sleep(forTimeInterval: 0.03)
                 continue
             }
-            var packet = videoPacketQueue.dequeuePacket()
-            if packet.flags == AV_PKT_FLAG_DISCARD {
+            let packet = videoPacketQueue.dequeue()
+            if packet.flags == .discard {
                 avcodec_flush_buffers(context.videoCodecContext)
                 videoFrameQueue.flush()
                 videoFrameQueue.enqueueAndSort(frames: NSArray.init(object: MarkerFrame.init()))
-                av_packet_unref(&packet);
-                continue;
+                packet.unref()
+                continue
             }
-            if packet.data != nil && packet.stream_index >= 0 {
-                let frames = videoDecoder!.decode(packet: packet)
+            if let vd = videoDecoder, packet.data != nil && packet.streamIndex >= 0 {
+                let frames = vd.decode(packet: packet)
                 videoFrameQueue.enqueueAndSort(frames: frames)
             }
         }
@@ -208,16 +208,16 @@ enum ControlState: Int {
                 Thread.sleep(forTimeInterval: 0.03)
                 continue
             }
-            var packet = audioPacketQueue.dequeuePacket()
-            if packet.flags == AV_PKT_FLAG_DISCARD {
+            let packet = audioPacketQueue.dequeue()
+            if packet.flags == .discard {
                 avcodec_flush_buffers(context.audioCodecContext)
                 audioFrameQueue.flush()
                 audioFrameQueue.enqueueAndSort(frames: NSArray.init(object: MarkerFrame.init()))
-                av_packet_unref(&packet);
+                packet.unref()
                 continue;
             }
-            if packet.data != nil && packet.stream_index >= 0 {
-                let frames = audioDecoder!.decode(packet: packet)
+            if let ad = audioDecoder, packet.data != nil && packet.streamIndex >= 0 {
+                let frames = ad.decode(packet: packet)
                 audioFrameQueue.enqueueAndSort(frames: frames)
             }
         }

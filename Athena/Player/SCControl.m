@@ -237,8 +237,8 @@
                 continue;
             }
             if (packet.data != NULL && packet.stream_index >= 0) {
-                NSArray<SCFrame *> *frames = [self.currentDecoder decodeWithPacket:packet];
-                [self.videoFrameQueue enqueueAndSort:frames];
+//                NSArray<SCFrame *> *frames = [self.currentDecoder decodeWithPacket:packet];
+//                [self.videoFrameQueue enqueueAndSort:frames];
             }
         }
     }
@@ -264,8 +264,8 @@
                 continue;
             }
             if (packet.data != NULL && packet.stream_index >= 0) {
-                NSArray<SCFrame *> *frames = [self.audioDecoder decodeWithPacket:packet];
-                [self.audioFrameQueue enqueueAndSort:frames];
+//                NSArray<SCFrame *> *frames = [self.audioDecoder decodeWithPacket:packet];
+//                [self.audioFrameQueue enqueueAndSort:frames];
             }
         }
     }

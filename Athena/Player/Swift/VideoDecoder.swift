@@ -12,7 +12,7 @@ import VideoToolbox
 @objc protocol VideoDecoder {
     var context: SCFormatContext? { get }
     
-    func decode(packet: AVPacket) -> NSArray
+    func decode(packet: YuuPacket) -> NSArray
 }
 
 @objc class VTDecoder: NSObject, VideoDecoder {
@@ -90,8 +90,8 @@ import VideoToolbox
         }
     }
     
-    @objc func decode(packet: AVPacket) -> NSArray {
-        var packet = packet
+    func decode(packet: YuuPacket) -> NSArray {
+//        var packet = packet
         var outputPixelBuffer: CVPixelBuffer?
         var blockBuffer: CMBlockBuffer?
         var status = CMBlockBufferCreateWithMemoryBlock(allocator: kCFAllocatorDefault,
@@ -130,13 +130,15 @@ import VideoToolbox
                     }
                     if let outputPixelBuffer = outputPixelBuffer, let context = context {
                         let videoFrame = NV12VideoFrame(position: Double(packet.pts) * context.videoTimebase, duration: Double(packet.duration) * context.videoTimebase, pixelBuffer: outputPixelBuffer)
-                        av_packet_unref(&packet);
+//                        av_packet_unref(&packet);
+                        packet.unref()
                         return NSArray(array: [videoFrame])
                     }
                 }
             }
         }
-        av_packet_unref(&packet);
+//        av_packet_unref(&packet)
+        packet.unref()
         return NSArray(array: [])
     }
     
@@ -171,12 +173,12 @@ import VideoToolbox
         temp_frame = av_frame_alloc()
     }
     
-    @objc func decode(packet: AVPacket) -> NSArray {
+    @objc func decode(packet: YuuPacket) -> NSArray {
         var packet = packet
         let defaultArray = NSArray()
         let array = NSMutableArray()
         guard let _ = packet.data, let context = context else { return defaultArray }
-        var result = avcodec_send_packet(context.videoCodecContext, &packet)
+        var result = avcodec_send_packet(context.videoCodecContext, packet.cPacketPtr)
         if result < 0 {
             return defaultArray
         }
@@ -190,7 +192,8 @@ import VideoToolbox
                 }
             }
         }
-        av_packet_unref(&packet)
+//        av_packet_unref(&packet)
+        packet.unref()
         return array.copy() as! NSArray
     }
     

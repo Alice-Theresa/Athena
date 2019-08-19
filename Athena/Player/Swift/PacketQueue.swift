@@ -9,52 +9,92 @@
 import Foundation
 
 fileprivate class PacketNode {
-    let packet: NSValue
+    let packet: YuuPacket
     var next: PacketNode?
     
-    init(_ packet: NSValue) {
+    init(_ packet: YuuPacket) {
         self.packet = packet
     }
 }
 
 @objc public class PacketQueue: NSObject {
+    
     let semaphore = DispatchSemaphore(value: 1)
     
-    @objc public private(set) var packetTotalSize = 0
+    @objc public var packetTotalSize = 0
+    
+    var queue: [YuuPacket] = []
     
     private var header: PacketNode?
     private var tailer: PacketNode?
     
     @objc(enqueueDiscardPacket)
     func enqueueDiscardPacket() {
-        
+        semaphore.wait()
+        defer {
+            semaphore.signal()
+        }
+        let packet = YuuPacket()
+        packetTotalSize += Int(packet.size)
+        packet.flags = .discard
+        let node = PacketNode(packet)
+        if var tailer = tailer {
+            tailer.next = node
+            self.tailer = node
+        } else {
+            header = node
+            tailer = node
+        }
     }
     
-    func enqueue(Packet: AVPacket) {
-        
+    func enqueue(packet: YuuPacket) {
+        semaphore.wait()
+        defer {
+            semaphore.signal()
+        }
+        packetTotalSize += Int(packet.size)
+        let node = PacketNode(packet)
+        if let tailer = tailer {
+            tailer.next = node
+            self.tailer = node
+        } else {
+            header = node
+            tailer = node
+        }
     }
     
-    func dequeue() -> AVPacket {
-        fatalError()
+    func dequeue() -> YuuPacket {
+        semaphore.wait()
+        defer {
+            semaphore.signal()
+        }
+        var packet = YuuPacket()
+        packet.streamIndex = -1
+        if let header = header {
+            packet = header.packet
+            packetTotalSize -= Int(packet.size)
+            if let next = header.next {
+                self.header = next
+            } else {
+                self.header = nil
+                self.tailer = nil
+            }
+        }
+        return packet
     }
     
     func flush() {
         semaphore.wait()
+        defer {
+            semaphore.signal()
+        }
         if let header = header {
-            var packet: AVPacket?
-            header.packet.getValue(&packet)
-            if var packet = packet {
-                av_packet_unref(&packet)
-            }
+            header.packet.unref()
             while let next = header.next {
-                next.packet.getValue(&packet)
-                if var packet = packet {
-                    av_packet_unref(&packet)
-                }
+                next.packet.unref()
                 self.header = next
             }
         }
         packetTotalSize = 0
-        semaphore.signal()
     }
 }

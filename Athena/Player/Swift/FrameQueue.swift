@@ -30,13 +30,15 @@ fileprivate class FrameNode {
     @objc(enqueueAndSort:)
     public func enqueueAndSort(frames: NSArray) {
         semaphore.wait()
+        defer {
+            semaphore.signal()
+        }
         for frame in frames {
             let node = FrameNode(frame as! Frame)
             guard let tailer = tailer else {
                 header = node
                 self.tailer = node
-                count = count + 1;
-                semaphore.signal()
+                count += 1
                 return
             }
             if tailer.frame.position > (frame as! Frame).position {
@@ -59,7 +61,6 @@ fileprivate class FrameNode {
             }
             count = count + 1;
         }
-        semaphore.signal()
     }
     @objc(dequeue)
     public func dequeue() -> Frame? {
