@@ -10,8 +10,8 @@ import Foundation
 
 @objc final class YuuPacket: NSObject {
     
-    let cPacketPtr: UnsafeMutablePointer<AVPacket>
-    var cPacket: AVPacket { return cPacketPtr.pointee }
+    @objc let cPacketPtr: UnsafeMutablePointer<AVPacket>
+    @objc var cPacket: AVPacket { return cPacketPtr.pointee }
     
     deinit {
         var ptr: UnsafeMutablePointer<AVPacket>? = cPacketPtr

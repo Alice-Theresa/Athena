@@ -135,12 +135,13 @@ static void didDecompress(void *decompressionOutputRefCon,
 //    SCNV12VideoFrame *videoFrame = [[SCNV12VideoFrame alloc] initWithAVPixelBuffer:outputPixelBuffer];
 //    videoFrame.position = packet.pts * self.context.videoTimebase;
 //    videoFrame.duration = packet.duration * self.context.videoTimebase;
-    NV12VideoFrame *videoFrame = [[NV12VideoFrame alloc] initWithPosition:packet.pts * self.context.videoTimebase
-                                                                 duration:packet.duration * self.context.videoTimebase
-                                                              pixelBuffer:outputPixelBuffer];
-    av_packet_unref(&packet);
-    CVPixelBufferRelease(outputPixelBuffer);
-    return @[videoFrame];
+//    NV12VideoFrame *videoFrame = [[NV12VideoFrame alloc] initWithPosition:packet.pts * self.context.videoTimebase
+//                                                                 duration:packet.duration * self.context.videoTimebase
+//                                                              pixelBuffer:outputPixelBuffer];
+//    av_packet_unref(&packet);
+//    CVPixelBufferRelease(outputPixelBuffer);
+//    return @[videoFrame];
+    return nil;
 }
 
 static CMFormatDescriptionRef CreateFormatDescription(CMVideoCodecType codec_type, int width, int height, const uint8_t * extradata, int extradata_size)

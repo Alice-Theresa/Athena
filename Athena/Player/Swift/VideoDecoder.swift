@@ -9,13 +9,13 @@
 import Foundation
 import VideoToolbox
 
-@objc protocol VideoDecoder {
+protocol VideoDecoder {
     var context: SCFormatContext? { get }
     
     func decode(packet: YuuPacket) -> NSArray
 }
 
-@objc class VTDecoder: NSObject, VideoDecoder {
+class VTDecoder: VideoDecoder {
     
     weak var context: SCFormatContext?
     
@@ -46,9 +46,8 @@ import VideoToolbox
         }
     }
     
-    @objc init(formatContext: SCFormatContext) {
+    init(formatContext: SCFormatContext) {
         context = formatContext
-        super.init()
         tryInitDecoder(context: formatContext)
     }
     
@@ -91,7 +90,6 @@ import VideoToolbox
     }
     
     func decode(packet: YuuPacket) -> NSArray {
-//        var packet = packet
         var outputPixelBuffer: CVPixelBuffer?
         var blockBuffer: CMBlockBuffer?
         var status = CMBlockBufferCreateWithMemoryBlock(allocator: kCFAllocatorDefault,
@@ -130,14 +128,12 @@ import VideoToolbox
                     }
                     if let outputPixelBuffer = outputPixelBuffer, let context = context {
                         let videoFrame = NV12VideoFrame(position: Double(packet.pts) * context.videoTimebase, duration: Double(packet.duration) * context.videoTimebase, pixelBuffer: outputPixelBuffer)
-//                        av_packet_unref(&packet);
                         packet.unref()
                         return NSArray(array: [videoFrame])
                     }
                 }
             }
         }
-//        av_packet_unref(&packet)
         packet.unref()
         return NSArray(array: [])
     }
@@ -164,16 +160,16 @@ import VideoToolbox
     }
 }
 
-@objc class FFDecoder: NSObject, VideoDecoder {
+class FFDecoder: VideoDecoder {
     weak var context: SCFormatContext?
     var temp_frame: YuuFrame
     
-    @objc init(formatContext: SCFormatContext) {
+    init(formatContext: SCFormatContext) {
         context = formatContext
         temp_frame = YuuFrame()
     }
     
-    @objc func decode(packet: YuuPacket) -> NSArray {
+    func decode(packet: YuuPacket) -> NSArray {
         let defaultArray = NSArray()
         let array = NSMutableArray()
         guard let _ = packet.data, let context = context else { return defaultArray }
@@ -191,7 +187,6 @@ import VideoToolbox
                 }
             }
         }
-//        av_packet_unref(&packet)
         packet.unref()
         return array.copy() as! NSArray
     }

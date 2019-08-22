@@ -9,9 +9,14 @@
 import Foundation
 
 @objc final class YuuFrame: NSObject {
+    
     let cFramePtr: UnsafeMutablePointer<AVFrame>
     var cFrame: AVFrame { return cFramePtr.pointee }
     
+    deinit {
+        var ptr: UnsafeMutablePointer<AVFrame>? = cFramePtr
+        av_frame_free(&ptr)
+    }
     @objc init(cFramePtr: UnsafeMutablePointer<AVFrame>) {
         self.cFramePtr = cFramePtr
     }
@@ -47,6 +52,11 @@ import Foundation
                 ptr.copyMemory(from: UnsafeRawBufferPointer(newValue))
             }
         }
+    }
+    
+    var sampleCount: Int {
+        get { return Int(cFrame.nb_samples) }
+        set { cFramePtr.pointee.nb_samples = Int32(newValue) }
     }
     
     var repeatPicture: Int {

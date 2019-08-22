@@ -10,22 +10,22 @@ import AVFoundation
 import Foundation
 import MetalKit
 
-@objc public protocol RenderData: NSObjectProtocol {
+protocol RenderData {
     var width: Int { get }
     var height: Int { get }
 }
 
-@objc public protocol RenderDataNV12: RenderData {
+protocol RenderDataNV12: RenderData {
     var pixelBuffer: CVPixelBuffer { get }
 }
 
-@objc public protocol RenderDataI420: RenderData {
+protocol RenderDataI420: RenderData {
     var luma_channel_pixels: UnsafeMutablePointer<UInt8> { get }
     var chromaB_channel_pixels: UnsafeMutablePointer<UInt8> { get }
     var chromaR_channel_pixels: UnsafeMutablePointer<UInt8> { get }
 }
 
-@objc public class Render: NSObject {
+class Render {
     @objc public let device: MTLDevice
     private let commandQueue: MTLCommandQueue
     private let library: MTLLibrary
@@ -48,14 +48,14 @@ import MetalKit
         return descriptor
     }()
     
-    public override init() {
+    init() {
         device = MTLCreateSystemDefaultDevice()!
         commandQueue = device.makeCommandQueue()!
         library = device.makeDefaultLibrary()!
         CVMetalTextureCacheCreate(kCFAllocatorDefault, nil, device, nil, &textureCache)
     }
     
-    @objc(render:drawIn:)
+    
     public func render(frame: RenderData, drawIn view: MTKView) {
         if let frame = frame as? RenderDataNV12 {
             renderNV12(frame, drawIn: view)

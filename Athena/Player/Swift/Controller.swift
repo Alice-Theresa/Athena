@@ -82,8 +82,9 @@ enum ControlState: Int {
     
     @objc func open(path: NSString) {
         context.openPath(String(path))
-        vtDecoder = VTDecoder(formatContext: context)
-        videoDecoder = vtDecoder
+//        vtDecoder = VTDecoder(formatContext: context)
+        ffDecoder = FFDecoder(formatContext: context)
+        videoDecoder = ffDecoder
         audioDecoder = AudioDecoder(formatContext: context)
         start()
     }
@@ -159,7 +160,7 @@ enum ControlState: Int {
                 continue
             }
             let packet = YuuPacket()
-            let result = context.readFrame(packet.cPacketPtr)
+            let result = context.readFrame(packet)
             if result < 0 {
                 finished = true
                 break
@@ -225,7 +226,7 @@ enum ControlState: Int {
     
     func rendering() {
         if let playFrame = videoFrame {
-            if playFrame.isMember(of: MarkerFrame.self) {
+            if playFrame is MarkerFrame {
                 videoSeekingTime = -1
                 videoFrame = nil
                 return

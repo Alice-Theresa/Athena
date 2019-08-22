@@ -15,6 +15,7 @@
 #import <libswresample/swresample.h>
 #import <libavutil/pixdesc.h>
 
+#import "FrameUtil.h"
 #import "SCFormatContext.h"
 #import "SCAudioManager.h"
 #import "SCAudioDecoder.h"

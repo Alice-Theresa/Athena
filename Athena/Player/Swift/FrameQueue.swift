@@ -18,17 +18,16 @@ fileprivate class FrameNode {
     }
 }
 
-@objc public class FrameQueue: NSObject {
+class FrameQueue: NSObject {
     
     let semaphore = DispatchSemaphore(value: 1)
     
-    @objc public private(set) var count = 0
+    private(set) var count = 0
     
     private var header: FrameNode?
     private var tailer: FrameNode?
     
-    @objc(enqueueAndSort:)
-    public func enqueueAndSort(frames: NSArray) {
+    func enqueueAndSort(frames: NSArray) {
         semaphore.wait()
         defer {
             semaphore.signal()
@@ -62,12 +61,14 @@ fileprivate class FrameNode {
             count = count + 1;
         }
     }
-    @objc(dequeue)
-    public func dequeue() -> Frame? {
+    
+    func dequeue() -> Frame? {
         semaphore.wait()
+        defer {
+            semaphore.signal()
+        }
         var frame: Frame?
         guard let header = header else {
-            semaphore.signal()
             return frame
         }
         frame = header.frame
@@ -79,16 +80,17 @@ fileprivate class FrameNode {
             tailer = nil
         }
         count = count - 1
-        semaphore.signal()
         return frame
     }
-    @objc(flush)
-    public func flush() {
+    
+    func flush() {
         semaphore.wait()
+        defer {
+            semaphore.signal()
+        }
         header = nil
         tailer = nil
         count = 0
-        semaphore.signal()
     }
     
 }

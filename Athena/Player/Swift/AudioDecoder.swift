@@ -14,7 +14,7 @@ import Accelerate
     let _samplingRate: Int32 = 44100
     let _channelCount: Int32 = 2
     
-    var temp_frame: UnsafeMutablePointer<AVFrame>?
+    var temp_frame: YuuFrame?
     var audio_swr_context: OpaquePointer?
     
     var _audio_swr_buffer: UnsafeMutableRawPointer?
@@ -24,13 +24,13 @@ import Accelerate
     var codecContext: UnsafeMutablePointer<AVCodecContext>?
     
     deinit {
-        av_frame_free(&temp_frame)
+//        av_frame_free(&temp_frame)
         swr_free(&audio_swr_context)
     }
     
     @objc init(formatContext: SCFormatContext) {
         context = formatContext
-        temp_frame = av_frame_alloc()
+        temp_frame = YuuFrame()
         codecContext = formatContext.audioCodecContext
         super.init()
         setupSwsContext()
@@ -64,7 +64,7 @@ import Accelerate
             return defaultArray
         }
         while result >= 0 {
-            result = avcodec_receive_frame(context.audioCodecContext, temp_frame)
+            result = avcodec_receive_frame(context.audioCodecContext, temp_frame?.cFramePtr)
             if result < 0 {
                 break
             }
@@ -78,12 +78,12 @@ import Accelerate
     
     func audioFrameFromTempFrame(packetSize: Int) -> AudioFrame?  {
         
-        guard let temp = temp_frame, let _ = temp.pointee.data.0, let codecContext = codecContext else { return nil }
+        guard let temp = temp_frame, let _ = temp.data[0], let codecContext = codecContext else { return nil }
         var numberOfFrames: Int32 = 0
         var audioDataBuffer: UnsafeMutableRawPointer?
         if let c = audio_swr_context {
             let ratio = max(1, _samplingRate / codecContext.pointee.sample_rate) * max(1, _channelCount / codecContext.pointee.channels) * 2
-            let buffer_size = av_samples_get_buffer_size(nil, _channelCount, temp.pointee.nb_samples * ratio, AV_SAMPLE_FMT_S16, 1)
+            let buffer_size = av_samples_get_buffer_size(nil, _channelCount, Int32(temp.sampleCount) * ratio, AV_SAMPLE_FMT_S16, 1)
             if _audio_swr_buffer == nil || _audio_swr_buffer_size < buffer_size {
                 _audio_swr_buffer_size = Int(buffer_size)
                 _audio_swr_buffer = realloc(_audio_swr_buffer, _audio_swr_buffer_size)
@@ -96,20 +96,20 @@ import Accelerate
             let test = _audio_swr_buffer?.assumingMemoryBound(to: UInt8.self)
             data.assign(repeating: test)
             
-            let dataPointer = withUnsafeMutablePointer(to: &temp.pointee.data){$0}
+            let dataPointer = withUnsafeMutablePointer(to: &temp.cFramePtr.pointee.data){$0}
                 .withMemoryRebound(to: Optional<UnsafePointer<UInt8>>.self, capacity: MemoryLayout<UnsafePointer<UInt8>>.stride * 8) {$0}
             numberOfFrames = swr_convert(c,
                                          data.baseAddress,
-                                         temp.pointee.nb_samples * ratio,
+                                         Int32(temp.sampleCount) * ratio,
                                          dataPointer,
-                                         temp.pointee.nb_samples)
+                                         Int32(temp.sampleCount))
             audioDataBuffer = _audio_swr_buffer
             
         } else {
             print("sss")
         }
-        let position = TimeInterval(av_frame_get_best_effort_timestamp(temp)) * context!.audioTimebase
-        let duration = TimeInterval(av_frame_get_pkt_duration(temp)) * context!.audioTimebase
+        let position = TimeInterval(av_frame_get_best_effort_timestamp(temp.cFramePtr)) * context!.audioTimebase
+        let duration = TimeInterval(av_frame_get_pkt_duration(temp.cFramePtr)) * context!.audioTimebase
         let audioFrame = AudioFrame(position: position, duration: duration)
         
         let numberOfElements = numberOfFrames * _channelCount

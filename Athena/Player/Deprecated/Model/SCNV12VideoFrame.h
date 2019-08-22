@@ -12,7 +12,7 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-@interface SCNV12VideoFrame : SCFrame <RenderDataNV12>
+@interface SCNV12VideoFrame : SCFrame //<RenderDataNV12>
 
 @property (nonatomic, assign, readonly) NSUInteger width;
 @property (nonatomic, assign, readonly) NSUInteger height;

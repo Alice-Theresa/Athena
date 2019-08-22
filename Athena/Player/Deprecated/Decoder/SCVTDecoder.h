@@ -14,7 +14,7 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-@interface SCVTDecoder : NSObject <VideoDecoder>
+@interface SCVTDecoder : NSObject //<VideoDecoder>
 
 - (instancetype)init NS_UNAVAILABLE;
 - (instancetype)initWithFormatContext:(SCFormatContext *)formatContext;

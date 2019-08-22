@@ -16,7 +16,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 @property (nonatomic, strong) id<MTLDevice> device;
 
-- (void)render:(id<RenderData>)frame drawIn:(MTKView *)mtkView;
+//- (void)render:(id<RenderData>)frame drawIn:(MTKView *)mtkView;
 
 @end
 

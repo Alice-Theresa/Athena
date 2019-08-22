@@ -17,34 +17,21 @@ fileprivate class PacketNode {
     }
 }
 
-@objc public class PacketQueue: NSObject {
+class PacketQueue: NSObject {
     
     let semaphore = DispatchSemaphore(value: 1)
     
-    @objc public var packetTotalSize = 0
+    var packetTotalSize = 0
     
     var queue: [YuuPacket] = []
     
     private var header: PacketNode?
     private var tailer: PacketNode?
     
-    @objc(enqueueDiscardPacket)
     func enqueueDiscardPacket() {
-        semaphore.wait()
-        defer {
-            semaphore.signal()
-        }
         let packet = YuuPacket()
-        packetTotalSize += Int(packet.size)
         packet.flags = .discard
-        let node = PacketNode(packet)
-        if var tailer = tailer {
-            tailer.next = node
-            self.tailer = node
-        } else {
-            header = node
-            tailer = node
-        }
+        enqueue(packet: packet)
     }
     
     func enqueue(packet: YuuPacket) {
@@ -88,11 +75,11 @@ fileprivate class PacketNode {
         defer {
             semaphore.signal()
         }
-        if let header = header {
+        if var header = header {
             header.packet.unref()
             while let next = header.next {
                 next.packet.unref()
-                self.header = next
+                header = next
             }
         }
         packetTotalSize = 0

@@ -26,9 +26,9 @@
 
 @property (nonatomic, strong) SCFormatContext *context;
 
-@property (nonatomic, strong) VTDecoder *VTDecoder;
-@property (nonatomic, strong) FFDecoder *videoDecoder;
-@property (nonatomic, strong) id<VideoDecoder> currentDecoder;
+//@property (nonatomic, strong) VTDecoder *VTDecoder;
+//@property (nonatomic, strong) FFDecoder *videoDecoder;
+//@property (nonatomic, strong) id<VideoDecoder> currentDecoder;
 @property (nonatomic, strong) AudioDecoder *audioDecoder;
 
 @property (nonatomic, strong) SCPacketQueue *videoPacketQueue;
@@ -41,7 +41,7 @@
 @property (nonatomic, strong) NSInvocationOperation *audioDecodeOperation;
 @property (nonatomic, strong) NSOperationQueue *controlQueue;
 
-@property (nonatomic, strong) Render *render;
+//@property (nonatomic, strong) Render *render;
 @property (nonatomic, weak  ) MTKView *mtkView;
 
 @property (nonatomic, assign, readwrite) SCControlState controlState;
@@ -53,7 +53,7 @@
 @property (nonatomic, strong) SCSynchronizer *syncor;
 
 @property (nonatomic, strong) SCFrame *videoFrame;
-@property (nonatomic, strong) AudioFrame *audioFrame;
+//@property (nonatomic, strong) AudioFrame *audioFrame;
 
 @property (nonatomic, strong) AudioManager *audioManager;
 
@@ -69,23 +69,23 @@
     if (self = [super init]) {
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(appWillResignActive) name:UIApplicationWillResignActiveNotification object:nil];
         
-        _videoFrameQueue  = [[FrameQueue alloc] init];
-        _audioFrameQueue  = [[FrameQueue alloc] init];
-        _videoPacketQueue = [[SCPacketQueue alloc] init];
-        _audioPacketQueue = [[SCPacketQueue alloc] init];
-        _render           = [[Render alloc] init];
-        
-        _mtkView = view;
-        _mtkView.device = _render.device;
-        _mtkView.depthStencilPixelFormat = MTLPixelFormatInvalid;
-        _mtkView.framebufferOnly = false;
-        _mtkView.colorPixelFormat = MTLPixelFormatBGRA8Unorm;
-        _mtkView.delegate = self;
-        
-        _videoSeekingTime = -DBL_MAX;
-        _audioSeekingTime = -DBL_MAX;
-        _syncor = [[SCSynchronizer alloc] init];
-        _audioManager = [[AudioManager alloc] init];
+//        _videoFrameQueue  = [[FrameQueue alloc] init];
+//        _audioFrameQueue  = [[FrameQueue alloc] init];
+//        _videoPacketQueue = [[SCPacketQueue alloc] init];
+//        _audioPacketQueue = [[SCPacketQueue alloc] init];
+//        _render           = [[Render alloc] init];
+//
+//        _mtkView = view;
+//        _mtkView.device = _render.device;
+//        _mtkView.depthStencilPixelFormat = MTLPixelFormatInvalid;
+//        _mtkView.framebufferOnly = false;
+//        _mtkView.colorPixelFormat = MTLPixelFormatBGRA8Unorm;
+//        _mtkView.delegate = self;
+//
+//        _videoSeekingTime = -DBL_MAX;
+//        _audioSeekingTime = -DBL_MAX;
+//        _syncor = [[SCSynchronizer alloc] init];
+//        _audioManager = [[AudioManager alloc] init];
     }
     return self;
 }
@@ -98,10 +98,10 @@
     _context = [[SCFormatContext alloc] init];
     [_context openPath:filename];
     
-    _VTDecoder    = [[VTDecoder alloc] initWithFormatContext:_context];
-    _videoDecoder = [[FFDecoder alloc] initWithFormatContext:_context];
-    _audioDecoder = [[AudioDecoder alloc] initWithFormatContext:_context];
-    _currentDecoder = _VTDecoder;
+//    _VTDecoder    = [[VTDecoder alloc] initWithFormatContext:_context];
+//    _videoDecoder = [[FFDecoder alloc] initWithFormatContext:_context];
+//    _audioDecoder = [[AudioDecoder alloc] initWithFormatContext:_context];
+//    _currentDecoder = _VTDecoder;
     self.audioManager.delegate = self;
     [self start];
 }
@@ -160,14 +160,14 @@
 }
 
 - (void)switchToHardwareDecode:(BOOL)isHardware {
-    self.currentDecoder = isHardware ? self.VTDecoder : self.videoDecoder;
+//    self.currentDecoder = isHardware ? self.VTDecoder : self.videoDecoder;
 }
 
 - (void)flushQueue {
-    [self.videoFrameQueue flush];
-    [self.audioFrameQueue flush];
-    [self.videoPacketQueue flush];
-    [self.audioPacketQueue flush];
+//    [self.videoFrameQueue flush];
+//    [self.audioFrameQueue flush];
+//    [self.videoPacketQueue flush];
+//    [self.audioPacketQueue flush];
 }
 
 #pragma mark - reading
@@ -196,107 +196,107 @@
         }
         AVPacket packet;
         av_init_packet(&packet);
-        int result = [self.context readFrame:&packet];
-        if (result < 0) {
-            NSLog(@"read packet error");
-            finished = YES;
-            break;
-        } else {
-            if (packet.stream_index == self.context.videoIndex) {
-                [self.videoPacketQueue enqueuePacket:packet];
-            } else if (packet.stream_index == self.context.audioIndex) {
-                [self.audioPacketQueue enqueuePacket:packet];
-            } else if (packet.stream_index == self.context.subtitleIndex) {
-                NSData *data = [[NSData alloc] initWithBytes:packet.data length:packet.size];
-                NSString *string = [[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding];
-                NSLog(@"%@", string);
-            }
-        }
+//        int result = [self.context readFrame:&packet];
+//        if (result < 0) {
+//            NSLog(@"read packet error");
+//            finished = YES;
+//            break;
+//        } else {
+//            if (packet.stream_index == self.context.videoIndex) {
+//                [self.videoPacketQueue enqueuePacket:packet];
+//            } else if (packet.stream_index == self.context.audioIndex) {
+//                [self.audioPacketQueue enqueuePacket:packet];
+//            } else if (packet.stream_index == self.context.subtitleIndex) {
+//                NSData *data = [[NSData alloc] initWithBytes:packet.data length:packet.size];
+//                NSString *string = [[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding];
+//                NSLog(@"%@", string);
+//            }
+//        }
     }
 }
 
 #pragma mark - decoding
 
 - (void)decodeVideoFrame {
-    while (self.controlState != SCControlStateClosed) {
-        if (self.controlState == SCControlStatePaused) {
-            [NSThread sleepForTimeInterval:0.03];
-            continue;
-        }
-        if (self.videoFrameQueue.count > 10) {
-            [NSThread sleepForTimeInterval:0.03];
-            continue;
-        }
-        @autoreleasepool {
-            AVPacket packet = [self.videoPacketQueue dequeuePacket];
-            if (packet.flags == AV_PKT_FLAG_DISCARD) {
-                avcodec_flush_buffers(self.context.videoCodecContext);
-                [self.videoFrameQueue flush];
-                [self.videoFrameQueue enqueueAndSort:@[[[MarkerFrame alloc] init]]];
-                av_packet_unref(&packet);
-                continue;
-            }
-            if (packet.data != NULL && packet.stream_index >= 0) {
+//    while (self.controlState != SCControlStateClosed) {
+//        if (self.controlState == SCControlStatePaused) {
+//            [NSThread sleepForTimeInterval:0.03];
+//            continue;
+//        }
+//        if (self.videoFrameQueue.count > 10) {
+//            [NSThread sleepForTimeInterval:0.03];
+//            continue;
+//        }
+//        @autoreleasepool {
+//            AVPacket packet = [self.videoPacketQueue dequeuePacket];
+//            if (packet.flags == AV_PKT_FLAG_DISCARD) {
+//                avcodec_flush_buffers(self.context.videoCodecContext);
+//                [self.videoFrameQueue flush];
+//                [self.videoFrameQueue enqueueAndSort:@[[[MarkerFrame alloc] init]]];
+//                av_packet_unref(&packet);
+//                continue;
+//            }
+//            if (packet.data != NULL && packet.stream_index >= 0) {
 //                NSArray<SCFrame *> *frames = [self.currentDecoder decodeWithPacket:packet];
 //                [self.videoFrameQueue enqueueAndSort:frames];
-            }
-        }
-    }
+//            }
+//        }
+//    }
 }
 
 - (void)decodeAudioFrame {
-    while (self.controlState != SCControlStateClosed) {
-        if (self.controlState == SCControlStatePaused) {
-            [NSThread sleepForTimeInterval:0.03];
-            continue;
-        }
-        if (self.audioFrameQueue.count > 10) {
-            [NSThread sleepForTimeInterval:0.03];
-            continue;
-        }
-        @autoreleasepool {
-            AVPacket packet = [self.audioPacketQueue dequeuePacket];
-            if (packet.flags == AV_PKT_FLAG_DISCARD) {
-                avcodec_flush_buffers(self.context.audioCodecContext);
-                [self.audioFrameQueue flush];
-                [self.audioFrameQueue enqueueAndSort:@[[[MarkerFrame alloc] init]]];
-                av_packet_unref(&packet);
-                continue;
-            }
-            if (packet.data != NULL && packet.stream_index >= 0) {
+//    while (self.controlState != SCControlStateClosed) {
+//        if (self.controlState == SCControlStatePaused) {
+//            [NSThread sleepForTimeInterval:0.03];
+//            continue;
+//        }
+//        if (self.audioFrameQueue.count > 10) {
+//            [NSThread sleepForTimeInterval:0.03];
+//            continue;
+//        }
+//        @autoreleasepool {
+//            AVPacket packet = [self.audioPacketQueue dequeuePacket];
+//            if (packet.flags == AV_PKT_FLAG_DISCARD) {
+//                avcodec_flush_buffers(self.context.audioCodecContext);
+//                [self.audioFrameQueue flush];
+//                [self.audioFrameQueue enqueueAndSort:@[[[MarkerFrame alloc] init]]];
+//                av_packet_unref(&packet);
+//                continue;
+//            }
+//            if (packet.data != NULL && packet.stream_index >= 0) {
 //                NSArray<SCFrame *> *frames = [self.audioDecoder decodeWithPacket:packet];
 //                [self.audioFrameQueue enqueueAndSort:frames];
-            }
-        }
-    }
+//            }
+//        }
+//    }
 }
 
 #pragma mark - rendering
 
 - (void)rendering {
-    if (!self.videoFrame) {
-        self.videoFrame = [self.videoFrameQueue dequeue];
-    }
-    if (!self.videoFrame) {
-        return;
-    }
-    if ([self.videoFrame isMemberOfClass:[MarkerFrame class]]) {
-        self.videoSeekingTime = -DBL_MAX;
-        self.videoFrame = nil;
-        return;
-    }
-    if (self.videoSeekingTime > 0) {
-        self.videoFrame = nil;
-        return;
-    }
-    if (![self.syncor shouldRenderVideoFrame:self.videoFrame.position duration:self.videoFrame.duration]) {
-        return;
-    }
-    [self.render render:(id<RenderData>)self.videoFrame drawIn:self.mtkView];
-    if ([self.delegate respondsToSelector:@selector(controlCenter:didRender:duration:)] && !self.isSeeking) {
-        [self.delegate controlCenter:self didRender:self.videoFrame.position duration:self.context.duration];
-    }
-    self.videoFrame = nil;
+//    if (!self.videoFrame) {
+//        self.videoFrame = [self.videoFrameQueue dequeue];
+//    }
+//    if (!self.videoFrame) {
+//        return;
+//    }
+//    if ([self.videoFrame isMemberOfClass:[MarkerFrame class]]) {
+//        self.videoSeekingTime = -DBL_MAX;
+//        self.videoFrame = nil;
+//        return;
+//    }
+//    if (self.videoSeekingTime > 0) {
+//        self.videoFrame = nil;
+//        return;
+//    }
+//    if (![self.syncor shouldRenderVideoFrame:self.videoFrame.position duration:self.videoFrame.duration]) {
+//        return;
+//    }
+//    [self.render render:(id<RenderData>)self.videoFrame drawIn:self.mtkView];
+//    if ([self.delegate respondsToSelector:@selector(controlCenter:didRender:duration:)] && !self.isSeeking) {
+//        [self.delegate controlCenter:self didRender:self.videoFrame.position duration:self.context.duration];
+//    }
+//    self.videoFrame = nil;
 }
 
 - (void)drawInMTKView:(nonnull MTKView *)view {
@@ -308,45 +308,45 @@
 #pragma mark - audio delegate
 
 - (void)fetchWithOutputData:(float * _Nonnull)outputData numberOfFrames:(uint32_t)numberOfFrames numberOfChannels:(uint32_t)numberOfChannels {
-    @autoreleasepool {
-        while (numberOfFrames > 0) {
-            if (!self.audioFrame) {
-                self.audioFrame = (AudioFrame *)[self.audioFrameQueue dequeue];
-            }
-            if (!self.audioFrame) {
-                memset(outputData, 0, numberOfFrames * numberOfChannels * sizeof(float));
-                return;
-            }
-            if (self.audioFrame.duration == -1) {
-                memset(outputData, 0, numberOfFrames * numberOfChannels * sizeof(float));
-                self.audioSeekingTime = -DBL_MAX;
-                self.audioFrame = nil;
-                return;
-            }
-            if (self.audioSeekingTime > 0) {
-                memset(outputData, 0, numberOfFrames * numberOfChannels * sizeof(float));
-                self.audioFrame = nil;
-                return;
-            }
-            [self.syncor updateAudioClock:self.audioFrame.position];
-            
-            const Byte * bytes = (Byte *)self.audioFrame.samples + self.audioFrame.outputOffset;
-            const NSUInteger bytesLeft = self.audioFrame.length - self.audioFrame.outputOffset;
-            const NSUInteger frameSizeOf = numberOfChannels * sizeof(float);
-            const NSUInteger bytesToCopy = MIN(numberOfFrames * frameSizeOf, bytesLeft);
-            const NSUInteger framesToCopy = bytesToCopy / frameSizeOf;
-            
-            memcpy(outputData, bytes, bytesToCopy);
-            numberOfFrames -= framesToCopy;
-            outputData += framesToCopy * numberOfChannels;
-            
-            if (bytesToCopy < bytesLeft) {
-                self.audioFrame.outputOffset += bytesToCopy;
-            } else {
-                self.audioFrame = nil;
-            }
-        }
-    }
+//    @autoreleasepool {
+//        while (numberOfFrames > 0) {
+//            if (!self.audioFrame) {
+//                self.audioFrame = (AudioFrame *)[self.audioFrameQueue dequeue];
+//            }
+//            if (!self.audioFrame) {
+//                memset(outputData, 0, numberOfFrames * numberOfChannels * sizeof(float));
+//                return;
+//            }
+//            if (self.audioFrame.duration == -1) {
+//                memset(outputData, 0, numberOfFrames * numberOfChannels * sizeof(float));
+//                self.audioSeekingTime = -DBL_MAX;
+//                self.audioFrame = nil;
+//                return;
+//            }
+//            if (self.audioSeekingTime > 0) {
+//                memset(outputData, 0, numberOfFrames * numberOfChannels * sizeof(float));
+//                self.audioFrame = nil;
+//                return;
+//            }
+//            [self.syncor updateAudioClock:self.audioFrame.position];
+//
+//            const Byte * bytes = (Byte *)self.audioFrame.samples + self.audioFrame.outputOffset;
+//            const NSUInteger bytesLeft = self.audioFrame.length - self.audioFrame.outputOffset;
+//            const NSUInteger frameSizeOf = numberOfChannels * sizeof(float);
+//            const NSUInteger bytesToCopy = MIN(numberOfFrames * frameSizeOf, bytesLeft);
+//            const NSUInteger framesToCopy = bytesToCopy / frameSizeOf;
+//
+//            memcpy(outputData, bytes, bytesToCopy);
+//            numberOfFrames -= framesToCopy;
+//            outputData += framesToCopy * numberOfChannels;
+//
+//            if (bytesToCopy < bytesLeft) {
+//                self.audioFrame.outputOffset += bytesToCopy;
+//            } else {
+//                self.audioFrame = nil;
+//            }
+//        }
+//    }
 }
 
 @end

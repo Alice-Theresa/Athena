@@ -9,7 +9,9 @@
 #import <Foundation/Foundation.h>
 #import <libavformat/avformat.h>
 
-@class SCTrack;
+@class Track;
+//@class SCTrack;
+@class YuuPacket;
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -27,11 +29,11 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, assign) AVCodecContext *videoCodecContext;
 @property (nonatomic, assign) AVCodecContext *audioCodecContext;
 
-@property (nonatomic, strong, readonly) NSArray<SCTrack *> *videoTracks;
-@property (nonatomic, strong, readonly) NSArray<SCTrack *> *audioTracks;
-@property (nonatomic, strong, readonly) NSArray<SCTrack *> *subtitleTracks;
+@property (nonatomic, strong, readonly) NSArray<Track *> *videoTracks;
+@property (nonatomic, strong, readonly) NSArray<Track *> *audioTracks;
+@property (nonatomic, strong, readonly) NSArray<Track *> *subtitleTracks;
 
-- (int)readFrame:(AVPacket *)packet;
+- (int)readFrame:(YuuPacket *)packet;
 - (void)seekingTime:(NSTimeInterval)time;
 
 - (void)openPath:(NSString *)path;

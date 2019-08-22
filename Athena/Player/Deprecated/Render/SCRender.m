@@ -33,7 +33,7 @@
     }
     return self;
 }
-
+/*
 - (void)render:(id<RenderData>)frame drawIn:(MTKView *)mtkView {
     if ([frame conformsToProtocol:@protocol(RenderDataNV12)]) {
         [self renderNV12:(id<RenderDataNV12>)frame drawIn:mtkView];
@@ -190,5 +190,5 @@
     }
     return _yuvPipelineDescriptor;
 }
-
+*/
 @end
