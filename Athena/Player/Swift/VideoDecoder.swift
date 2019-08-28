@@ -12,7 +12,7 @@ import VideoToolbox
 protocol VideoDecoder {
     var context: FormatContext? { get }
     
-    func decode(packet: YuuPacket) -> NSArray
+    func decode(packet: YuuPacket) -> Array<Frame>
 }
 
 class VTDecoder: VideoDecoder {
@@ -89,7 +89,7 @@ class VTDecoder: VideoDecoder {
         }
     }
     
-    func decode(packet: YuuPacket) -> NSArray {
+    func decode(packet: YuuPacket) -> Array<Frame> {
         var outputPixelBuffer: CVPixelBuffer?
         var blockBuffer: CMBlockBuffer?
         var status = CMBlockBufferCreateWithMemoryBlock(allocator: kCFAllocatorDefault,
@@ -131,13 +131,13 @@ class VTDecoder: VideoDecoder {
                                                         duration: Double(packet.duration) * Double(context.videoTimebase),
                                                         pixelBuffer: outputPixelBuffer)
                         packet.unref()
-                        return NSArray(array: [videoFrame])
+                        return [videoFrame]
                     }
                 }
             }
         }
         packet.unref()
-        return NSArray(array: [])
+        return []
     }
     
     func createFormatDescription(codec_type: CMVideoCodecType, width: Int32, height: Int32, extradata: UnsafePointer<UInt8>, extradata_size: Int32) -> CMFormatDescription? {
@@ -171,9 +171,9 @@ class FFDecoder: VideoDecoder {
         temp_frame = YuuFrame()
     }
     
-    func decode(packet: YuuPacket) -> NSArray {
-        let defaultArray = NSArray()
-        let array = NSMutableArray()
+    func decode(packet: YuuPacket) -> Array<Frame> {
+        let defaultArray: [Frame] = []
+        var array: [Frame] = []
         guard let _ = packet.data, let context = context else { return defaultArray }
         var result = avcodec_send_packet(context.videoCodecContext?.cContextPtr, packet.cPacketPtr)
         if result < 0 {
@@ -185,12 +185,12 @@ class FFDecoder: VideoDecoder {
                 break
             } else {
                 if let frame = videoFrameFromTempFrame(packetSize: Int(packet.size)) {
-                    array.add(frame)
+                    array.append(frame)
                 }
             }
         }
         packet.unref()
-        return array.copy() as! NSArray
+        return array
     }
     
     func videoFrameFromTempFrame(packetSize: Int) -> I420VideoFrame?  {

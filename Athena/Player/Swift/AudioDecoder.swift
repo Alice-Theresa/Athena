@@ -55,9 +55,9 @@ class AudioDecoder: NSObject {
         }
     }
     
-    func decode(packet: YuuPacket) -> NSArray {
-        let defaultArray = NSArray()
-        let array = NSMutableArray()
+    func decode(packet: YuuPacket) -> Array<AudioFrame> {
+        let defaultArray: [AudioFrame] = []
+        var array: [AudioFrame] = []
         guard let _ = packet.data, let context = context else { return defaultArray }
         var result = avcodec_send_packet(context.audioCodecContext?.cContextPtr, packet.cPacketPtr)
         if result < 0 {
@@ -69,11 +69,11 @@ class AudioDecoder: NSObject {
                 break
             }
             if let frame = audioFrameFromTempFrame(packetSize: Int(packet.size)) {
-                array.add(frame)
+                array.append(frame)
             }
         }
         packet.unref()
-        return array.copy() as! NSArray
+        return array
     }
     
     func audioFrameFromTempFrame(packetSize: Int) -> AudioFrame?  {
@@ -105,16 +105,12 @@ class AudioDecoder: NSObject {
                                          Int32(temp.sampleCount))
             audioDataBuffer = _audio_swr_buffer
             
-        } else {
-            print("sss")
         }
-        let position = TimeInterval(av_frame_get_best_effort_timestamp(temp.cFramePtr)) * TimeInterval(context!.audioTimebase)
-        let duration = TimeInterval(av_frame_get_pkt_duration(temp.cFramePtr)) * TimeInterval(context!.audioTimebase)
-        let audioFrame = AudioFrame(position: position, duration: duration)
-        
         let numberOfElements = numberOfFrames * _channelCount
         let length = Int(numberOfElements) * MemoryLayout<Float>.size
-        audioFrame.setting(samplesLength: length)
+        let position = TimeInterval(av_frame_get_best_effort_timestamp(temp.cFramePtr)) * TimeInterval(context!.audioTimebase)
+        let duration = TimeInterval(av_frame_get_pkt_duration(temp.cFramePtr)) * TimeInterval(context!.audioTimebase)
+        let audioFrame = AudioFrame(position: position, duration: duration, samplesLength: length)
         
         var scale = 1.0 / Float(Int16.max)
         let sample = audioFrame.samples!

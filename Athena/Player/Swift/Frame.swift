@@ -32,12 +32,9 @@ class AudioFrame: Frame {
         free(samples)
     }
     
-    init(position: TimeInterval, duration: TimeInterval) {
+    init(position: TimeInterval, duration: TimeInterval, samplesLength: Int) {
         self.position = position
         self.duration = duration
-    }
-    
-    func setting(samplesLength: Int) {
         if bufferSize < samplesLength {
             if (bufferSize > 0 && samples != nil) {
                 free(samples)
@@ -46,8 +43,8 @@ class AudioFrame: Frame {
             samples = malloc(bufferSize)
         }
         length = samplesLength
-        outputOffset = 0
     }
+
 }
 
 class NV12VideoFrame: Frame, RenderDataNV12 {

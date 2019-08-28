@@ -27,22 +27,22 @@ class FrameQueue: NSObject {
     private var header: FrameNode?
     private var tailer: FrameNode?
     
-    func enqueueAndSort(frames: NSArray) {
+    func enqueueAndSort(frames: Array<Frame>) {
         semaphore.wait()
         defer {
             semaphore.signal()
         }
         for frame in frames {
-            let node = FrameNode(frame as! Frame)
+            let node = FrameNode(frame)
             guard let tailer = tailer else {
                 header = node
                 self.tailer = node
                 count += 1
                 return
             }
-            if tailer.frame.position > (frame as! Frame).position {
+            if tailer.frame.position > frame.position {
                 guard var search = tailer.pre else { return } //??
-                while (search.frame.position > (frame as! Frame).position) {
+                while (search.frame.position > frame.position) {
                     if let pre = search.pre {
                         search = pre
                     } else {

@@ -204,7 +204,7 @@ import MetalKit
             if packet.flags == .discard {
                 avcodec_flush_buffers(context.videoCodecContext?.cContextPtr)
                 videoFrameQueue.flush()
-                videoFrameQueue.enqueueAndSort(frames: NSArray.init(object: MarkerFrame.init()))
+                videoFrameQueue.enqueueAndSort(frames: [MarkerFrame.init()])
                 packet.unref()
                 continue
             }
@@ -229,7 +229,7 @@ import MetalKit
             if packet.flags == .discard {
                 avcodec_flush_buffers(context.audioCodecContext?.cContextPtr)
                 audioFrameQueue.flush()
-                audioFrameQueue.enqueueAndSort(frames: NSArray.init(object: MarkerFrame.init()))
+                audioFrameQueue.enqueueAndSort(frames: [MarkerFrame.init()])
                 packet.unref()
                 continue;
             }
@@ -292,11 +292,11 @@ extension Controller: AudioManagerDelegate {
                 let  bytesToCopy = min(Int(nof) * frameSizeOf, bytesLeft)
                 let  framesToCopy = bytesToCopy / frameSizeOf
                 memcpy(od, bytes, bytesToCopy)
-                nof = nof - UInt32(framesToCopy)
+                nof -= UInt32(framesToCopy)
                 od = od.advanced(by: framesToCopy * Int(numberOfChannels))
                 
                 if (bytesToCopy < bytesLeft) {
-                    frame.outputOffset = frame.outputOffset + bytesToCopy
+                    frame.outputOffset += bytesToCopy
                 } else {
                     audioFrame = nil
                 }
@@ -304,8 +304,7 @@ extension Controller: AudioManagerDelegate {
                 if let af = audioFrameQueue.dequeue() {
                     self.audioFrame = af as? AudioFrame
                 } else {
-                    memset(od, 0, Int(numberOfFrames * numberOfChannels) * MemoryLayout<Float>.size)
-                    return
+                    memset(od, 0, Int(nof * numberOfChannels) * MemoryLayout<Float>.size)
                 }
             }
         }
