@@ -9,7 +9,11 @@
 import Foundation
 import MetalKit
 
-enum ControlState: Int {
+@objc protocol ControllerProtocol: NSObjectProtocol {
+    @objc func controlCenter(controller: Controller, didRender position: TimeInterval, duration: TimeInterval)
+}
+
+@objc enum ControlState: Int {
     case Origin = 0
     case Opened
     case Playing
@@ -19,7 +23,7 @@ enum ControlState: Int {
 
 @objc class Controller: NSObject {
     
-    private let context: SCFormatContext
+    private let context: FormatContext
     
     private var vtDecoder: VTDecoder?
     private var ffDecoder: FFDecoder?
@@ -38,17 +42,20 @@ enum ControlState: Int {
     
     private weak var mtkView: MTKView?
     private let render: Render
+    @objc weak var delegate: ControllerProtocol?
     
-    public private(set) var state: ControlState = .Origin
+    @objc public private(set) var state: ControlState = .Origin
     
     private var isSeeking: Bool
     private var videoSeekingTime: TimeInterval
+    private var audioSeekingTime: TimeInterval
+    private var syncer : Synchronizer
     private var videoFrame: Frame?
     private var audioFrame: AudioFrame?
     private var audioManager: AudioManager
     
     deinit {
-        
+        NotificationCenter.default.removeObserver(self, name: UIApplication.willResignActiveNotification, object: nil)
     }
     
     @objc init(renderView: MTKView) {
@@ -63,10 +70,12 @@ enum ControlState: Int {
         audioDecodeOperation = BlockOperation()
         controlQueue = OperationQueue()
         
-        context = SCFormatContext()
+        context = FormatContext()
         render = Render()
         isSeeking = false
-        videoSeekingTime = 0
+        videoSeekingTime = -Double.greatestFiniteMagnitude
+        audioSeekingTime = -Double.greatestFiniteMagnitude
+        syncer = Synchronizer()
         
         mtkView = renderView
         mtkView!.device = render.device
@@ -78,10 +87,11 @@ enum ControlState: Int {
         super.init()
         mtkView!.delegate = self
         audioManager.delegate = self
+        NotificationCenter.default.addObserver(self, selector: #selector(appWillResignActive), name: UIApplication.willResignActiveNotification, object: nil)
     }
     
     @objc func open(path: NSString) {
-        context.openPath(String(path))
+        context.open(path: String(path))
 //        vtDecoder = VTDecoder(formatContext: context)
         ffDecoder = FFDecoder(formatContext: context)
         videoDecoder = ffDecoder
@@ -105,12 +115,16 @@ enum ControlState: Int {
         audioManager.play()
     }
     
-    func pause() {
-        
+    @objc func pause() {
+        state = .Paused
+        audioManager.stop()
+        mtkView?.isPaused = true
     }
     
-    func resume() {
-        
+    @objc func resume() {
+        state = .Playing
+        audioManager.play()
+        mtkView?.isPaused = false
     }
     
     @objc func close() {
@@ -122,11 +136,13 @@ enum ControlState: Int {
         context.closeFile()
     }
     
-    func seeking(time: TimeInterval) {
-        
+    @objc func seeking(time: TimeInterval) {
+        videoSeekingTime = time * context.duration
+        audioSeekingTime = videoSeekingTime
+        isSeeking = true
     }
     
-    func appWillResignActive() {
+    @objc func appWillResignActive() {
         pause()
     }
     
@@ -152,7 +168,7 @@ enum ControlState: Int {
                 continue
             }
             if isSeeking {
-                context.seekingTime(videoSeekingTime)
+                context.seeking(time: videoSeekingTime)
                 flushQueue()
                 videoPacketQueue.enqueueDiscardPacket()
                 audioPacketQueue.enqueueDiscardPacket()
@@ -160,7 +176,7 @@ enum ControlState: Int {
                 continue
             }
             let packet = YuuPacket()
-            let result = context.readFrame(packet)
+            let result = context.read(packet: packet)
             if result < 0 {
                 finished = true
                 break
@@ -186,7 +202,7 @@ enum ControlState: Int {
             }
             let packet = videoPacketQueue.dequeue()
             if packet.flags == .discard {
-                avcodec_flush_buffers(context.videoCodecContext)
+                avcodec_flush_buffers(context.videoCodecContext?.cContextPtr)
                 videoFrameQueue.flush()
                 videoFrameQueue.enqueueAndSort(frames: NSArray.init(object: MarkerFrame.init()))
                 packet.unref()
@@ -211,7 +227,7 @@ enum ControlState: Int {
             }
             let packet = audioPacketQueue.dequeue()
             if packet.flags == .discard {
-                avcodec_flush_buffers(context.audioCodecContext)
+                avcodec_flush_buffers(context.audioCodecContext?.cContextPtr)
                 audioFrameQueue.flush()
                 audioFrameQueue.enqueueAndSort(frames: NSArray.init(object: MarkerFrame.init()))
                 packet.unref()
@@ -235,13 +251,14 @@ enum ControlState: Int {
                 videoFrame = nil
                 return
             }
+            if !syncer.shouldRenderVideoFrame(position: playFrame.position, duration: playFrame.duration) {
+                return
+            }
             render.render(frame: playFrame as! RenderData, drawIn: mtkView!)
+            delegate?.controlCenter(controller: self, didRender: playFrame.position, duration: context.duration)
             videoFrame = nil
         } else {
             videoFrame = videoFrameQueue.dequeue()
-            if videoFrame == nil {
-                return
-            }
         }
     }
 }
@@ -268,6 +285,7 @@ extension Controller: AudioManagerDelegate {
                 }
 //                if (self.audioSeekingTime > 0) {
 //                }
+                syncer.updateAudioClock(position: frame.position)
                 let bytes: UnsafeMutablePointer<UInt8> = frame.samples!.assumingMemoryBound(to: UInt8.self) + frame.outputOffset
                 let bytesLeft = frame.length - frame.outputOffset
                 let frameSizeOf = Int(numberOfChannels) * MemoryLayout<Float>.size

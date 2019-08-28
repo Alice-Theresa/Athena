@@ -54,23 +54,5 @@
     }
 }
 
-//- (void)block {
-//    dispatch_semaphore_wait(self.semaphore, DISPATCH_TIME_FOREVER);
-//    self.isBlock = YES;
-//    self.lockCounter = 2;
-//    dispatch_semaphore_signal(self.semaphore);
-//}
-//
-//- (void)unblock {
-//    dispatch_semaphore_wait(self.semaphore, DISPATCH_TIME_FOREVER);
-//    if (self.lockCounter < 0) {
-//        NSLog(@"error");
-//    }
-//    self.lockCounter--;
-//    if (self.lockCounter == 0) {
-//        self.isBlock = NO;
-//    }
-//    dispatch_semaphore_signal(self.semaphore);
-//}
 
 @end

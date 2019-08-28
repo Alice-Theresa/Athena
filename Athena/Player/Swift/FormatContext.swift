@@ -14,16 +14,17 @@ class FormatContext {
     var audioIndex = -1
     var subtitleIndex = -1
     
-    var videoTimebase = 0
-    var audioTimebase = 0
-    var duration = 0
-    
-    let formatContext: YuuFormatContext
+    var videoTimebase: TimeInterval = 0
+    var audioTimebase: TimeInterval = 0
+    var duration: TimeInterval = 0
     
     var videoTracks: [Track] = []
     var audioTracks: [Track] = []
     var subtitleTracks: [Track] = []
     
+    let formatContext: YuuFormatContext
+    var videoCodecContext: YuuCodecContext?
+    var audioCodecContext: YuuCodecContext?
     
     init() {
         av_register_all()
@@ -31,9 +32,9 @@ class FormatContext {
         formatContext = YuuFormatContext()
     }
     
-    func open(path: NSString) {
+    func open(path: String) {
         var p = formatContext.cContextPtr
-        if avformat_open_input(&p, path.utf8String, nil, nil) != 0 {
+        if avformat_open_input(&p, (path as NSString).utf8String, nil, nil) != 0 {
             print("Couldn't open input stream.\n")
             return
         }
@@ -53,10 +54,59 @@ class FormatContext {
                 break
             }
         }
-//        videoIndex = videoTracks.first?.index
-//        audioIndex = audioTracks.first?.index
-//        subtitleIndex = subtitleTracks.first?.index
-//        let videoStream = formatContext.cContext.streams[videoIndex]
+        videoIndex = videoTracks.first?.index ?? -1
+        audioIndex = audioTracks.first?.index ?? -1
+        subtitleIndex = subtitleTracks.first?.index ?? -1
+        let videoStream = formatContext.streams[videoIndex]
+        let audioStream = formatContext.streams[audioIndex]
+        let videoCodec = YuuCodec.findDecoderById(AVCodecID(rawValue: videoStream.codecParameters.codecId.rawValue))
+        let audioCodec = YuuCodec.findDecoderById(AVCodecID(rawValue: audioStream.codecParameters.codecId.rawValue))
+        videoCodecContext = YuuCodecContext(codec: videoCodec)
+        audioCodecContext = YuuCodecContext(codec: audioCodec)
+        videoCodecContext?.setParameters(videoStream.codecParameters)
+        audioCodecContext?.setParameters(audioStream.codecParameters)
+        guard let vc = videoCodec, let ac = audioCodec else {
+            print("Couldn't find Codec.\n")
+            return
+        }
+        do {
+            try videoCodecContext?.openCodec()
+            try audioCodecContext?.openCodec()
+        } catch {
+            print("Couldn't open codec.\n")
+        }
+        settingTimeBase()
+        settingDuration()
     }
+    
+    func read(packet: YuuPacket) -> Int {
+        return Int(av_read_frame(formatContext.cContextPtr, packet.cPacketPtr))
+    }
+    
+    func seeking(time: TimeInterval) {
         
+    }
+    
+    func closeFile() {
+        var p = formatContext.cContextPtr
+        avcodec_close(videoCodecContext?.cContextPtr)
+        avcodec_close(audioCodecContext?.cContextPtr)
+        avformat_close_input(&p)
+    }
+    
+    private func settingTimeBase() {
+        let stream = formatContext.streams[videoIndex]
+        if stream.timebase.den > 0 && stream.timebase.num > 0 {
+            videoTimebase = av_q2d(stream.timebase)
+        }
+        let audioStream = formatContext.streams[audioIndex]
+        if audioStream.timebase.den > 0 && audioStream.timebase.num > 0 {
+            audioTimebase = av_q2d(audioStream.timebase)
+        }
+    }
+    
+    private func settingDuration() {
+        duration = TimeInterval(formatContext.duration) / TimeInterval(AV_TIME_BASE)
+    }
 }
+

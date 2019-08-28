@@ -8,50 +8,50 @@
 
 import Foundation
 
-@objc public final class YuuStream : NSObject {
+class YuuStream : NSObject {
     let cStreamPtr: UnsafeMutablePointer<AVStream>
     var cStream: AVStream { return cStreamPtr.pointee }
     
-    @objc init(cStreamPtr: UnsafeMutablePointer<AVStream>) {
+    init(cStreamPtr: UnsafeMutablePointer<AVStream>) {
         self.cStreamPtr = cStreamPtr
     }
     
-    public var index: Int {
+    var index: Int {
         return Int(cStream.index)
     }
     
-    public var id: Int32 {
+    var id: Int32 {
         get { return cStream.id }
         set { cStreamPtr.pointee.id = newValue }
     }
     
-    @objc public var timebase: AVRational {
+    var timebase: AVRational {
         get { return cStream.time_base }
         set { cStreamPtr.pointee.time_base = newValue }
     }
     
-    public var startTime: Int64 {
+    var startTime: Int64 {
         return cStream.start_time
     }
     
-    @objc public var duration: Int64 {
+    var duration: Int64 {
         return cStream.duration
     }
     
-    public var frameCount: Int {
+    var frameCount: Int {
         return Int(cStream.nb_frames)
     }
     
-    public var discard: AVDiscard {
+    var discard: AVDiscard {
         get { return cStream.discard }
         set { cStreamPtr.pointee.discard = newValue }
     }
     
-    public var sampleAspectRatio: AVRational {
+    var sampleAspectRatio: AVRational {
         return cStream.sample_aspect_ratio
     }
     
-    @objc public var metadata: [String: String] {
+    var metadata: [String: String] {
         get {
             var dict = [String: String]()
             var prev: UnsafeMutablePointer<AVDictionaryEntry>?
@@ -64,16 +64,16 @@ import Foundation
         set { cStreamPtr.pointee.metadata = newValue.toAVDict() }
     }
     
-    public var averageFramerate: AVRational {
+    var averageFramerate: AVRational {
         get { return cStream.avg_frame_rate }
         set { cStreamPtr.pointee.avg_frame_rate = newValue }
     }
     
-    public var realFramerate: AVRational {
+    var realFramerate: AVRational {
         return cStream.r_frame_rate
     }
     
-    @objc public var codecParameters: YuuCodecParameters {
+    var codecParameters: YuuCodecParameters {
         return YuuCodecParameters(cParametersPtr: cStream.codecpar)
     }
     

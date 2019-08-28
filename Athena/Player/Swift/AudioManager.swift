@@ -10,12 +10,12 @@ import Foundation
 import AVFoundation
 import Accelerate
 
-@objc protocol AudioManagerDelegate: NSObjectProtocol {
+protocol AudioManagerDelegate: NSObjectProtocol {
     func fetch(outputData: UnsafeMutablePointer<Float>, numberOfFrames: UInt32, numberOfChannels: UInt32)
 }
 
-@objc class AudioManager: NSObject {
-    @objc weak var delegate: AudioManagerDelegate?
+class AudioManager {
+    weak var delegate: AudioManagerDelegate?
     var outData = UnsafeMutablePointer<Float>.allocate(capacity: 4096 * 2)
     
     var audioUnit: AudioUnit!
@@ -56,7 +56,7 @@ import Accelerate
         return noErr
     }
     
-    @objc public override init() {
+    init() {
         do {
             try audioSession.setPreferredSampleRate(44_100)
             // https://stackoverflow.com/questions/51010390/avaudiosession-setcategory-swift-4-2-ios-12-play-sound-on-silent
@@ -69,7 +69,6 @@ import Accelerate
         } catch {
             print("error")
         }
-        super.init()
         initPlayer()
     }
     
@@ -112,11 +111,11 @@ import Accelerate
         print(result)
     }
     
-    @objc func play() {
+    func play() {
         AudioOutputUnitStart(audioUnit)
     }
 
-    @objc func stop() {
+    func stop() {
         AudioOutputUnitStop(audioUnit)
     }
 }

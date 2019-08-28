@@ -22,7 +22,7 @@
 
 #import "Athena-Swift.h"
 
-@interface SCControl () <AudioManagerDelegate, MTKViewDelegate>
+@interface SCControl () <MTKViewDelegate>
 
 @property (nonatomic, strong) SCFormatContext *context;
 
@@ -55,7 +55,7 @@
 @property (nonatomic, strong) SCFrame *videoFrame;
 //@property (nonatomic, strong) AudioFrame *audioFrame;
 
-@property (nonatomic, strong) AudioManager *audioManager;
+//@property (nonatomic, strong) AudioManager *audioManager;
 
 @end
 
@@ -102,43 +102,43 @@
 //    _videoDecoder = [[FFDecoder alloc] initWithFormatContext:_context];
 //    _audioDecoder = [[AudioDecoder alloc] initWithFormatContext:_context];
 //    _currentDecoder = _VTDecoder;
-    self.audioManager.delegate = self;
+//    self.audioManager.delegate = self;
     [self start];
 }
 
 - (void)start {
-    self.readPacketOperation = [[NSInvocationOperation alloc] initWithTarget:self selector:@selector(readPacket) object:nil];
-    self.readPacketOperation.queuePriority = NSOperationQueuePriorityVeryHigh;
-    self.readPacketOperation.qualityOfService = NSQualityOfServiceUserInteractive;
+//    self.readPacketOperation = [[NSInvocationOperation alloc] initWithTarget:self selector:@selector(readPacket) object:nil];
+//    self.readPacketOperation.queuePriority = NSOperationQueuePriorityVeryHigh;
+//    self.readPacketOperation.qualityOfService = NSQualityOfServiceUserInteractive;
+//
+//    self.videoDecodeOperation = [[NSInvocationOperation alloc] initWithTarget:self selector:@selector(decodeVideoFrame) object:nil];
+//    self.videoDecodeOperation.queuePriority = NSOperationQueuePriorityVeryHigh;
+//    self.videoDecodeOperation.qualityOfService = NSQualityOfServiceUserInteractive;
+//
+//    self.audioDecodeOperation = [[NSInvocationOperation alloc] initWithTarget:self selector:@selector(decodeAudioFrame) object:nil];
+//    self.audioDecodeOperation.queuePriority = NSOperationQueuePriorityVeryHigh;
+//    self.audioDecodeOperation.qualityOfService = NSQualityOfServiceUserInteractive;
+//
+//    self.controlQueue = [[NSOperationQueue alloc] init];
+//    self.controlQueue.qualityOfService = NSQualityOfServiceUserInteractive;
+//    [self.controlQueue addOperation:self.readPacketOperation];
+//    [self.controlQueue addOperation:self.videoDecodeOperation];
+//    [self.controlQueue addOperation:self.audioDecodeOperation];
     
-    self.videoDecodeOperation = [[NSInvocationOperation alloc] initWithTarget:self selector:@selector(decodeVideoFrame) object:nil];
-    self.videoDecodeOperation.queuePriority = NSOperationQueuePriorityVeryHigh;
-    self.videoDecodeOperation.qualityOfService = NSQualityOfServiceUserInteractive;
-    
-    self.audioDecodeOperation = [[NSInvocationOperation alloc] initWithTarget:self selector:@selector(decodeAudioFrame) object:nil];
-    self.audioDecodeOperation.queuePriority = NSOperationQueuePriorityVeryHigh;
-    self.audioDecodeOperation.qualityOfService = NSQualityOfServiceUserInteractive;
-    
-    self.controlQueue = [[NSOperationQueue alloc] init];
-    self.controlQueue.qualityOfService = NSQualityOfServiceUserInteractive;
-    [self.controlQueue addOperation:self.readPacketOperation];
-    [self.controlQueue addOperation:self.videoDecodeOperation];
-    [self.controlQueue addOperation:self.audioDecodeOperation];
-    
-    [self.audioManager play];
-    self.controlState = SCControlStatePlaying;
+//    [self.audioManager play];
+//    self.controlState = SCControlStatePlaying;
 }
 
 - (void)pause {
-    self.controlState = SCControlStatePaused;
-     [self.audioManager stop];
-    self.mtkView.paused = YES;
+//    self.controlState = SCControlStatePaused;
+//     [self.audioManager stop];
+//    self.mtkView.paused = YES;
 }
 
 - (void)resume {
-    self.controlState = SCControlStatePlaying;
-     [self.audioManager play];
-    self.mtkView.paused = NO;
+//    self.controlState = SCControlStatePlaying;
+//     [self.audioManager play];
+//    self.mtkView.paused = NO;
 }
 
 - (void)close {
@@ -149,7 +149,7 @@
     self.videoDecodeOperation = nil;
     self.audioDecodeOperation = nil;
     [self flushQueue];
-    [self.audioManager stop];
+//    [self.audioManager stop];
     [self.context closeFile];
 }
 

@@ -15,7 +15,7 @@
 #import "SCPlayerControlView.h"
 #import "Athena-Swift.h"
 
-@interface SCPlayerViewController () <ControlCenterProtocol>
+@interface SCPlayerViewController () <ControllerProtocol>
 
 @property (nonatomic, strong) MTKView *mtkView;
 @property (nonatomic, strong) SCPlayerControlView *controlView;
@@ -59,7 +59,7 @@
     [self.mtkView addSubview:self.controlView];
     
     self.controler = [[Controller alloc] initWithRenderView:self.mtkView];
-//    self.controler.delegate = self;
+    self.controler.delegate = self;
     
     [self.controlView.actionButton addTarget:self action:@selector(resumeOrPause) forControlEvents:UIControlEventTouchUpInside];
     [self.controlView.backButton addTarget:self action:@selector(popVC) forControlEvents:UIControlEventTouchUpInside];
@@ -74,16 +74,16 @@
     self.isHideContainer = !self.isHideContainer;
 }
 
-//- (void)resumeOrPause {
-//    if (self.controler.controlState == SCControlStatePlaying) {
-//        [self.controler pause];
-//        [self.controlView settingPause];
-//    } else if (self.controler.controlState == SCControlStatePaused) {
-//        [self.controler resume];
-//        [self.controlView settingPlay];
-//    }
-////    [self.controler switchVideoDecoder];
-//}
+- (void)resumeOrPause {
+    if (self.controler.state == SCControlStatePlaying) {
+        [self.controler pause];
+        [self.controlView settingPause];
+    } else if (self.controler.state == SCControlStatePaused) {
+        [self.controler resume];
+        [self.controlView settingPlay];
+    }
+//    [self.controler switchVideoDecoder];
+}
 
 - (void)popVC {
     [self.navigationController popViewControllerAnimated:YES];
@@ -93,23 +93,25 @@
     self.isTouchSlider = YES;
 }
 
-//- (void)seekingTime:(id)sender {
-//    [self.controler seekingTime:self.controlView.progressSlide.value];
-//    self.isTouchSlider = NO;
-//}
+- (void)seekingTime:(id)sender {
+    [self.controler seekingWithTime:self.controlView.progressSlide.value];
+    self.isTouchSlider = NO;
+}
 
-- (void)controlCenter:(SCControl *)control didRender:(NSUInteger)position duration:(NSUInteger)duration {
-    NSString *total = [NSString stringWithFormat:@"%02lu:%02lu:%02lu", duration / 3600, duration % 3600 / 60, duration % 3600 % 60];
+
+- (void)controlCenterWithController:(Controller * _Nonnull)controller didRender:(double)position duration:(double)duration {
+    NSInteger length = duration;
+    NSInteger playing = position;
+    NSString *total = [NSString stringWithFormat:@"%02lu:%02lu:%02lu", length / 3600, length % 3600 / 60, length % 3600 % 60];
     if (!self.isTouchSlider) {
-        NSString *current = [NSString stringWithFormat:@"%02lu:%02lu:%02lu", position / 3600, position % 3600 / 60, position % 3600 % 60];
+        NSString *current = [NSString stringWithFormat:@"%02lu:%02lu:%02lu", playing / 3600, playing % 3600 / 60, playing % 3600 % 60];
         self.controlView.timeLabel.text = [NSString stringWithFormat:@"%@/%@", current, total];
-        self.controlView.progressSlide.value = (float)position / duration;
+        self.controlView.progressSlide.value = (float)playing / length;
     } else {
-        NSUInteger result = self.controlView.progressSlide.value * duration;
+        NSUInteger result = self.controlView.progressSlide.value * length;
         NSString *current = [NSString stringWithFormat:@"%02lu:%02lu:%02lu", result / 3600, result % 3600 / 60, result % 3600 % 60];
         self.controlView.timeLabel.text = [NSString stringWithFormat:@"%@/%@", current, total];
     }
 }
-
 
 @end

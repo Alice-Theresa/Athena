@@ -26,7 +26,7 @@ protocol RenderDataI420: RenderData {
 }
 
 class Render {
-    @objc public let device: MTLDevice
+    public let device: MTLDevice
     private let commandQueue: MTLCommandQueue
     private let library: MTLLibrary
     

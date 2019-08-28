@@ -10,14 +10,14 @@ import Foundation
 import VideoToolbox
 
 protocol VideoDecoder {
-    var context: SCFormatContext? { get }
+    var context: FormatContext? { get }
     
     func decode(packet: YuuPacket) -> NSArray
 }
 
 class VTDecoder: VideoDecoder {
     
-    weak var context: SCFormatContext?
+    weak var context: FormatContext?
     
     var session: VTDecompressionSession?
     var formatDescription: CMVideoFormatDescription?
@@ -46,29 +46,29 @@ class VTDecoder: VideoDecoder {
         }
     }
     
-    init(formatContext: SCFormatContext) {
+    init(formatContext: FormatContext) {
         context = formatContext
         tryInitDecoder(context: formatContext)
     }
     
     @discardableResult
-    func tryInitDecoder(context: SCFormatContext) -> Bool {
+    func tryInitDecoder(context: FormatContext) -> Bool {
         if let _ = session {
             return true
         }
         let codecContext = context.videoCodecContext
-        let extradata = codecContext.pointee.extradata
-        let dataSize = codecContext.pointee.extradata_size
+        let extradata = codecContext!.extradata
+        let dataSize = codecContext!.extradataSize
         
         guard let data = extradata else { return false }
         if dataSize < 7 || data[0] != 1 {
             return false
         } else {
             formatDescription = createFormatDescription(codec_type: kCMVideoCodecType_H264,
-                                                        width: codecContext.pointee.width,
-                                                        height: codecContext.pointee.height,
+                                                        width: Int32(codecContext!.width),
+                                                        height: Int32(codecContext!.height),
                                                         extradata: data,
-                                                        extradata_size: dataSize)
+                                                        extradata_size: Int32(dataSize))
             guard let desc = formatDescription else { return false }
             let destinationPixelBufferAttributes = NSMutableDictionary()
             destinationPixelBufferAttributes.setValue(NSNumber(value: kCVPixelFormatType_420YpCbCr8BiPlanarVideoRange), forKey: kCVPixelBufferPixelFormatTypeKey as String)
@@ -127,7 +127,9 @@ class VTDecoder: VideoDecoder {
                         
                     }
                     if let outputPixelBuffer = outputPixelBuffer, let context = context {
-                        let videoFrame = NV12VideoFrame(position: Double(packet.pts) * context.videoTimebase, duration: Double(packet.duration) * context.videoTimebase, pixelBuffer: outputPixelBuffer)
+                        let videoFrame = NV12VideoFrame(position: Double(packet.pts) * Double(context.videoTimebase),
+                                                        duration: Double(packet.duration) * Double(context.videoTimebase),
+                                                        pixelBuffer: outputPixelBuffer)
                         packet.unref()
                         return NSArray(array: [videoFrame])
                     }
@@ -161,10 +163,10 @@ class VTDecoder: VideoDecoder {
 }
 
 class FFDecoder: VideoDecoder {
-    weak var context: SCFormatContext?
+    weak var context: FormatContext?
     var temp_frame: YuuFrame
     
-    init(formatContext: SCFormatContext) {
+    init(formatContext: FormatContext) {
         context = formatContext
         temp_frame = YuuFrame()
     }
@@ -173,12 +175,12 @@ class FFDecoder: VideoDecoder {
         let defaultArray = NSArray()
         let array = NSMutableArray()
         guard let _ = packet.data, let context = context else { return defaultArray }
-        var result = avcodec_send_packet(context.videoCodecContext, packet.cPacketPtr)
+        var result = avcodec_send_packet(context.videoCodecContext?.cContextPtr, packet.cPacketPtr)
         if result < 0 {
             return defaultArray
         }
         while result >= 0 {
-            result = avcodec_receive_frame(context.videoCodecContext, temp_frame.cFramePtr)
+            result = avcodec_receive_frame(context.videoCodecContext?.cContextPtr, temp_frame.cFramePtr)
             if result < 0 {
                 break
             } else {
@@ -196,12 +198,12 @@ class FFDecoder: VideoDecoder {
             let _ = temp_frame.data[1],
             let _ = temp_frame.data[2],
             let context = context else { return nil }
-        let position = Double(av_frame_get_best_effort_timestamp(temp_frame.cFramePtr)) * context.videoTimebase + Double(temp_frame.repeatPicture) * context.videoTimebase * 0.5
-        let duration = Double(av_frame_get_pkt_duration(temp_frame.cFramePtr)) * context.videoTimebase
+        let position = Double(av_frame_get_best_effort_timestamp(temp_frame.cFramePtr)) * Double(context.videoTimebase) + Double(temp_frame.repeatPicture) * Double(context.videoTimebase) * 0.5
+        let duration = Double(av_frame_get_pkt_duration(temp_frame.cFramePtr)) * Double(context.videoTimebase)
         let videoFrame = I420VideoFrame(position: position,
                                         duration: duration,
-                                        width: Int(context.videoCodecContext.pointee.width),
-                                        height: Int(context.videoCodecContext.pointee.height),
+                                        width: Int(context.videoCodecContext!.width),
+                                        height: Int(context.videoCodecContext!.height),
                                         frame: temp_frame)
         return videoFrame
     }

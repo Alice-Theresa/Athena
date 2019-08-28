@@ -18,9 +18,6 @@ NS_ASSUME_NONNULL_BEGIN
 - (BOOL)shouldRenderVideoFrame:(NSTimeInterval)position duration:(NSTimeInterval)duration;
 - (BOOL)shouldDiscardVideoFrame:(NSTimeInterval)position duration:(NSTimeInterval)duration;
 
-- (void)block;
-- (void)unblock;
-
 @end
 
 NS_ASSUME_NONNULL_END

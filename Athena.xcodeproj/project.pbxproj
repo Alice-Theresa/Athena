@@ -75,10 +75,11 @@
 		76C3E2DC21FD63ED00EDC6AB /* SCFrameQueue.m in Sources */ = {isa = PBXBuildFile; fileRef = 76C3E2DB21FD63ED00EDC6AB /* SCFrameQueue.m */; };
 		76C3E2DF21FD65E900EDC6AB /* SCFrameNode.m in Sources */ = {isa = PBXBuildFile; fileRef = 76C3E2DE21FD65E900EDC6AB /* SCFrameNode.m */; };
 		76F2D7D821F375DB0088445C /* libyuv.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 76F2D7D721F375DB0088445C /* libyuv.a */; };
+		9423D853230F7D5800A005B7 /* YuuCodec.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9423D852230F7D5800A005B7 /* YuuCodec.swift */; };
 		9424CE8922FD5DD40098D693 /* Aimer.mkv in Resources */ = {isa = PBXBuildFile; fileRef = 9424CE8822FD5DD30098D693 /* Aimer.mkv */; };
+		9426C814230F91EE00670456 /* YuuCodecContext.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9426C813230F91EE00670456 /* YuuCodecContext.swift */; };
 		943F9F21230D3355006CB485 /* YuuStream.swift in Sources */ = {isa = PBXBuildFile; fileRef = 943F9F20230D3355006CB485 /* YuuStream.swift */; };
 		943F9F23230D35F0006CB485 /* YuuError.swift in Sources */ = {isa = PBXBuildFile; fileRef = 943F9F22230D35F0006CB485 /* YuuError.swift */; };
-		943F9F25230D4864006CB485 /* YuuLog.swift in Sources */ = {isa = PBXBuildFile; fileRef = 943F9F24230D4864006CB485 /* YuuLog.swift */; };
 		943F9F28230D4B24006CB485 /* YuuCodecParameters.swift in Sources */ = {isa = PBXBuildFile; fileRef = 943F9F27230D4B24006CB485 /* YuuCodecParameters.swift */; };
 		94741CBD230E58DA00980702 /* Track.swift in Sources */ = {isa = PBXBuildFile; fileRef = 94741CBC230E58DA00980702 /* Track.swift */; };
 		94741CC0230E8DA300980702 /* FrameUtil.c in Sources */ = {isa = PBXBuildFile; fileRef = 94741CBF230E8DA200980702 /* FrameUtil.c */; };
@@ -86,6 +87,7 @@
 		94941281230AA7BE00ACA808 /* FormatContext.swift in Sources */ = {isa = PBXBuildFile; fileRef = 94941280230AA7BE00ACA808 /* FormatContext.swift */; };
 		94941283230AA8D800ACA808 /* YuuFrame.swift in Sources */ = {isa = PBXBuildFile; fileRef = 94941282230AA8D800ACA808 /* YuuFrame.swift */; };
 		94D624DE230A507D00D41B8B /* YuuPacket.swift in Sources */ = {isa = PBXBuildFile; fileRef = 94D624DD230A507D00D41B8B /* YuuPacket.swift */; };
+		94EF700A2314D5A5006FB858 /* Synchronizer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 94EF70092314D5A5006FB858 /* Synchronizer.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -352,10 +354,11 @@
 		76F2D7D421F375DB0088445C /* macros_msa.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = macros_msa.h; sourceTree = "<group>"; };
 		76F2D7D521F375DB0088445C /* row.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = row.h; sourceTree = "<group>"; };
 		76F2D7D721F375DB0088445C /* libyuv.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = libyuv.a; sourceTree = "<group>"; };
+		9423D852230F7D5800A005B7 /* YuuCodec.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = YuuCodec.swift; sourceTree = "<group>"; };
 		9424CE8822FD5DD30098D693 /* Aimer.mkv */ = {isa = PBXFileReference; lastKnownFileType = file; path = Aimer.mkv; sourceTree = "<group>"; };
+		9426C813230F91EE00670456 /* YuuCodecContext.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = YuuCodecContext.swift; sourceTree = "<group>"; };
 		943F9F20230D3355006CB485 /* YuuStream.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = YuuStream.swift; sourceTree = "<group>"; };
 		943F9F22230D35F0006CB485 /* YuuError.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = YuuError.swift; sourceTree = "<group>"; };
-		943F9F24230D4864006CB485 /* YuuLog.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = YuuLog.swift; sourceTree = "<group>"; };
 		943F9F27230D4B24006CB485 /* YuuCodecParameters.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = YuuCodecParameters.swift; sourceTree = "<group>"; };
 		94741CBC230E58DA00980702 /* Track.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Track.swift; sourceTree = "<group>"; };
 		94741CBE230E8DA200980702 /* FrameUtil.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = FrameUtil.h; sourceTree = "<group>"; };
@@ -364,6 +367,7 @@
 		94941280230AA7BE00ACA808 /* FormatContext.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FormatContext.swift; sourceTree = "<group>"; };
 		94941282230AA8D800ACA808 /* YuuFrame.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = YuuFrame.swift; sourceTree = "<group>"; };
 		94D624DD230A507D00D41B8B /* YuuPacket.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = YuuPacket.swift; sourceTree = "<group>"; };
+		94EF70092314D5A5006FB858 /* Synchronizer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Synchronizer.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -616,8 +620,6 @@
 				7608F09E220AADB0001D7086 /* Swift */,
 				521B7E7B21D7602800F5B689 /* SCControl.h */,
 				521B7E7A21D7602800F5B689 /* SCControl.m */,
-				520EB428220137FF002243DC /* SCSynchronizer.h */,
-				520EB429220137FF002243DC /* SCSynchronizer.m */,
 				526F498721D213D10023E6C3 /* SCFormatContext.h */,
 				526F498821D213D10023E6C3 /* SCFormatContext.m */,
 				527D337121F5AF9800B9D959 /* SCPlayerViewController.h */,
@@ -654,20 +656,9 @@
 		7608F09E220AADB0001D7086 /* Swift */ = {
 			isa = PBXGroup;
 			children = (
+				94741CC5230E9AB800980702 /* Core */,
 				94741CC4230E964200980702 /* CUtil */,
 				943F9F26230D4965006CB485 /* Yuu */,
-				763EE4F12207E7560090A0A3 /* AudioDecoder.swift */,
-				7608F09F220AADFF001D7086 /* AudioManager.swift */,
-				7608F09C220AA4B7001D7086 /* Controller.swift */,
-				94941280230AA7BE00ACA808 /* FormatContext.swift */,
-				7625A1102207290100578C0B /* Frame.swift */,
-				7625A1122207330000578C0B /* FrameQueue.swift */,
-				7656D2AB220717D900E5FB2A /* Mapping.metal */,
-				7625A1172207BBC200578C0B /* PacketQueue.swift */,
-				7656D2B52207195100E5FB2A /* Render.swift */,
-				7656D2AC220717D900E5FB2A /* SCShaderType.h */,
-				763EE4EF2207E74E0090A0A3 /* VideoDecoder.swift */,
-				94741CBC230E58DA00980702 /* Track.swift */,
 			);
 			path = Swift;
 			sourceTree = "<group>";
@@ -675,6 +666,8 @@
 		7625A10F2207232900578C0B /* Deprecated */ = {
 			isa = PBXGroup;
 			children = (
+				520EB428220137FF002243DC /* SCSynchronizer.h */,
+				520EB429220137FF002243DC /* SCSynchronizer.m */,
 				52EAE6DA21F03C8200D9B90B /* Audio */,
 				7608F09B2209F1AA001D7086 /* Decoder */,
 				763EE4EE2207E52F0090A0A3 /* Render */,
@@ -993,12 +986,13 @@
 			isa = PBXGroup;
 			children = (
 				9494127E230AA5C000ACA808 /* YuuFormatContext.swift */,
+				9426C813230F91EE00670456 /* YuuCodecContext.swift */,
 				943F9F27230D4B24006CB485 /* YuuCodecParameters.swift */,
 				94D624DD230A507D00D41B8B /* YuuPacket.swift */,
 				94941282230AA8D800ACA808 /* YuuFrame.swift */,
 				943F9F20230D3355006CB485 /* YuuStream.swift */,
 				943F9F22230D35F0006CB485 /* YuuError.swift */,
-				943F9F24230D4864006CB485 /* YuuLog.swift */,
+				9423D852230F7D5800A005B7 /* YuuCodec.swift */,
 			);
 			path = Yuu;
 			sourceTree = "<group>";
@@ -1010,6 +1004,26 @@
 				94741CBF230E8DA200980702 /* FrameUtil.c */,
 			);
 			name = CUtil;
+			sourceTree = "<group>";
+		};
+		94741CC5230E9AB800980702 /* Core */ = {
+			isa = PBXGroup;
+			children = (
+				763EE4F12207E7560090A0A3 /* AudioDecoder.swift */,
+				7608F09F220AADFF001D7086 /* AudioManager.swift */,
+				7608F09C220AA4B7001D7086 /* Controller.swift */,
+				94941280230AA7BE00ACA808 /* FormatContext.swift */,
+				94741CBC230E58DA00980702 /* Track.swift */,
+				7656D2AB220717D900E5FB2A /* Mapping.metal */,
+				7656D2AC220717D900E5FB2A /* SCShaderType.h */,
+				7625A1102207290100578C0B /* Frame.swift */,
+				7625A1122207330000578C0B /* FrameQueue.swift */,
+				7625A1172207BBC200578C0B /* PacketQueue.swift */,
+				7656D2B52207195100E5FB2A /* Render.swift */,
+				763EE4EF2207E74E0090A0A3 /* VideoDecoder.swift */,
+				94EF70092314D5A5006FB858 /* Synchronizer.swift */,
+			);
+			name = Core;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -1091,6 +1105,7 @@
 			files = (
 				52296C0F21E6D98D006585FE /* SCFrame.m in Sources */,
 				522136661F7F737500182B12 /* AudioEncodeViewController.m in Sources */,
+				94EF700A2314D5A5006FB858 /* Synchronizer.swift in Sources */,
 				7656D2AE220717DA00E5FB2A /* Mapping.metal in Sources */,
 				7625A1132207330000578C0B /* FrameQueue.swift in Sources */,
 				52E04394215E270B003CB1C5 /* AudioDecoder.m in Sources */,
@@ -1119,6 +1134,8 @@
 				94741CBD230E58DA00980702 /* Track.swift in Sources */,
 				7608F0A0220AADFF001D7086 /* AudioManager.swift in Sources */,
 				52EAE6E021F0542E00D9B90B /* SCI420VideoFrame.m in Sources */,
+				9423D853230F7D5800A005B7 /* YuuCodec.swift in Sources */,
+				9426C814230F91EE00670456 /* YuuCodecContext.swift in Sources */,
 				522136791F7F738F00182B12 /* AudioCaptureManager.m in Sources */,
 				943F9F21230D3355006CB485 /* YuuStream.swift in Sources */,
 				763EE4F22207E7560090A0A3 /* AudioDecoder.swift in Sources */,
@@ -1129,7 +1146,6 @@
 				52B338571F7F9BE2003BEFFB /* AACHardEncoder.m in Sources */,
 				526F498021D0DE110023E6C3 /* SCVTDecoder.m in Sources */,
 				527D337421F5AF9800B9D959 /* SCPlayerViewController.m in Sources */,
-				943F9F25230D4864006CB485 /* YuuLog.swift in Sources */,
 				520EB42422003084002243DC /* SCTrack.m in Sources */,
 				5210136621CCE62A003D98F5 /* AAPLEAGLLayer.m in Sources */,
 				7625A1182207BBC200578C0B /* PacketQueue.swift in Sources */,

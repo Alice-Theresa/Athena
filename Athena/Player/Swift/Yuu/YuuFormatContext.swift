@@ -69,4 +69,5 @@ import Foundation
         }
         set { cContextPtr.pointee.metadata = newValue.toAVDict() }
     }
+
 }

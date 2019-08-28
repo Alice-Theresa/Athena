@@ -9,7 +9,7 @@
 import Foundation
 import Accelerate
 
-@objc class AudioDecoder: NSObject {
+class AudioDecoder: NSObject {
     
     let _samplingRate: Int32 = 44100
     let _channelCount: Int32 = 2
@@ -20,7 +20,7 @@ import Accelerate
     var _audio_swr_buffer: UnsafeMutableRawPointer?
     var _audio_swr_buffer_size: Int = 0
     
-    weak var context: SCFormatContext?
+    weak var context: FormatContext?
     var codecContext: UnsafeMutablePointer<AVCodecContext>?
     
     deinit {
@@ -28,10 +28,10 @@ import Accelerate
         swr_free(&audio_swr_context)
     }
     
-    @objc init(formatContext: SCFormatContext) {
+    init(formatContext: FormatContext) {
         context = formatContext
         temp_frame = YuuFrame()
-        codecContext = formatContext.audioCodecContext
+        codecContext = formatContext.audioCodecContext?.cContextPtr
         super.init()
         setupSwsContext()
     }
@@ -55,16 +55,16 @@ import Accelerate
         }
     }
     
-    @objc func decode(packet: YuuPacket) -> NSArray {
+    func decode(packet: YuuPacket) -> NSArray {
         let defaultArray = NSArray()
         let array = NSMutableArray()
         guard let _ = packet.data, let context = context else { return defaultArray }
-        var result = avcodec_send_packet(context.audioCodecContext, packet.cPacketPtr)
+        var result = avcodec_send_packet(context.audioCodecContext?.cContextPtr, packet.cPacketPtr)
         if result < 0 {
             return defaultArray
         }
         while result >= 0 {
-            result = avcodec_receive_frame(context.audioCodecContext, temp_frame?.cFramePtr)
+            result = avcodec_receive_frame(context.audioCodecContext?.cContextPtr, temp_frame?.cFramePtr)
             if result < 0 {
                 break
             }
@@ -108,8 +108,8 @@ import Accelerate
         } else {
             print("sss")
         }
-        let position = TimeInterval(av_frame_get_best_effort_timestamp(temp.cFramePtr)) * context!.audioTimebase
-        let duration = TimeInterval(av_frame_get_pkt_duration(temp.cFramePtr)) * context!.audioTimebase
+        let position = TimeInterval(av_frame_get_best_effort_timestamp(temp.cFramePtr)) * TimeInterval(context!.audioTimebase)
+        let duration = TimeInterval(av_frame_get_pkt_duration(temp.cFramePtr)) * TimeInterval(context!.audioTimebase)
         let audioFrame = AudioFrame(position: position, duration: duration)
         
         let numberOfElements = numberOfFrames * _channelCount
