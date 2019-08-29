@@ -61,14 +61,15 @@ class FormatContext {
         let audioStream = formatContext.streams[audioIndex]
         let videoCodec = YuuCodec.findDecoderById(AVCodecID(rawValue: videoStream.codecParameters.codecId.rawValue))
         let audioCodec = YuuCodec.findDecoderById(AVCodecID(rawValue: audioStream.codecParameters.codecId.rawValue))
-        videoCodecContext = YuuCodecContext(codec: videoCodec)
-        audioCodecContext = YuuCodecContext(codec: audioCodec)
-        videoCodecContext?.setParameters(videoStream.codecParameters)
-        audioCodecContext?.setParameters(audioStream.codecParameters)
         guard let vc = videoCodec, let ac = audioCodec else {
             print("Couldn't find Codec.\n")
             return
         }
+        videoCodecContext = YuuCodecContext(codec: vc)
+        audioCodecContext = YuuCodecContext(codec: ac)
+        videoCodecContext?.setParameters(videoStream.codecParameters)
+        audioCodecContext?.setParameters(audioStream.codecParameters)
+
         do {
             try videoCodecContext?.openCodec()
             try audioCodecContext?.openCodec()
@@ -84,7 +85,14 @@ class FormatContext {
     }
     
     func seeking(time: TimeInterval) {
-        
+        let seek_pos = time * TimeInterval(AV_TIME_BASE)
+        let seek_target = av_rescale_q(Int64(seek_pos), AVRational(num: 1, den: AV_TIME_BASE), formatContext.streams[videoIndex].timebase)
+//        av_seek_frame(formatContext, videoIndex, seek_target, AVSEEK_FLAG_BACKWARD)
+        do {
+            try formatContext.seekFrame(to: seek_target, streamIndex: videoIndex)
+        } catch {
+            fatalError()
+        }
     }
     
     func closeFile() {

@@ -243,7 +243,7 @@ import MetalKit
     func rendering() {
         if let playFrame = videoFrame {
             if playFrame is MarkerFrame {
-                videoSeekingTime = -1
+                videoSeekingTime = -Double.greatestFiniteMagnitude
                 videoFrame = nil
                 return
             }
@@ -279,12 +279,15 @@ extension Controller: AudioManagerDelegate {
             if let frame = audioFrame {
                 if frame.duration == -1 {
                     memset(od, 0, Int(nof * numberOfChannels) * MemoryLayout<Float>.size);
-//                    audioSeekingTime = -DBL_MAX;
+                    audioSeekingTime = -Double.greatestFiniteMagnitude
                     audioFrame = nil
                     return
                 }
-//                if (self.audioSeekingTime > 0) {
-//                }
+                if (self.audioSeekingTime > 0) {
+                    memset(od, 0, Int(nof * numberOfChannels) * MemoryLayout<Float>.size);
+                    self.audioFrame = nil
+                    return
+                }
                 syncer.updateAudioClock(position: frame.position)
                 let bytes: UnsafeMutablePointer<UInt8> = frame.samples!.assumingMemoryBound(to: UInt8.self) + frame.outputOffset
                 let bytesLeft = frame.length - frame.outputOffset

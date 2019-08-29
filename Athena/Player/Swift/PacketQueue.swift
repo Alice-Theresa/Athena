@@ -17,13 +17,11 @@ fileprivate class PacketNode {
     }
 }
 
-class PacketQueue: NSObject {
+class PacketQueue {
     
     let semaphore = DispatchSemaphore(value: 1)
     
     var packetTotalSize = 0
-    
-    var queue: [YuuPacket] = []
     
     private var header: PacketNode?
     private var tailer: PacketNode?

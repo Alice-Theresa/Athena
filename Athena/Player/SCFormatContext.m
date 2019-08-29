@@ -10,8 +10,8 @@
 #import "Athena-Swift.h"
 
 @interface SCFormatContext () {
-//    AVFormatContext *formatContext;
-    YuuFormatContext *formatContext;
+    AVFormatContext *formatContext;
+//    YuuFormatContext *formatContext;
     AVCodec *videoCodec;
     AVCodec *audioCodec;
 }
@@ -48,23 +48,23 @@
         av_register_all();
         avformat_network_init();
     });
-    formatContext = [[YuuFormatContext alloc] init];// avformat_alloc_context();
+//    formatContext = [[YuuFormatContext alloc] init];// avformat_alloc_context();
 }
 
 - (void)openPath:(NSString *)path {
-    AVFormatContext *p = formatContext.cContextPtr;
-    if(avformat_open_input(&p, [path UTF8String], NULL, NULL) != 0){
-        printf("Couldn't open input stream.\n");
-        return ;
-    }
-    if(avformat_find_stream_info(p, NULL) < 0){
-        printf("Couldn't find stream information.\n");
-        return;
-    }
-    
-    NSMutableArray *videoTracks = [NSMutableArray array];
-    NSMutableArray *audioTracks = [NSMutableArray array];
-    NSMutableArray *subtitleTracks = [NSMutableArray array];
+//    AVFormatContext *p = formatContext.cContextPtr;
+//    if(avformat_open_input(&p, [path UTF8String], NULL, NULL) != 0){
+//        printf("Couldn't open input stream.\n");
+//        return ;
+//    }
+//    if(avformat_find_stream_info(p, NULL) < 0){
+//        printf("Couldn't find stream information.\n");
+//        return;
+//    }
+//
+//    NSMutableArray *videoTracks = [NSMutableArray array];
+//    NSMutableArray *audioTracks = [NSMutableArray array];
+//    NSMutableArray *subtitleTracks = [NSMutableArray array];
 //    for (int i = 0; i < formatContext.streamCount; i++) {
 //        switch (formatContext.streams[i].codecParameters.mediaType) {
 //            case AVMEDIA_TYPE_VIDEO:
@@ -116,23 +116,23 @@
 //    [self settingDuration];
 }
 
-- (void)closeFile {
-    AVFormatContext *p = formatContext.cContextPtr;
-    avcodec_close(_videoCodecContext);
-    avcodec_close(_audioCodecContext);
-    avformat_close_input(&p);
-}
-
-- (int)readFrame:(YuuPacket *)packet {
-    AVFormatContext *p = formatContext.cContextPtr;
-    return av_read_frame(p, packet.cPacketPtr);
-}
-
-//- (void)seekingTime:(NSTimeInterval)time {
-//    int64_t seek_pos = time * AV_TIME_BASE;
-//    int64_t seek_target = av_rescale_q(seek_pos, AV_TIME_BASE_Q, formatContext->streams[self.videoIndex]->time_base);
-//    av_seek_frame(formatContext, self.videoIndex, seek_target, AVSEEK_FLAG_BACKWARD);
+//- (void)closeFile {
+//    AVFormatContext *p = formatContext.cContextPtr;
+//    avcodec_close(_videoCodecContext);
+//    avcodec_close(_audioCodecContext);
+//    avformat_close_input(&p);
 //}
+//
+//- (int)readFrame:(YuuPacket *)packet {
+//    AVFormatContext *p = formatContext.cContextPtr;
+//    return av_read_frame(p, packet.cPacketPtr);
+//}
+
+- (void)seekingTime:(NSTimeInterval)time {
+    int64_t seek_pos = time * AV_TIME_BASE;
+    int64_t seek_target = av_rescale_q(seek_pos, AV_TIME_BASE_Q, formatContext->streams[self.videoIndex]->time_base);
+    av_seek_frame(formatContext, self.videoIndex, seek_target, AVSEEK_FLAG_BACKWARD);
+}
 
 //- (void)settingTimeBase {
 //    YuuStream *stream = formatContext.streams[self.videoIndex];

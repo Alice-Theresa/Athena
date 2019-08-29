@@ -14,6 +14,8 @@
 #import <libswscale/swscale.h>
 #import <libswresample/swresample.h>
 #import <libavutil/pixdesc.h>
+#import <libavutil/avutil.h>
+#import <libavutil/rational.h>
 
 #import "FrameUtil.h"
 #import "SCFormatContext.h"

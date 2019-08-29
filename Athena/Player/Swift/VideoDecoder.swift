@@ -22,23 +22,6 @@ class VTDecoder: VideoDecoder {
     var session: VTDecompressionSession?
     var formatDescription: CMVideoFormatDescription?
     
-    var callback: VTDecompressionOutputCallback = {(
-        decompressionOutputRefCon: UnsafeMutableRawPointer?,
-        sourceFrameRefCon: UnsafeMutableRawPointer?,
-        status: OSStatus,
-        infoFlags: VTDecodeInfoFlags,
-        imageBuffer: CVImageBuffer?,
-        presentationTimeStamp: CMTime,
-        presentationDuration: CMTime) in
-        guard let source = sourceFrameRefCon else {
-            return
-        }
-        let outputPixelBuffer = source.assumingMemoryBound(to: CVPixelBuffer.self);
-        if let imageBuffer = imageBuffer {
-            outputPixelBuffer.pointee = imageBuffer
-        }
-    }
-    
     deinit {
         if let session = session {
             VTDecompressionSessionWaitForAsynchronousFrames(session)
@@ -73,7 +56,7 @@ class VTDecoder: VideoDecoder {
             let destinationPixelBufferAttributes = NSMutableDictionary()
             destinationPixelBufferAttributes.setValue(NSNumber(value: kCVPixelFormatType_420YpCbCr8BiPlanarVideoRange), forKey: kCVPixelBufferPixelFormatTypeKey as String)
             var callBackRecord = VTDecompressionOutputCallbackRecord()
-            callBackRecord.decompressionOutputCallback = callback
+            callBackRecord.decompressionOutputCallback = YuuDidDecompress
             callBackRecord.decompressionOutputRefCon = Unmanaged.passUnretained(self).toOpaque()
             let status = VTDecompressionSessionCreate(allocator: kCFAllocatorDefault,
                                                       formatDescription: desc,
@@ -81,11 +64,7 @@ class VTDecoder: VideoDecoder {
                                                       imageBufferAttributes: destinationPixelBufferAttributes,
                                                       outputCallback: &callBackRecord,
                                                       decompressionSessionOut: &session)
-            if status != noErr {
-                return false
-            } else {
-                return true
-            }
+            return status == noErr
         }
     }
     
@@ -127,8 +106,8 @@ class VTDecoder: VideoDecoder {
                         
                     }
                     if let outputPixelBuffer = outputPixelBuffer, let context = context {
-                        let videoFrame = NV12VideoFrame(position: Double(packet.pts) * Double(context.videoTimebase),
-                                                        duration: Double(packet.duration) * Double(context.videoTimebase),
+                        let videoFrame = NV12VideoFrame(position: Double(packet.pts) * context.videoTimebase,
+                                                        duration: Double(packet.duration) * context.videoTimebase,
                                                         pixelBuffer: outputPixelBuffer)
                         packet.unref()
                         return [videoFrame]
@@ -164,29 +143,30 @@ class VTDecoder: VideoDecoder {
 
 class FFDecoder: VideoDecoder {
     weak var context: FormatContext?
-    var temp_frame: YuuFrame
+    var tempFrame: YuuFrame
     
     init(formatContext: FormatContext) {
         context = formatContext
-        temp_frame = YuuFrame()
+        tempFrame = YuuFrame()
     }
     
     func decode(packet: YuuPacket) -> Array<Frame> {
         let defaultArray: [Frame] = []
         var array: [Frame] = []
-        guard let _ = packet.data, let context = context else { return defaultArray }
-        var result = avcodec_send_packet(context.videoCodecContext?.cContextPtr, packet.cPacketPtr)
-        if result < 0 {
+        guard let _ = packet.data, let context = context, let vcc = context.videoCodecContext else { return defaultArray }
+        do {
+            try vcc.sendPacket(packet)
+        } catch {
             return defaultArray
         }
-        while result >= 0 {
-            result = avcodec_receive_frame(context.videoCodecContext?.cContextPtr, temp_frame.cFramePtr)
-            if result < 0 {
-                break
-            } else {
+        while true {
+            do {
+                try vcc.receiveFrame(tempFrame)
                 if let frame = videoFrameFromTempFrame(packetSize: Int(packet.size)) {
                     array.append(frame)
                 }
+            } catch {
+                break
             }
         }
         packet.unref()
@@ -194,17 +174,18 @@ class FFDecoder: VideoDecoder {
     }
     
     func videoFrameFromTempFrame(packetSize: Int) -> I420VideoFrame?  {
-        guard let _ = temp_frame.data[0],
-            let _ = temp_frame.data[1],
-            let _ = temp_frame.data[2],
-            let context = context else { return nil }
-        let position = Double(av_frame_get_best_effort_timestamp(temp_frame.cFramePtr)) * Double(context.videoTimebase) + Double(temp_frame.repeatPicture) * Double(context.videoTimebase) * 0.5
-        let duration = Double(av_frame_get_pkt_duration(temp_frame.cFramePtr)) * Double(context.videoTimebase)
+        guard let _ = tempFrame.data[0],
+            let _ = tempFrame.data[1],
+            let _ = tempFrame.data[2],
+            let context = context,
+            let vcc = context.videoCodecContext else { return nil }
+        let position = Double(av_frame_get_best_effort_timestamp(tempFrame.cFramePtr)) * context.videoTimebase + Double(tempFrame.repeatPicture) * context.videoTimebase * 0.5
+        let duration = Double(av_frame_get_pkt_duration(tempFrame.cFramePtr)) * context.videoTimebase
         let videoFrame = I420VideoFrame(position: position,
                                         duration: duration,
-                                        width: Int(context.videoCodecContext!.width),
-                                        height: Int(context.videoCodecContext!.height),
-                                        frame: temp_frame)
+                                        width: vcc.width,
+                                        height: vcc.height,
+                                        frame: tempFrame)
         return videoFrame
     }
 

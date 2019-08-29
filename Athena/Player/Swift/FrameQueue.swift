@@ -18,7 +18,7 @@ fileprivate class FrameNode {
     }
 }
 
-class FrameQueue: NSObject {
+class FrameQueue {
     
     let semaphore = DispatchSemaphore(value: 1)
     
@@ -35,10 +35,10 @@ class FrameQueue: NSObject {
         for frame in frames {
             let node = FrameNode(frame)
             guard let tailer = tailer else {
-                header = node
+                self.header = node
                 self.tailer = node
                 count += 1
-                return
+                continue
             }
             if tailer.frame.position > frame.position {
                 guard var search = tailer.pre else { return } //??
@@ -58,7 +58,7 @@ class FrameQueue: NSObject {
                 node.pre = tailer;
                 self.tailer = node;
             }
-            count = count + 1;
+            count += 1;
         }
     }
     
@@ -77,9 +77,9 @@ class FrameQueue: NSObject {
             self.header = next
         } else {
             self.header = nil
-            tailer = nil
+            self.tailer = nil
         }
-        count = count - 1
+        count -= 1
         return frame
     }
     

@@ -26,3 +26,14 @@ void YuuYUVChannelFilter(uint8_t * src, long linesize, long width, long height, 
         src += linesize;
     }
 }
+
+void YuuDidDecompress(void *decompressionOutputRefCon,
+                          void *sourceFrameRefCon,
+                          OSStatus status,
+                          VTDecodeInfoFlags infoFlags,
+                          CVImageBufferRef pixelBuffer,
+                          CMTime presentationTimeStamp,
+                          CMTime presentationDuration) {
+    CVPixelBufferRef *outputPixelBuffer = (CVPixelBufferRef *)sourceFrameRefCon;
+    *outputPixelBuffer = CVPixelBufferRetain(pixelBuffer);
+}

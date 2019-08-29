@@ -8,23 +8,23 @@
 
 import Foundation
 
-@objc final class YuuFormatContext : NSObject {
+class YuuFormatContext {
     
-    @objc var cContextPtr: UnsafeMutablePointer<AVFormatContext>!
-    @objc var cContext: AVFormatContext { return cContextPtr.pointee }
+    var cContextPtr: UnsafeMutablePointer<AVFormatContext>!
+    var cContext: AVFormatContext { return cContextPtr.pointee }
     
     init(cContextPtr: UnsafeMutablePointer<AVFormatContext>) {
         self.cContextPtr = cContextPtr
     }
     
-    @objc  override init() {
+    init() {
         guard let ctxPtr = avformat_alloc_context() else {
             fatalError()
         }
         self.cContextPtr = ctxPtr
     }
     
-    @objc var streams: [YuuStream] {
+    var streams: [YuuStream] {
         var list = [YuuStream]()
         for i in 0..<streamCount {
             let stream = cContext.streams.advanced(by: i).pointee!
@@ -33,7 +33,7 @@ import Foundation
         return list
     }
     
-    @objc var streamCount: Int {
+    var streamCount: Int {
         return Int(cContext.nb_streams)
     }
     
@@ -53,11 +53,11 @@ import Foundation
             try throwIfFail(avformat_find_stream_info(cContextPtr, nil))
         }
     }
-    @objc var duration: Int64 {
+    var duration: Int64 {
         return cContext.duration
     }
     
-    @objc var metadata: [String: String] {
+    var metadata: [String: String] {
         get {
             var dict = [String: String]()
             var prev: UnsafeMutablePointer<AVDictionaryEntry>?
@@ -70,4 +70,8 @@ import Foundation
         set { cContextPtr.pointee.metadata = newValue.toAVDict() }
     }
 
+    func seekFrame(to timestamp: Int64, streamIndex: Int) throws {
+        try throwIfFail(av_seek_frame(cContextPtr, Int32(streamIndex), timestamp, AVSEEK_FLAG_BACKWARD))
+    }
+    
 }

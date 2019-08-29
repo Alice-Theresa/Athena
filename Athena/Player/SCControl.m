@@ -33,8 +33,8 @@
 
 @property (nonatomic, strong) SCPacketQueue *videoPacketQueue;
 @property (nonatomic, strong) SCPacketQueue *audioPacketQueue;
-@property (nonatomic, strong) FrameQueue *videoFrameQueue;
-@property (nonatomic, strong) FrameQueue *audioFrameQueue;
+//@property (nonatomic, strong) FrameQueue *videoFrameQueue;
+//@property (nonatomic, strong) FrameQueue *audioFrameQueue;
 
 @property (nonatomic, strong) NSInvocationOperation *readPacketOperation;
 @property (nonatomic, strong) NSInvocationOperation *videoDecodeOperation;

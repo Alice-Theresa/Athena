@@ -90,24 +90,6 @@ class YuuCodecContext {
         set { cContextPtr.pointee.codec_id = newValue }
     }
     
-    /// fourcc (LSB first, so "ABCD" -> ('D'<<24) + ('C'<<16) + ('B'<<8) + 'A').
-    ///
-    /// This is used to work around some encoder bugs.
-    /// A demuxer should set this to what is stored in the field used to identify the codec.
-    /// If there are multiple such fields in a container then the demuxer should choose the one
-    /// which maximizes the information about the used codec.
-    /// If the codec tag field in a container is larger than 32 bits then the demuxer should
-    /// remap the longer ID to 32 bits with a table or other structure. Alternatively a new
-    /// extra_codec_tag + size could be added but for this a clear advantage must be demonstrated
-    /// first.
-    ///
-    /// - encoding: Set by user, if not then the default based on `codecId` will be used.
-    /// - decoding: Set by user, will be converted to uppercase by libavcodec during init.
-    public var codecTag: UInt32 {
-        get { return cContext.codec_tag }
-        set { cContextPtr.pointee.codec_tag = newValue }
-    }
-    
     /// Private data of the user, can be used to carry app specific stuff.
     ///
     /// - encoding: Set by user.
@@ -117,11 +99,7 @@ class YuuCodecContext {
         set { opaqueBox = CodecContextBox((opaque: newValue, getFormat: opaqueBox?.value.getFormat)) }
     }
     
-    /// The average bitrate.
-    ///
-    /// - encoding: Set by user, unused for constant quantizer encoding.
-    /// - decoding: Set by user, may be overwritten by libavcodec if this info is available in the stream.
-    public var bitRate: Int64 {
+    var bitRate: Int64 {
         get { return cContext.bit_rate }
         set { cContextPtr.pointee.bit_rate = newValue }
     }
@@ -180,25 +158,19 @@ class YuuCodecContext {
         set { cContextPtr.pointee.time_base = newValue }
     }
     
-    /// Frame counter.
-    ///
-    /// - encoding: Total number of frames passed to the encoder so far.
-    /// - decoding: Total number of frames returned from the decoder so far.
-    public var frameNumber: Int {
-        return Int(cContext.frame_number)
+    func sendPacket(_ packet: YuuPacket?) throws {
+        try throwIfFail(avcodec_send_packet(cContextPtr, packet?.cPacketPtr))
     }
     
-
+    func receiveFrame(_ frame: YuuFrame) throws {
+        try throwIfFail(avcodec_receive_frame(cContextPtr, frame.cFramePtr))
+    }
     
-    /// A Boolean value indicating whether the codec is open.
-    public var isOpen: Bool {
+    var isOpen: Bool {
         return avcodec_is_open(cContextPtr) > 0
     }
     
-    /// Fill the codec context based on the values from the supplied codec parameters.
-    ///
-    /// - Parameter params: codec parameters
-    public func setParameters(_ params: YuuCodecParameters) {
+    func setParameters(_ params: YuuCodecParameters) {
         avcodec_parameters_to_context(cContextPtr, params.cParametersPtr)
     }
     
