@@ -87,7 +87,6 @@ class FormatContext {
     func seeking(time: TimeInterval) {
         let seek_pos = time * TimeInterval(AV_TIME_BASE)
         let seek_target = av_rescale_q(Int64(seek_pos), AVRational(num: 1, den: AV_TIME_BASE), formatContext.streams[videoIndex].timebase)
-//        av_seek_frame(formatContext, videoIndex, seek_target, AVSEEK_FLAG_BACKWARD)
         do {
             try formatContext.seekFrame(to: seek_target, streamIndex: videoIndex)
         } catch {

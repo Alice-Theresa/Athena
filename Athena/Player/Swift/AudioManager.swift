@@ -30,29 +30,16 @@ class AudioManager {
         ioData: UnsafeMutablePointer<AudioBufferList>?) -> OSStatus in
         
         if let ioData = ioData {
-            for iBuffer in 0..<ioData.pointee.mNumberBuffers {
-                memset(ioData[Int(iBuffer)].mBuffers.mData, 0, Int(ioData[Int(iBuffer)].mBuffers.mDataByteSize))
+            for iBuffer in 0..<Int(ioData.pointee.mNumberBuffers) {
+                memset(ioData[iBuffer].mBuffers.mData, 0, Int(ioData[iBuffer].mBuffers.mDataByteSize))
             }
             let player = Unmanaged<AudioManager>.fromOpaque(inRefCon).takeUnretainedValue()
             if let delegate = player.delegate {
                 delegate.fetch(outputData: player.outData, numberOfFrames: inNumberFrames, numberOfChannels: 2)
-                var scale = Float(INT16_MAX)
-                vDSP_vsmul(player.outData, 1, &scale, player.outData, 1, vDSP_Length(inNumberFrames * 2));
-                for iBuffer in 0..<ioData.pointee.mNumberBuffers {
-                    let thisNumChannels = ioData[Int(iBuffer)].mBuffers.mNumberChannels
-                    for iChannel in 0..<thisNumChannels {
-                        vDSP_vfix16(player.outData + Int(iChannel),
-                                    2,
-                                    ioData[Int(iBuffer)].mBuffers.mData!.assumingMemoryBound(to: Int16.self) + Int(iChannel),
-                                    vDSP_Stride(thisNumChannels),
-                                    vDSP_Length(inNumberFrames))
-                    }
-                }
+                YuuAudioAccelerateCompute(player.outData, inNumberFrames, ioData)
                 return noErr
             }
-            
         }
-        
         return noErr
     }
     
@@ -67,7 +54,7 @@ class AudioManager {
             }
             try audioSession.setActive(true)
         } catch {
-            print("error")
+            fatalError()
         }
         initPlayer()
     }
@@ -96,7 +83,6 @@ class AudioManager {
                                           0,
                                           &outputFormat,
                                           UInt32(MemoryLayout.size(ofValue: outputFormat)))
-        print(result)
         var callbackStruct = AURenderCallbackStruct()
         callbackStruct.inputProc = callback
         callbackStruct.inputProcRefCon = UnsafeMutableRawPointer(Unmanaged.passUnretained(self).toOpaque())
@@ -106,9 +92,7 @@ class AudioManager {
                                       0,
                                       &callbackStruct,
                                       UInt32(MemoryLayout<AURenderCallbackStruct>.size));
-        print(result)
         result = AudioUnitInitialize(audioUnit)
-        print(result)
     }
     
     func play() {

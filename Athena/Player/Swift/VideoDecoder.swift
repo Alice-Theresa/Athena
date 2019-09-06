@@ -34,38 +34,32 @@ class VTDecoder: VideoDecoder {
         tryInitDecoder(context: formatContext)
     }
     
-    @discardableResult
-    func tryInitDecoder(context: FormatContext) -> Bool {
-        if let _ = session {
-            return true
+    func tryInitDecoder(context: FormatContext) {
+        guard let codecContext = context.videoCodecContext, let data = codecContext.extradata else {
+            fatalError()
         }
-        let codecContext = context.videoCodecContext
-        let extradata = codecContext!.extradata
-        let dataSize = codecContext!.extradataSize
-        
-        guard let data = extradata else { return false }
+        let dataSize = codecContext.extradataSize
         if dataSize < 7 || data[0] != 1 {
-            return false
-        } else {
-            formatDescription = createFormatDescription(codec_type: kCMVideoCodecType_H264,
-                                                        width: Int32(codecContext!.width),
-                                                        height: Int32(codecContext!.height),
-                                                        extradata: data,
-                                                        extradata_size: Int32(dataSize))
-            guard let desc = formatDescription else { return false }
-            let destinationPixelBufferAttributes = NSMutableDictionary()
-            destinationPixelBufferAttributes.setValue(NSNumber(value: kCVPixelFormatType_420YpCbCr8BiPlanarVideoRange), forKey: kCVPixelBufferPixelFormatTypeKey as String)
-            var callBackRecord = VTDecompressionOutputCallbackRecord()
-            callBackRecord.decompressionOutputCallback = YuuDidDecompress
-            callBackRecord.decompressionOutputRefCon = Unmanaged.passUnretained(self).toOpaque()
-            let status = VTDecompressionSessionCreate(allocator: kCFAllocatorDefault,
-                                                      formatDescription: desc,
-                                                      decoderSpecification: NSMutableDictionary(),
-                                                      imageBufferAttributes: destinationPixelBufferAttributes,
-                                                      outputCallback: &callBackRecord,
-                                                      decompressionSessionOut: &session)
-            return status == noErr
+            fatalError()
         }
+        formatDescription = createFormatDescription(codec_type: kCMVideoCodecType_H264,
+                                                    width: Int32(codecContext.width),
+                                                    height: Int32(codecContext.height),
+                                                    extradata: data,
+                                                    extradata_size: Int32(dataSize))
+        guard let desc = formatDescription else { fatalError() }
+        let destinationPixelBufferAttributes = NSMutableDictionary()
+        destinationPixelBufferAttributes.setValue(NSNumber(value: kCVPixelFormatType_420YpCbCr8BiPlanarVideoRange), forKey: kCVPixelBufferPixelFormatTypeKey as String)
+        var callBackRecord = VTDecompressionOutputCallbackRecord()
+        callBackRecord.decompressionOutputCallback = YuuDidDecompress
+        callBackRecord.decompressionOutputRefCon = Unmanaged.passUnretained(self).toOpaque()
+        let status = VTDecompressionSessionCreate(allocator: kCFAllocatorDefault,
+                                                  formatDescription: desc,
+                                                  decoderSpecification: NSMutableDictionary(),
+                                                  imageBufferAttributes: destinationPixelBufferAttributes,
+                                                  outputCallback: &callBackRecord,
+                                                  decompressionSessionOut: &session)
+        print(status)
     }
     
     func decode(packet: YuuPacket) -> Array<Frame> {
@@ -98,7 +92,7 @@ class VTDecoder: VideoDecoder {
                 if let sampleBuffer = sampleBuffer, let session = session {
                     var flagsOut: VTDecodeInfoFlags = []
                     let decodeStatus = VTDecompressionSessionDecodeFrame(session, sampleBuffer: sampleBuffer, flags: [], frameRefcon: &outputPixelBuffer, infoFlagsOut: &flagsOut)
-                    if(decodeStatus == kVTInvalidSessionErr) {
+                    if (decodeStatus == kVTInvalidSessionErr) {
                         
                     } else if(decodeStatus == kVTVideoDecoderBadDataErr) {
                         
@@ -119,24 +113,34 @@ class VTDecoder: VideoDecoder {
         return []
     }
     
-    func createFormatDescription(codec_type: CMVideoCodecType, width: Int32, height: Int32, extradata: UnsafePointer<UInt8>, extradata_size: Int32) -> CMFormatDescription? {
-        let par = NSMutableDictionary()
-        par.setObject(0 as NSNumber, forKey: "HorizontalSpacing" as NSString)
-        par.setObject(0 as NSNumber, forKey: "VerticalSpacing" as NSString)
-        
+    func createFormatDescription(codec_type: CMVideoCodecType,
+                                 width: Int32,
+                                 height: Int32,
+                                 extradata: UnsafePointer<UInt8>,
+                                 extradata_size: Int32) -> CMFormatDescription? {
+        let params = NSMutableDictionary()
         let atoms = NSMutableDictionary()
+        let extensions = NSMutableDictionary()
+        var formatDescription: CMFormatDescription?
+        
+        params.setObject(0, forKey: "HorizontalSpacing" as NSString)
+        params.setObject(0, forKey: "VerticalSpacing" as NSString)
+        
         atoms.setObject(NSData(bytes: extradata, length: Int(extradata_size)), forKey: "avcC" as NSString)
         
-        let extensions = NSMutableDictionary()
-        extensions.setObject(par, forKey: "CVPixelAspectRatio" as NSString)
+        extensions.setObject(params, forKey: "CVPixelAspectRatio" as NSString)
         extensions.setObject(atoms, forKey: "SampleDescriptionExtensionAtoms" as NSString)
-        extensions.setObject("avcC" as NSString, forKey: "FormatName" as NSString)
-        extensions.setObject("left" as NSString, forKey: "CVImageBufferChromaLocationBottomField" as NSString)
-        extensions.setObject("left" as NSString, forKey: "CVImageBufferChromaLocationTopField" as NSString)
-        extensions.setObject(0 as NSNumber, forKey: "FullRangeVideo" as NSString)
+        extensions.setObject("avcC", forKey: "FormatName" as NSString)
+        extensions.setObject("left", forKey: "CVImageBufferChromaLocationBottomField" as NSString)
+        extensions.setObject("left", forKey: "CVImageBufferChromaLocationTopField" as NSString)
+        extensions.setObject(0, forKey: "FullRangeVideo" as NSString)
         
-        var formatDescription: CMFormatDescription?
-        CMVideoFormatDescriptionCreate(allocator: nil, codecType: CMVideoCodecType(codec_type), width: width, height: height, extensions: extensions, formatDescriptionOut: &formatDescription)
+        CMVideoFormatDescriptionCreate(allocator: nil,
+                                       codecType: CMVideoCodecType(codec_type),
+                                       width: width,
+                                       height: height,
+                                       extensions: extensions,
+                                       formatDescriptionOut: &formatDescription)
         return formatDescription
     }
 }

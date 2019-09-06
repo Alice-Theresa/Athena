@@ -23,36 +23,36 @@ import MetalKit
 
 @objc class Controller: NSObject {
     
-    private let context: FormatContext
+    private let context  = FormatContext()
     
     private var vtDecoder: VTDecoder?
     private var ffDecoder: FFDecoder?
     private var videoDecoder: VideoDecoder?
     private var audioDecoder: AudioDecoder?
     
-    private let videoFrameQueue: FrameQueue
-    private let audioFrameQueue: FrameQueue
-    private let videoPacketQueue: PacketQueue
-    private let audioPacketQueue: PacketQueue
+    private let videoFrameQueue = FrameQueue()
+    private let audioFrameQueue = FrameQueue()
+    private let videoPacketQueue = PacketQueue()
+    private let audioPacketQueue = PacketQueue()
     
-    private let readPacketOperation: BlockOperation
-    private let videoDecodeOperation: BlockOperation
-    private let audioDecodeOperation: BlockOperation
-    private let controlQueue: OperationQueue
+    private let readPacketOperation = BlockOperation()
+    private let videoDecodeOperation = BlockOperation()
+    private let audioDecodeOperation = BlockOperation()
+    private let controlQueue = OperationQueue()
     
     private weak var mtkView: MTKView?
-    private let render: Render
+    private let render = Render()
     @objc weak var delegate: ControllerProtocol?
     
     @objc public private(set) var state: ControlState = .Origin
     
-    private var isSeeking: Bool
-    private var videoSeekingTime: TimeInterval
-    private var audioSeekingTime: TimeInterval
-    private var syncer : Synchronizer
+    private var isSeeking = false
+    private var videoSeekingTime: TimeInterval = -Double.greatestFiniteMagnitude
+    private var audioSeekingTime: TimeInterval = -Double.greatestFiniteMagnitude
+    private var syncer = Synchronizer()
     private var videoFrame: Frame?
     private var audioFrame: AudioFrame?
-    private var audioManager: AudioManager
+    private var audioManager = AudioManager()
     
     deinit {
         NotificationCenter.default.removeObserver(self, name: UIApplication.willResignActiveNotification, object: nil)
@@ -60,30 +60,12 @@ import MetalKit
     
     @objc init(renderView: MTKView) {
         
-        videoPacketQueue = PacketQueue()
-        audioPacketQueue = PacketQueue()
-        videoFrameQueue = FrameQueue()
-        audioFrameQueue = FrameQueue()
-        
-        readPacketOperation = BlockOperation()
-        videoDecodeOperation = BlockOperation()
-        audioDecodeOperation = BlockOperation()
-        controlQueue = OperationQueue()
-        
-        context = FormatContext()
-        render = Render()
-        isSeeking = false
-        videoSeekingTime = -Double.greatestFiniteMagnitude
-        audioSeekingTime = -Double.greatestFiniteMagnitude
-        syncer = Synchronizer()
-        
+        renderView.device = render.device
+        renderView.depthStencilPixelFormat = .invalid
+        renderView.framebufferOnly = false
+        renderView.colorPixelFormat = .bgra8Unorm
         mtkView = renderView
-        mtkView!.device = render.device
-        mtkView!.depthStencilPixelFormat = .invalid
-        mtkView!.framebufferOnly = false
-        mtkView!.colorPixelFormat = .bgra8Unorm
 
-        audioManager = AudioManager()
         super.init()
         mtkView!.delegate = self
         audioManager.delegate = self
@@ -240,7 +222,10 @@ import MetalKit
         }
     }
     
-    func rendering() {
+}
+
+extension Controller: MTKViewDelegate {
+    func draw(in view: MTKView) {
         if let playFrame = videoFrame {
             if playFrame is MarkerFrame {
                 videoSeekingTime = -Double.greatestFiniteMagnitude
@@ -261,12 +246,6 @@ import MetalKit
             videoFrame = videoFrameQueue.dequeue()
         }
     }
-}
-
-extension Controller: MTKViewDelegate {
-    func draw(in view: MTKView) {
-        rendering()
-    }
     
     func mtkView(_ view: MTKView, drawableSizeWillChange size: CGSize) {}
 }
@@ -277,12 +256,6 @@ extension Controller: AudioManagerDelegate {
         var od = outputData
         while nof > 0 {
             if let frame = audioFrame {
-                if frame.duration == -1 {
-                    memset(od, 0, Int(nof * numberOfChannels) * MemoryLayout<Float>.size);
-                    audioSeekingTime = -Double.greatestFiniteMagnitude
-                    audioFrame = nil
-                    return
-                }
                 if (self.audioSeekingTime > 0) {
                     memset(od, 0, Int(nof * numberOfChannels) * MemoryLayout<Float>.size);
                     self.audioFrame = nil
@@ -301,14 +274,18 @@ extension Controller: AudioManagerDelegate {
                 if (bytesToCopy < bytesLeft) {
                     frame.outputOffset += bytesToCopy
                 } else {
-                    audioFrame = nil
+                    self.audioFrame = nil
+                }
+            } else if let frame = audioFrameQueue.dequeue() {
+                if frame is MarkerFrame {
+                    memset(od, 0, Int(nof * numberOfChannels) * MemoryLayout<Float>.size);
+                    audioSeekingTime = -Double.greatestFiniteMagnitude
+                    self.audioFrame = nil
+                } else {
+                    self.audioFrame = frame as? AudioFrame
                 }
             } else {
-                if let af = audioFrameQueue.dequeue() {
-                    self.audioFrame = af as? AudioFrame
-                } else {
-                    memset(od, 0, Int(nof * numberOfChannels) * MemoryLayout<Float>.size)
-                }
+                memset(od, 0, Int(nof * numberOfChannels) * MemoryLayout<Float>.size)
             }
         }
     }

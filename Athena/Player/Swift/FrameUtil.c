@@ -8,6 +8,7 @@
 
 #define MIN(X, Y) (((X) < (Y)) ? (X) : (Y))
 
+#import <Accelerate/Accelerate.h>
 #import <libavformat/avformat.h>
 #include "FrameUtil.h"
 
@@ -28,12 +29,28 @@ void YuuYUVChannelFilter(uint8_t * src, long linesize, long width, long height, 
 }
 
 void YuuDidDecompress(void *decompressionOutputRefCon,
-                          void *sourceFrameRefCon,
-                          OSStatus status,
-                          VTDecodeInfoFlags infoFlags,
-                          CVImageBufferRef pixelBuffer,
-                          CMTime presentationTimeStamp,
-                          CMTime presentationDuration) {
+                      void *sourceFrameRefCon,
+                      OSStatus status,
+                      VTDecodeInfoFlags infoFlags,
+                      CVImageBufferRef pixelBuffer,
+                      CMTime presentationTimeStamp,
+                      CMTime presentationDuration) {
     CVPixelBufferRef *outputPixelBuffer = (CVPixelBufferRef *)sourceFrameRefCon;
     *outputPixelBuffer = CVPixelBufferRetain(pixelBuffer);
+}
+
+void YuuAudioAccelerateCompute(float *player, UInt32 inNumberFrames, AudioBufferList *ioData) {
+    float scale = (float)INT16_MAX;
+    vDSP_vsmul(player, 1, &scale, player, 1, inNumberFrames * 2);
+    
+    for (int iBuffer = 0; iBuffer < ioData->mNumberBuffers; iBuffer++) {
+        int thisNumChannels = ioData->mBuffers[iBuffer].mNumberChannels;
+        for (int iChannel = 0; iChannel < thisNumChannels; iChannel++) {
+            vDSP_vfix16(player + iChannel,
+                        2,
+                        (SInt16 *)ioData->mBuffers[iBuffer].mData + iChannel,
+                        thisNumChannels,
+                        inNumberFrames);
+        }
+    }
 }

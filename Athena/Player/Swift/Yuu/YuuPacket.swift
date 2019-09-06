@@ -8,24 +8,24 @@
 
 import Foundation
 
-@objc final class YuuPacket: NSObject {
+class YuuPacket {
     
-    @objc let cPacketPtr: UnsafeMutablePointer<AVPacket>
-    @objc var cPacket: AVPacket { return cPacketPtr.pointee }
+    let cPacketPtr: UnsafeMutablePointer<AVPacket>
+    var cPacket: AVPacket { return cPacketPtr.pointee }
     
     deinit {
         var ptr: UnsafeMutablePointer<AVPacket>? = cPacketPtr
         av_packet_free(&ptr)
     }
     
-    @objc override init() {
+    init() {
         guard let packetPtr = av_packet_alloc() else {
             fatalError()
         }
         self.cPacketPtr = packetPtr
     }
     
-    @objc init(cPacketPtr: UnsafeMutablePointer<AVPacket>) {
+    init(cPacketPtr: UnsafeMutablePointer<AVPacket>) {
         self.cPacketPtr = cPacketPtr
     }
     

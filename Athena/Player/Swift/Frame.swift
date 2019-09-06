@@ -91,9 +91,9 @@ class I420VideoFrame: Frame, RenderDataI420 {
         let linesize_u = Int(frame.linesize[1])
         let linesize_v = Int(frame.linesize[2])
         
-        let needsize_y = YuuYUVChannelFilterNeedSize(width, height, linesize_y)
-        let needsize_u = YuuYUVChannelFilterNeedSize(width/2, height/2, linesize_u)
-        let needsize_v = YuuYUVChannelFilterNeedSize(width/2, height/2, linesize_v)
+        let needsize_y = YuuYUVChannelFilterNeedSize(linesize_y, width, height)
+        let needsize_u = YuuYUVChannelFilterNeedSize(linesize_u, width/2, height/2)
+        let needsize_v = YuuYUVChannelFilterNeedSize(linesize_v, width/2, height/2)
         
         luma_channel_pixels = UnsafeMutablePointer<UInt8>.allocate(capacity: needsize_y)
         chromaB_channel_pixels = UnsafeMutablePointer<UInt8>.allocate(capacity: needsize_u)
