@@ -10,14 +10,9 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-@interface SCAudioFrame : SCFrame {
-@public
-    float *samples;
-    int length;
-    int output_offset;
-}
+@interface SCAudioFrame : SCFrame
 
-- (void)setSamplesLength:(NSUInteger)samplesLength;
+@property (nonatomic, strong) NSData *sampleData;
 
 @end
 

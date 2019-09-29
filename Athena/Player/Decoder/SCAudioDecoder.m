@@ -113,11 +113,11 @@
         }
         
         Byte *outyput_buffer[2] = {_audio_swr_buffer, 0};
-        numberOfFrames = swr_convert(_audio_swr_context, outyput_buffer, _temp_frame->nb_samples * ratio, (const uint8_t **)_temp_frame->data, _temp_frame->nb_samples);
-        NSError *error = nil;
-        if (error) {
-            return nil;
-        }
+        numberOfFrames = swr_convert(_audio_swr_context,
+                                     outyput_buffer,
+                                     _temp_frame->nb_samples * ratio,
+                                     (const uint8_t **)_temp_frame->data,
+                                     _temp_frame->nb_samples);
         audioDataBuffer = _audio_swr_buffer;
     } else {
         // Todo
@@ -125,21 +125,13 @@
     }
     
     SCAudioFrame *audioFrame = [[SCAudioFrame alloc] init];
-//    audioFrame.packetSize = packetSize;
     audioFrame.position = av_frame_get_best_effort_timestamp(_temp_frame) * self.context.audioTimebase;
     audioFrame.duration = av_frame_get_pkt_duration(_temp_frame) * self.context.audioTimebase;
     
-    if (audioFrame.duration == 0) {
-        audioFrame.duration = audioFrame->length / (sizeof(float) * _channelCount * _samplingRate);
-    }
-    
-    const NSUInteger numberOfElements = numberOfFrames * self->_channelCount;
-    [audioFrame setSamplesLength:numberOfElements * sizeof(float)];
-    
-    float scale = 1.0 / (float)INT16_MAX ;
-    vDSP_vflt16((SInt16 *)audioDataBuffer, 1, audioFrame->samples, 1, numberOfElements);
-    vDSP_vsmul(audioFrame->samples, 1, &scale, audioFrame->samples, 1, numberOfElements);
-    
+    const NSUInteger numberOfElements = numberOfFrames * _channelCount;
+    NSMutableData *pcmData = [NSMutableData dataWithLength:numberOfElements * sizeof(SInt16)];
+    memcpy(pcmData.mutableBytes, audioDataBuffer, numberOfElements * sizeof(SInt16));
+    audioFrame.sampleData = pcmData;
     return audioFrame;
 }
 

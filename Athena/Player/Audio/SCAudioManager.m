@@ -13,7 +13,7 @@
 #import "SCAudioManager.h"
 
 @interface SCAudioManager () {
-    float *_outData;
+    SInt16 *_outData;
 }
 
 @property (nonatomic, strong) AVAudioSession *audioSession;
@@ -39,7 +39,7 @@ static int const max_chan = 2;
     if (self = [super init]) {
         _audioSession = [AVAudioSession sharedInstance];
         [_audioSession setCategory:AVAudioSessionCategoryPlayback error:nil];
-        _outData = (float *)calloc(max_frame_size * max_chan, sizeof(float));
+        _outData = (SInt16 *)calloc(8192, sizeof(SInt16));//(float *)calloc(max_frame_size * max_chan, sizeof(float));
         [self initPlayer];
     }
     return self;
@@ -120,24 +120,13 @@ static OSStatus PlayCallback(void *inRefCon,
                              UInt32 inBusNumber,
                              UInt32 inNumberFrames,
                              AudioBufferList *ioData) {
-    for (int iBuffer = 0; iBuffer < ioData->mNumberBuffers; iBuffer++) {
-        memset(ioData->mBuffers[iBuffer].mData, 0, ioData->mBuffers[iBuffer].mDataByteSize);
-    }
+//    for (int iBuffer = 0; iBuffer < ioData->mNumberBuffers; iBuffer++) {
+//        memset(ioData->mBuffers[iBuffer].mData, 0, ioData->mBuffers[iBuffer].mDataByteSize);
+//    }
     SCAudioManager *player = (__bridge SCAudioManager *)inRefCon;
     [player.delegate fetchoutputData:player->_outData numberOfFrames:inNumberFrames numberOfChannels:2];
-
-    float scale = (float)INT16_MAX;
-    vDSP_vsmul(player->_outData, 1, &scale, player->_outData, 1, inNumberFrames * 2);
-    
-    for (int iBuffer = 0; iBuffer < ioData->mNumberBuffers; iBuffer++) {
-        int thisNumChannels = ioData->mBuffers[iBuffer].mNumberChannels;
-        for (int iChannel = 0; iChannel < thisNumChannels; iChannel++) {
-            vDSP_vfix16(player->_outData + iChannel,
-                        2,
-                        (SInt16 *)ioData->mBuffers[iBuffer].mData + iChannel,
-                        thisNumChannels,
-                        inNumberFrames);
-        }
+    for (int iBuffer=0; iBuffer < ioData->mNumberBuffers; ++iBuffer) {
+        memcpy((SInt16 *)ioData->mBuffers[iBuffer].mData, player->_outData, ioData->mBuffers[iBuffer].mDataByteSize);
     }
     return noErr;
 }

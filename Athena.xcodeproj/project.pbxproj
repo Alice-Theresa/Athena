@@ -10,8 +10,6 @@
 		5202621C21606DB800F1033B /* AudioDecodeViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 5202621A21606DB800F1033B /* AudioDecodeViewController.m */; };
 		5202621D21606DB800F1033B /* AudioDecodeViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 5202621B21606DB800F1033B /* AudioDecodeViewController.xib */; };
 		520B5C242202CD6C00758299 /* SCMetaData.m in Sources */ = {isa = PBXBuildFile; fileRef = 520B5C232202CD6C00758299 /* SCMetaData.m */; };
-		520B5C282202D6FB00758299 /* 265.mkv in Resources */ = {isa = PBXBuildFile; fileRef = 520B5C272202D6FA00758299 /* 265.mkv */; };
-		520B5C2A2202EA0300758299 /* sub.mkv in Resources */ = {isa = PBXBuildFile; fileRef = 520B5C292202EA0300758299 /* sub.mkv */; };
 		520EB41E22002AB2002243DC /* SCPacketNode.m in Sources */ = {isa = PBXBuildFile; fileRef = 520EB41D22002AB2002243DC /* SCPacketNode.m */; };
 		520EB42122002B9B002243DC /* SCPacketQueue.m in Sources */ = {isa = PBXBuildFile; fileRef = 520EB42022002B9B002243DC /* SCPacketQueue.m */; };
 		520EB42422003084002243DC /* SCTrack.m in Sources */ = {isa = PBXBuildFile; fileRef = 520EB42322003084002243DC /* SCTrack.m */; };
@@ -78,8 +76,6 @@
 		5202621B21606DB800F1033B /* AudioDecodeViewController.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = AudioDecodeViewController.xib; sourceTree = "<group>"; };
 		520B5C222202CD6C00758299 /* SCMetaData.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SCMetaData.h; sourceTree = "<group>"; };
 		520B5C232202CD6C00758299 /* SCMetaData.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = SCMetaData.m; sourceTree = "<group>"; };
-		520B5C272202D6FA00758299 /* 265.mkv */ = {isa = PBXFileReference; lastKnownFileType = file; name = 265.mkv; path = ../../../265.mkv; sourceTree = "<group>"; };
-		520B5C292202EA0300758299 /* sub.mkv */ = {isa = PBXFileReference; lastKnownFileType = file; name = sub.mkv; path = "../../../../Downloads/[Kamigami] Kaze ga Tsuyoku Fuiteiru - 14 [1080p x265 Ma10p AAC].mkv/sub.mkv"; sourceTree = "<group>"; };
 		520EB41C22002AB2002243DC /* SCPacketNode.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SCPacketNode.h; sourceTree = "<group>"; };
 		520EB41D22002AB2002243DC /* SCPacketNode.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = SCPacketNode.m; sourceTree = "<group>"; };
 		520EB41F22002B9B002243DC /* SCPacketQueue.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SCPacketQueue.h; sourceTree = "<group>"; };
@@ -399,8 +395,6 @@
 				529067961F95A48A001A7BFA /* SharedQueue.m */,
 				522136611F7F737500182B12 /* AppDelegate.h */,
 				522136621F7F737500182B12 /* AppDelegate.m */,
-				520B5C292202EA0300758299 /* sub.mkv */,
-				520B5C272202D6FA00758299 /* 265.mkv */,
 				527D336121F559C000B9D959 /* Aimer.mkv */,
 				5214035C21EDE3F000CAF190 /* test.jpg */,
 				522136671F7F737500182B12 /* Main.storyboard */,
@@ -973,13 +967,11 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				520B5C282202D6FB00758299 /* 265.mkv in Resources */,
 				527D336221F559C000B9D959 /* Aimer.mkv in Resources */,
 				5221366E1F7F737500182B12 /* LaunchScreen.storyboard in Resources */,
 				5202621D21606DB800F1033B /* AudioDecodeViewController.xib in Resources */,
 				52E1033A215E095F007783E6 /* AudioEncodeViewController.xib in Resources */,
 				5221366B1F7F737500182B12 /* Assets.xcassets in Resources */,
-				520B5C2A2202EA0300758299 /* sub.mkv in Resources */,
 				522136691F7F737500182B12 /* Main.storyboard in Resources */,
 				5214035D21EDE3F000CAF190 /* test.jpg in Resources */,
 			);
