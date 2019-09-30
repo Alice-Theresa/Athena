@@ -8,6 +8,6 @@
 
 #import "SCAudioFrame.h"
 
-@implementation SCAudioFrame {
+@implementation SCAudioFrame
 
 @end

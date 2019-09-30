@@ -23,9 +23,10 @@
 #import "SCPacketQueue.h"
 #import "SCRender.h"
 
-@interface SCControl () <SCAudioManagerDelegate, MTKViewDelegate> {
-    NSUInteger _currentAudioFramePos;
-}
+#import "SCDemuxLayer.h"
+#import "SCCommand.h"
+
+@interface SCControl () <SCAudioManagerDelegate, MTKViewDelegate>
 
 @property (nonatomic, strong) SCFormatContext *context;
 
@@ -280,9 +281,9 @@
 - (void)rendering {
     if (!self.videoFrame) {
         self.videoFrame = [self.videoFrameQueue dequeueFrame];
-    }
-    if (!self.videoFrame) {
-        return;
+        if (!self.videoFrame) {
+            return;
+        }
     }
     if (self.videoFrame.duration == -1) {
         self.videoSeekingTime = -DBL_MAX;
@@ -316,27 +317,26 @@
         while (numberOfFrames > 0) {
             if (!self.audioFrame) {
                 self.audioFrame = (SCAudioFrame *)[self.audioFrameQueue dequeueFrame];
-                _currentAudioFramePos = 0;
             }
             if (!self.audioFrame) {
                 memset(outputData, 0, numberOfFrames * numberOfChannels * sizeof(SInt16));
-                return;
+                break;
             }
             if (self.audioFrame.duration == -1) {
                 memset(outputData, 0, numberOfFrames * numberOfChannels * sizeof(SInt16));
                 self.audioSeekingTime = -DBL_MAX;
                 self.audioFrame = nil;
-                return;
+                break;
             }
             if (self.audioSeekingTime > 0) {
                 memset(outputData, 0, numberOfFrames * numberOfChannels * sizeof(SInt16));
                 self.audioFrame = nil;
-                return;
+                break;
             }
             [self.syncor updateAudioClock:self.audioFrame.position];
             
-            const Byte * bytes = (Byte *)self.audioFrame.sampleData.bytes + _currentAudioFramePos;
-            const NSUInteger bytesLeft = self.audioFrame.sampleData.length - _currentAudioFramePos;
+            const Byte * bytes = (Byte *)self.audioFrame.sampleData.bytes + self.audioFrame->output_offset;
+            const NSUInteger bytesLeft = self.audioFrame.sampleData.length - self.audioFrame->output_offset;
             const NSUInteger frameSizeOf = numberOfChannels * sizeof(SInt16);
             const NSUInteger bytesToCopy = MIN(numberOfFrames * frameSizeOf, bytesLeft);
             const NSUInteger framesToCopy = bytesToCopy / frameSizeOf;
@@ -346,7 +346,7 @@
             outputData += framesToCopy * numberOfChannels;
             
             if (bytesToCopy < bytesLeft) {
-                _currentAudioFramePos += bytesToCopy;
+                self.audioFrame->output_offset += bytesToCopy;
             } else {
                 self.audioFrame = nil;
             }
