@@ -59,20 +59,6 @@ static int const max_chan = 2;
     AudioComponent inputComponent = AudioComponentFindNext(NULL, &audioDesc);
     AudioComponentInstanceNew(inputComponent, &_audioUnit);
     
-    //audio property
-   /* UInt32 flag = 1;
-    if (flag) {
-        status = AudioUnitSetProperty(self.audioUnit,
-                                      kAudioOutputUnitProperty_EnableIO,
-                                      kAudioUnitScope_Output,
-                                      OUTPUT_BUS,
-                                      &flag,
-                                      sizeof(flag));
-    }
-    if (status) {
-        NSLog(@"AudioUnitSetProperty error with status:%d", status);
-    }*/
-    
     // format
     AudioStreamBasicDescription outputFormat;
     memset(&outputFormat, 0, sizeof(outputFormat));
@@ -120,9 +106,6 @@ static OSStatus PlayCallback(void *inRefCon,
                              UInt32 inBusNumber,
                              UInt32 inNumberFrames,
                              AudioBufferList *ioData) {
-//    for (int iBuffer = 0; iBuffer < ioData->mNumberBuffers; iBuffer++) {
-//        memset(ioData->mBuffers[iBuffer].mData, 0, ioData->mBuffers[iBuffer].mDataByteSize);
-//    }
     SCAudioManager *player = (__bridge SCAudioManager *)inRefCon;
     [player.delegate fetchoutputData:player->_outData numberOfFrames:inNumberFrames numberOfChannels:2];
     for (int iBuffer=0; iBuffer < ioData->mNumberBuffers; ++iBuffer) {

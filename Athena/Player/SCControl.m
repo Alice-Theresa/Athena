@@ -24,9 +24,10 @@
 #import "SCRender.h"
 
 #import "SCDemuxLayer.h"
-#import "SCCommand.h"
+#import "SCRenderLayer.h"
+#import "SCDecoderLayer.h"
 
-@interface SCControl () <SCAudioManagerDelegate, MTKViewDelegate>
+@interface SCControl () 
 
 @property (nonatomic, strong) SCFormatContext *context;
 
@@ -40,12 +41,10 @@
 @property (nonatomic, strong) SCFrameQueue *videoFrameQueue;
 @property (nonatomic, strong) SCFrameQueue *audioFrameQueue;
 
-@property (nonatomic, strong) NSInvocationOperation *readPacketOperation;
 @property (nonatomic, strong) NSInvocationOperation *videoDecodeOperation;
 @property (nonatomic, strong) NSInvocationOperation *audioDecodeOperation;
 @property (nonatomic, strong) NSOperationQueue *controlQueue;
 
-@property (nonatomic, strong) SCRender *render;
 @property (nonatomic, weak  ) MTKView *mtkView;
 
 @property (nonatomic, assign, readwrite) SCControlState controlState;
@@ -54,10 +53,10 @@
 @property (nonatomic, assign) BOOL isSeeking;
 @property (nonatomic, assign) NSTimeInterval videoSeekingTime;
 @property (nonatomic, assign) NSTimeInterval audioSeekingTime;
-@property (nonatomic, strong) SCSynchronizer *syncor;
 
-@property (nonatomic, strong) SCFrame *videoFrame;
-@property (nonatomic, strong) SCAudioFrame *audioFrame;
+@property (nonatomic, strong) SCDemuxLayer *demuxLayer;
+@property (nonatomic, strong) SCRenderLayer *renderLayer;
+@property (nonatomic, strong) SCDecoderLayer *decoderLayer;
 
 @end
 
@@ -70,23 +69,13 @@
 - (instancetype)initWithRenderView:(MTKView *)view {
     if (self = [super init]) {
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(appWillResignActive) name:UIApplicationWillResignActiveNotification object:nil];
-        
         _videoFrameQueue  = [[SCFrameQueue alloc] init];
         _audioFrameQueue  = [[SCFrameQueue alloc] init];
         _videoPacketQueue = [[SCPacketQueue alloc] init];
         _audioPacketQueue = [[SCPacketQueue alloc] init];
-        _render           = [[SCRender alloc] init];
-        
-        _mtkView = view;
-        _mtkView.device = _render.device;
-        _mtkView.depthStencilPixelFormat = MTLPixelFormatInvalid;
-        _mtkView.framebufferOnly = false;
-        _mtkView.colorPixelFormat = MTLPixelFormatBGRA8Unorm;
-        _mtkView.delegate = self;
-        
         _videoSeekingTime = -DBL_MAX;
         _audioSeekingTime = -DBL_MAX;
-        _syncor = [[SCSynchronizer alloc] init];
+        _mtkView = view;
     }
     return self;
 }
@@ -102,55 +91,55 @@
     _VTDecoder    = [[SCVTDecoder alloc] initWithFormatContext:_context];
     _videoDecoder = [[SCVideoDecoder alloc] initWithFormatContext:_context];
     _audioDecoder = [[SCAudioDecoder alloc] initWithFormatContext:_context];
-    _currentDecoder = _VTDecoder;
-    [SCAudioManager shared].delegate = self;
+    _currentDecoder = _videoDecoder;
+    
+    self.demuxLayer = [[SCDemuxLayer alloc] initWithContext:self.context video:self.videoPacketQueue audio:self.audioPacketQueue];
+    self.renderLayer = [[SCRenderLayer alloc] initWithContext:self.context renderView:self.mtkView video:self.videoFrameQueue audio:self.audioFrameQueue];
+    self.decoderLayer = [[SCDecoderLayer alloc] initWithContext:self.context
+                                                          video:self.videoPacketQueue
+                                                          audio:self.audioPacketQueue
+                                                          video:self.videoFrameQueue
+                                                          audio:self.audioFrameQueue];
     [self start];
 }
 
 - (void)start {
-    self.readPacketOperation = [[NSInvocationOperation alloc] initWithTarget:self selector:@selector(readPacket) object:nil];
-    self.readPacketOperation.queuePriority = NSOperationQueuePriorityVeryHigh;
-    self.readPacketOperation.qualityOfService = NSQualityOfServiceUserInteractive;
-    
-    self.videoDecodeOperation = [[NSInvocationOperation alloc] initWithTarget:self selector:@selector(decodeVideoFrame) object:nil];
-    self.videoDecodeOperation.queuePriority = NSOperationQueuePriorityVeryHigh;
-    self.videoDecodeOperation.qualityOfService = NSQualityOfServiceUserInteractive;
-    
-    self.audioDecodeOperation = [[NSInvocationOperation alloc] initWithTarget:self selector:@selector(decodeAudioFrame) object:nil];
-    self.audioDecodeOperation.queuePriority = NSOperationQueuePriorityVeryHigh;
-    self.audioDecodeOperation.qualityOfService = NSQualityOfServiceUserInteractive;
+    [self.demuxLayer start];
+    [self.renderLayer start];
+    [self.decoderLayer start];
     
     self.controlQueue = [[NSOperationQueue alloc] init];
     self.controlQueue.qualityOfService = NSQualityOfServiceUserInteractive;
-    [self.controlQueue addOperation:self.readPacketOperation];
     [self.controlQueue addOperation:self.videoDecodeOperation];
     [self.controlQueue addOperation:self.audioDecodeOperation];
     
-    [[SCAudioManager shared] play];
     self.controlState = SCControlStatePlaying;
 }
 
 - (void)pause {
+    [self.demuxLayer pause];
+    [self.decoderLayer pause];
+    [self.renderLayer pause];
     self.controlState = SCControlStatePaused;
-    [[SCAudioManager shared] stop];
-    self.mtkView.paused = YES;
 }
 
 - (void)resume {
+    [self.demuxLayer resume];
+    [self.decoderLayer resume];
+    [self.renderLayer resume];
     self.controlState = SCControlStatePlaying;
-    [[SCAudioManager shared] play];
-    self.mtkView.paused = NO;
 }
 
 - (void)close {
+    [self.demuxLayer close];
+    [self.decoderLayer close];
+    [self.renderLayer close];
     self.controlState = SCControlStateClosed;
     [self.controlQueue cancelAllOperations];
     [self.controlQueue waitUntilAllOperationsAreFinished];
-    self.readPacketOperation = nil;
     self.videoDecodeOperation = nil;
     self.audioDecodeOperation = nil;
     [self flushQueue];
-    [[SCAudioManager shared] stop];
     [self.context closeFile];
 }
 
@@ -160,198 +149,11 @@
     self.isSeeking = YES;
 }
 
-- (void)switchToHardwareDecode:(BOOL)isHardware {
-    self.currentDecoder = isHardware ? self.VTDecoder : self.videoDecoder;
-}
-
 - (void)flushQueue {
     [self.videoFrameQueue flush];
     [self.audioFrameQueue flush];
     [self.videoPacketQueue flush];
     [self.audioPacketQueue flush];
-}
-
-#pragma mark - reading
-
-- (void)readPacket {
-    BOOL finished = NO;
-    while (!finished) {
-        if (self.controlState == SCControlStateClosed) {
-            break;
-        }
-        if (self.controlState == SCControlStatePaused) {
-            [NSThread sleepForTimeInterval:0.03];
-            continue;
-        }
-        if (self.videoPacketQueue.packetTotalSize + self.audioPacketQueue.packetTotalSize > 10 * 1024 * 1024) {
-            [NSThread sleepForTimeInterval:0.03];
-            continue;
-        }
-        if (self.isSeeking) {
-            [self.context seekingTime:self.videoSeekingTime];
-            [self flushQueue];
-            [self.videoPacketQueue enqueueDiscardPacket];
-            [self.audioPacketQueue enqueueDiscardPacket];
-            self.isSeeking = NO;
-            continue;
-        }
-        AVPacket packet;
-        av_init_packet(&packet);
-        int result = [self.context readFrame:&packet];
-        if (result < 0) {
-            NSLog(@"read packet error");
-            finished = YES;
-            break;
-        } else {
-            if (packet.stream_index == self.context.videoIndex) {
-                [self.videoPacketQueue enqueuePacket:packet];
-            } else if (packet.stream_index == self.context.audioIndex) {
-                [self.audioPacketQueue enqueuePacket:packet];
-            } else if (packet.stream_index == self.context.subtitleIndex) {
-                NSData *data = [[NSData alloc] initWithBytes:packet.data length:packet.size];
-                NSString *string = [[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding];
-                NSLog(@"%@", string);
-            }
-        }
-    }
-}
-
-#pragma mark - decoding
-
-- (void)decodeVideoFrame {
-    while (self.controlState != SCControlStateClosed) {
-        if (self.controlState == SCControlStatePaused) {
-            [NSThread sleepForTimeInterval:0.03];
-            continue;
-        }
-        if (self.videoFrameQueue.count > 10) {
-            [NSThread sleepForTimeInterval:0.03];
-            continue;
-        }
-        @autoreleasepool {
-            AVPacket packet = [self.videoPacketQueue dequeuePacket];
-            if (packet.flags == AV_PKT_FLAG_DISCARD) {
-                avcodec_flush_buffers(self.context.videoCodecContext);
-                [self.videoFrameQueue flush];
-                SCFrame *frame = [[SCFrame alloc] init];
-                frame.duration = -1;
-                [self.videoFrameQueue enqueueFramesAndSort:@[frame]];
-                av_packet_unref(&packet);
-                continue;
-            }
-            if (packet.data != NULL && packet.stream_index >= 0) {
-                NSArray<SCFrame *> *frames = [self.currentDecoder decode:packet];
-                [self.videoFrameQueue enqueueFramesAndSort:frames];
-            }
-        }
-    }
-}
-
-- (void)decodeAudioFrame {
-    while (self.controlState != SCControlStateClosed) {
-        if (self.controlState == SCControlStatePaused) {
-            [NSThread sleepForTimeInterval:0.03];
-            continue;
-        }
-        if (self.audioFrameQueue.count > 10) {
-            [NSThread sleepForTimeInterval:0.03];
-            continue;
-        }
-        @autoreleasepool {
-            AVPacket packet = [self.audioPacketQueue dequeuePacket];
-            if (packet.flags == AV_PKT_FLAG_DISCARD) {
-                avcodec_flush_buffers(self.context.audioCodecContext);
-                [self.audioFrameQueue flush];
-                SCFrame *frame = [[SCFrame alloc] init];
-                frame.duration = -1;
-                [self.audioFrameQueue enqueueFramesAndSort:@[frame]];
-                av_packet_unref(&packet);
-                continue;
-            }
-            if (packet.data != NULL && packet.stream_index >= 0) {
-                NSArray<SCFrame *> *frames = [self.audioDecoder decode:packet];
-                [self.audioFrameQueue enqueueFramesAndSort:frames];
-            }
-        }
-    }
-}
-
-#pragma mark - rendering
-
-- (void)rendering {
-    if (!self.videoFrame) {
-        self.videoFrame = [self.videoFrameQueue dequeueFrame];
-        if (!self.videoFrame) {
-            return;
-        }
-    }
-    if (self.videoFrame.duration == -1) {
-        self.videoSeekingTime = -DBL_MAX;
-        self.videoFrame = nil;
-        return;
-    }
-    if (self.videoSeekingTime > 0) {
-        self.videoFrame = nil;
-        return;
-    }
-    if (![self.syncor shouldRenderVideoFrame:self.videoFrame.position duration:self.videoFrame.duration]) {
-        return;
-    }
-    [self.render render:(id<SCRenderDataInterface>)self.videoFrame drawIn:self.mtkView];
-    if ([self.delegate respondsToSelector:@selector(controlCenter:didRender:duration:)] && !self.isSeeking) {
-        [self.delegate controlCenter:self didRender:self.videoFrame.position duration:self.context.duration];
-    }
-    self.videoFrame = nil;
-}
-
-- (void)drawInMTKView:(nonnull MTKView *)view {
-    [self rendering];
-}
-
-- (void)mtkView:(nonnull MTKView *)view drawableSizeWillChange:(CGSize)size {}
-
-#pragma mark - audio delegate
-
-- (void)fetchoutputData:(SInt16 *)outputData numberOfFrames:(UInt32)numberOfFrames numberOfChannels:(UInt32)numberOfChannels {
-    @autoreleasepool {
-        while (numberOfFrames > 0) {
-            if (!self.audioFrame) {
-                self.audioFrame = (SCAudioFrame *)[self.audioFrameQueue dequeueFrame];
-            }
-            if (!self.audioFrame) {
-                memset(outputData, 0, numberOfFrames * numberOfChannels * sizeof(SInt16));
-                break;
-            }
-            if (self.audioFrame.duration == -1) {
-                memset(outputData, 0, numberOfFrames * numberOfChannels * sizeof(SInt16));
-                self.audioSeekingTime = -DBL_MAX;
-                self.audioFrame = nil;
-                break;
-            }
-            if (self.audioSeekingTime > 0) {
-                memset(outputData, 0, numberOfFrames * numberOfChannels * sizeof(SInt16));
-                self.audioFrame = nil;
-                break;
-            }
-            [self.syncor updateAudioClock:self.audioFrame.position];
-            
-            const Byte * bytes = (Byte *)self.audioFrame.sampleData.bytes + self.audioFrame->output_offset;
-            const NSUInteger bytesLeft = self.audioFrame.sampleData.length - self.audioFrame->output_offset;
-            const NSUInteger frameSizeOf = numberOfChannels * sizeof(SInt16);
-            const NSUInteger bytesToCopy = MIN(numberOfFrames * frameSizeOf, bytesLeft);
-            const NSUInteger framesToCopy = bytesToCopy / frameSizeOf;
-            
-            memcpy(outputData, bytes, bytesToCopy);
-            numberOfFrames -= framesToCopy;
-            outputData += framesToCopy * numberOfChannels;
-            
-            if (bytesToCopy < bytesLeft) {
-                self.audioFrame->output_offset += bytesToCopy;
-            } else {
-                self.audioFrame = nil;
-            }
-        }
-    }
 }
 
 @end

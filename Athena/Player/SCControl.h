@@ -20,7 +20,7 @@ typedef NS_ENUM(NSUInteger, SCControlState) {
 
 @protocol ControlCenterProtocol <NSObject>
 
-- (void)controlCenter:(SCControl *)control didRender:(NSUInteger)position duration:(NSUInteger)duration;
+- (void)controlCenter:(SCControl *_Nullable)control didRender:(NSUInteger)position duration:(NSUInteger)duration;
 
 @end
 
@@ -29,7 +29,7 @@ NS_ASSUME_NONNULL_BEGIN
 @interface SCControl : NSObject
 
 @property (nonatomic, assign, readonly) SCControlState controlState;
-@property (nonatomic, weak) id<ControlCenterProtocol> delegate;
+//@property (nonatomic, weak) id<ControlCenterProtocol> delegate;
 
 - (instancetype)init NS_UNAVAILABLE;
 - (instancetype)initWithRenderView:(MTKView *)view;
@@ -40,7 +40,6 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)close;
 
 - (void)seekingTime:(NSTimeInterval)percentage;
-- (void)switchToHardwareDecode:(BOOL)isHardware;
 
 @end
 

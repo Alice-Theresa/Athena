@@ -57,7 +57,7 @@
     [self.mtkView addSubview:self.controlView];
     
     self.controler = [[SCControl alloc] initWithRenderView:self.mtkView];
-    self.controler.delegate = self;
+//    self.controler.delegate = self;
     
     [self.controlView.actionButton addTarget:self action:@selector(resumeOrPause) forControlEvents:UIControlEventTouchUpInside];
     [self.controlView.backButton addTarget:self action:@selector(popVC) forControlEvents:UIControlEventTouchUpInside];
