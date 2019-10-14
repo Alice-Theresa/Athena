@@ -71,6 +71,7 @@
 		94BD54DE2354741E001B252C /* SCDemuxLayer.m in Sources */ = {isa = PBXBuildFile; fileRef = 94BD54DD2354741E001B252C /* SCDemuxLayer.m */; };
 		94BD54E123547A0B001B252C /* SCDecoderLayer.m in Sources */ = {isa = PBXBuildFile; fileRef = 94BD54E023547A0B001B252C /* SCDecoderLayer.m */; };
 		94BD54E423547B36001B252C /* SCRenderLayer.m in Sources */ = {isa = PBXBuildFile; fileRef = 94BD54E323547B36001B252C /* SCRenderLayer.m */; };
+		94BD54EA23548727001B252C /* SCPacket.m in Sources */ = {isa = PBXBuildFile; fileRef = 94BD54E923548727001B252C /* SCPacket.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -322,6 +323,9 @@
 		94BD54E023547A0B001B252C /* SCDecoderLayer.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = SCDecoderLayer.m; sourceTree = "<group>"; };
 		94BD54E223547B36001B252C /* SCRenderLayer.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SCRenderLayer.h; sourceTree = "<group>"; };
 		94BD54E323547B36001B252C /* SCRenderLayer.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = SCRenderLayer.m; sourceTree = "<group>"; };
+		94BD54E7235484D0001B252C /* SCQueueProtocol.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SCQueueProtocol.h; sourceTree = "<group>"; };
+		94BD54E823548727001B252C /* SCPacket.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SCPacket.h; sourceTree = "<group>"; };
+		94BD54E923548727001B252C /* SCPacket.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = SCPacket.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -361,6 +365,7 @@
 				520EB42022002B9B002243DC /* SCPacketQueue.m */,
 				76C3E2DA21FD63ED00EDC6AB /* SCFrameQueue.h */,
 				76C3E2DB21FD63ED00EDC6AB /* SCFrameQueue.m */,
+				94BD54E7235484D0001B252C /* SCQueueProtocol.h */,
 			);
 			path = Queue;
 			sourceTree = "<group>";
@@ -584,27 +589,13 @@
 		52EAE6D521F02A0100D9B90B /* Player */ = {
 			isa = PBXGroup;
 			children = (
+				94BD54E6235482F4001B252C /* UI */,
+				94BD54E5235482E5001B252C /* Core */,
 				520EB41B22002A72002243DC /* Queue */,
 				52EAE6DC21F03CA600D9B90B /* Decoder */,
 				52EAE6DB21F03C8900D9B90B /* Render */,
 				52EAE6DA21F03C8200D9B90B /* Audio */,
 				52EAE6D921F03C6000D9B90B /* Model */,
-				521B7E7B21D7602800F5B689 /* SCControl.h */,
-				521B7E7A21D7602800F5B689 /* SCControl.m */,
-				94BD54DC2354741E001B252C /* SCDemuxLayer.h */,
-				94BD54DD2354741E001B252C /* SCDemuxLayer.m */,
-				94BD54DF23547A0B001B252C /* SCDecoderLayer.h */,
-				94BD54E023547A0B001B252C /* SCDecoderLayer.m */,
-				94BD54E223547B36001B252C /* SCRenderLayer.h */,
-				94BD54E323547B36001B252C /* SCRenderLayer.m */,
-				520EB428220137FF002243DC /* SCSynchronizer.h */,
-				520EB429220137FF002243DC /* SCSynchronizer.m */,
-				526F498721D213D10023E6C3 /* SCFormatContext.h */,
-				526F498821D213D10023E6C3 /* SCFormatContext.m */,
-				527D337121F5AF9800B9D959 /* SCPlayerViewController.h */,
-				527D337221F5AF9800B9D959 /* SCPlayerViewController.m */,
-				527D337721F5C23F00B9D959 /* SCPlayerControlView.h */,
-				527D337821F5C23F00B9D959 /* SCPlayerControlView.m */,
 			);
 			path = Player;
 			sourceTree = "<group>";
@@ -624,6 +615,8 @@
 				520EB42322003084002243DC /* SCTrack.m */,
 				520B5C222202CD6C00758299 /* SCMetaData.h */,
 				520B5C232202CD6C00758299 /* SCMetaData.m */,
+				94BD54E823548727001B252C /* SCPacket.h */,
+				94BD54E923548727001B252C /* SCPacket.m */,
 			);
 			path = Model;
 			sourceTree = "<group>";
@@ -924,6 +917,36 @@
 			path = lib;
 			sourceTree = "<group>";
 		};
+		94BD54E5235482E5001B252C /* Core */ = {
+			isa = PBXGroup;
+			children = (
+				521B7E7B21D7602800F5B689 /* SCControl.h */,
+				521B7E7A21D7602800F5B689 /* SCControl.m */,
+				94BD54DC2354741E001B252C /* SCDemuxLayer.h */,
+				94BD54DD2354741E001B252C /* SCDemuxLayer.m */,
+				94BD54DF23547A0B001B252C /* SCDecoderLayer.h */,
+				94BD54E023547A0B001B252C /* SCDecoderLayer.m */,
+				94BD54E223547B36001B252C /* SCRenderLayer.h */,
+				94BD54E323547B36001B252C /* SCRenderLayer.m */,
+				520EB428220137FF002243DC /* SCSynchronizer.h */,
+				520EB429220137FF002243DC /* SCSynchronizer.m */,
+				526F498721D213D10023E6C3 /* SCFormatContext.h */,
+				526F498821D213D10023E6C3 /* SCFormatContext.m */,
+			);
+			path = Core;
+			sourceTree = "<group>";
+		};
+		94BD54E6235482F4001B252C /* UI */ = {
+			isa = PBXGroup;
+			children = (
+				527D337121F5AF9800B9D959 /* SCPlayerViewController.h */,
+				527D337221F5AF9800B9D959 /* SCPlayerViewController.m */,
+				527D337721F5C23F00B9D959 /* SCPlayerControlView.h */,
+				527D337821F5C23F00B9D959 /* SCPlayerControlView.m */,
+			);
+			path = UI;
+			sourceTree = "<group>";
+		};
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
@@ -1035,6 +1058,7 @@
 				521B7E8521D7604D00F5B689 /* SCNV12VideoFrame.m in Sources */,
 				522136631F7F737500182B12 /* AppDelegate.m in Sources */,
 				52E04397215E2988003CB1C5 /* AudioPlayerManager.m in Sources */,
+				94BD54EA23548727001B252C /* SCPacket.m in Sources */,
 				526F498921D213D10023E6C3 /* SCFormatContext.m in Sources */,
 				520EB41E22002AB2002243DC /* SCPacketNode.m in Sources */,
 				52AA25191F998ECF0084771B /* H264HardwareEncoder.m in Sources */,

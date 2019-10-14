@@ -7,7 +7,7 @@
 //
 
 #import <Foundation/Foundation.h>
-
+#import "SCQueueProtocol.h"
 NS_ASSUME_NONNULL_BEGIN
 
 @class SCFormatContext;
@@ -15,9 +15,9 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface SCDemuxLayer : NSObject
 
-- (instancetype)initWithContext:(SCFormatContext *)context
-                          video:(SCPacketQueue *)videoPacketQueue
-                          audio:(SCPacketQueue *)audioPacketQueue;
+@property (nonatomic, weak  ) id<DemuxToQueueProtocol> delegate;
+
+- (instancetype)initWithContext:(SCFormatContext *)context;
 
 - (void)start;
 - (void)resume;

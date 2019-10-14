@@ -14,8 +14,10 @@
 #import "SCPacketQueue.h"
 #import "SCVideoDecoder.h"
 #import "SCAudioDecoder.h"
+#import "SCQueueProtocol.h"
+#import "SCDemuxLayer.h"
 
-@interface SCDecoderLayer ()
+@interface SCDecoderLayer () <DemuxToQueueProtocol>
 
 @property (nonatomic, strong) SCPacketQueue *videoPacketQueue;
 @property (nonatomic, strong) SCPacketQueue *audioPacketQueue;
@@ -37,17 +39,16 @@
 @implementation SCDecoderLayer
 
 - (instancetype)initWithContext:(SCFormatContext *)context
-                          video:(SCPacketQueue *)videoPacketQueue
-                          audio:(SCPacketQueue *)audioPacketQueue
+                          demuxLayer:(SCDemuxLayer *)demuxLayer
                           video:(SCFrameQueue *)videoFrameQueue
                           audio:(SCFrameQueue *)audioFrameQueue {
     if (self = [super init]) {
         _context = context;
-        _videoPacketQueue = videoPacketQueue;
-        _audioPacketQueue = audioPacketQueue;
+        _videoPacketQueue = [[SCPacketQueue alloc] init];
+        _audioPacketQueue = [[SCPacketQueue alloc] init];
         _videoFrameQueue = videoFrameQueue;
         _audioFrameQueue = audioFrameQueue;
-        
+        demuxLayer.delegate = self;
         _videoDecoder = [[SCVideoDecoder alloc] initWithFormatContext:context];
         _audioDecoder = [[SCAudioDecoder alloc] initWithFormatContext:context];
     }
@@ -143,5 +144,27 @@
     }
 }
 
+- (void)enqueue:(AVPacket)packet {
+    if (packet.stream_index == self.context.videoIndex) {
+        [self.videoPacketQueue enqueuePacket:packet];
+    } else if (packet.stream_index == self.context.audioIndex) {
+        [self.audioPacketQueue enqueuePacket:packet];
+    } else if (packet.stream_index == self.context.subtitleIndex) {
+        NSData *data = [[NSData alloc] initWithBytes:packet.data length:packet.size];
+        NSString *string = [[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding];
+        NSLog(@"%@", string);
+    }
+}
+
+- (void)flush {
+    [self.videoPacketQueue flush];
+    [self.audioPacketQueue flush];
+    [self.videoPacketQueue enqueueDiscardPacket];
+    [self.audioPacketQueue enqueueDiscardPacket];
+}
+
+- (BOOL)packetQueueIsFull {
+    return self.videoPacketQueue.packetTotalSize + self.audioPacketQueue.packetTotalSize > 10 * 1024 * 1024;
+}
 
 @end

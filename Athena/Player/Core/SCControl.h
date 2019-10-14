@@ -10,7 +10,6 @@
 
 typedef NS_ENUM(NSUInteger, SCControlState) {
     SCControlStateOrigin = 0,
-    SCControlStateOpened,
     SCControlStatePlaying,
     SCControlStatePaused,
     SCControlStateClosed

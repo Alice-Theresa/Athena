@@ -36,8 +36,6 @@
 @property (nonatomic, strong) id<SCDecoderInterface> currentDecoder;
 @property (nonatomic, strong) SCAudioDecoder *audioDecoder;
 
-@property (nonatomic, strong) SCPacketQueue *videoPacketQueue;
-@property (nonatomic, strong) SCPacketQueue *audioPacketQueue;
 @property (nonatomic, strong) SCFrameQueue *videoFrameQueue;
 @property (nonatomic, strong) SCFrameQueue *audioFrameQueue;
 
@@ -71,8 +69,6 @@
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(appWillResignActive) name:UIApplicationWillResignActiveNotification object:nil];
         _videoFrameQueue  = [[SCFrameQueue alloc] init];
         _audioFrameQueue  = [[SCFrameQueue alloc] init];
-        _videoPacketQueue = [[SCPacketQueue alloc] init];
-        _audioPacketQueue = [[SCPacketQueue alloc] init];
         _videoSeekingTime = -DBL_MAX;
         _audioSeekingTime = -DBL_MAX;
         _mtkView = view;
@@ -93,11 +89,10 @@
     _audioDecoder = [[SCAudioDecoder alloc] initWithFormatContext:_context];
     _currentDecoder = _videoDecoder;
     
-    self.demuxLayer = [[SCDemuxLayer alloc] initWithContext:self.context video:self.videoPacketQueue audio:self.audioPacketQueue];
+    self.demuxLayer = [[SCDemuxLayer alloc] initWithContext:self.context];
     self.renderLayer = [[SCRenderLayer alloc] initWithContext:self.context renderView:self.mtkView video:self.videoFrameQueue audio:self.audioFrameQueue];
     self.decoderLayer = [[SCDecoderLayer alloc] initWithContext:self.context
-                                                          video:self.videoPacketQueue
-                                                          audio:self.audioPacketQueue
+                                                     demuxLayer:self.demuxLayer
                                                           video:self.videoFrameQueue
                                                           audio:self.audioFrameQueue];
     [self start];
@@ -139,7 +134,6 @@
     [self.controlQueue waitUntilAllOperationsAreFinished];
     self.videoDecodeOperation = nil;
     self.audioDecodeOperation = nil;
-    [self flushQueue];
     [self.context closeFile];
 }
 
@@ -147,13 +141,6 @@
     self.videoSeekingTime = percentage * self.context.duration;
     self.audioSeekingTime = self.videoSeekingTime;
     self.isSeeking = YES;
-}
-
-- (void)flushQueue {
-    [self.videoFrameQueue flush];
-    [self.audioFrameQueue flush];
-    [self.videoPacketQueue flush];
-    [self.audioPacketQueue flush];
 }
 
 @end
