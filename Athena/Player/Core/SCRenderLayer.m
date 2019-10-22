@@ -24,13 +24,12 @@
 @property (nonatomic, strong) SCFrameQueue *audioFrameQueue;
 
 @property (nonatomic, strong) SCFormatContext *context;
-@property (nonatomic, assign) SCControlState controlState;
+@property (nonatomic, assign) SCControlState  controlState;
+@property (nonatomic, strong) SCRender        *render;
+@property (nonatomic, strong) MTKView         *mtkView;
 
 @property (nonatomic, strong) SCFrame *videoFrame;
 @property (nonatomic, strong) SCAudioFrame *audioFrame;
-
-@property (nonatomic, strong) SCRender *render;
-@property (nonatomic, strong) MTKView *mtkView;
 @property (nonatomic, strong) SCSynchronizer *syncor;
 
 @end
@@ -45,14 +44,14 @@
         _context = context;
         _videoFrameQueue = videoFrameQueue;
         _audioFrameQueue = audioFrameQueue;
-        
-        _render           = [[SCRender alloc] init];
-        _mtkView = view;
-        _mtkView.device = _render.device;
+
+        _render                          = [[SCRender alloc] init];
+        _mtkView                         = view;
+        _mtkView.device                  = _render.device;
         _mtkView.depthStencilPixelFormat = MTLPixelFormatInvalid;
-        _mtkView.framebufferOnly = false;
-        _mtkView.colorPixelFormat = MTLPixelFormatBGRA8Unorm;
-        _mtkView.delegate = self;
+        _mtkView.framebufferOnly         = false;
+        _mtkView.colorPixelFormat        = MTLPixelFormatBGRA8Unorm;
+        _mtkView.delegate                = self;
         
         [SCAudioManager shared].delegate = self;
         

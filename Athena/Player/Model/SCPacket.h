@@ -7,10 +7,13 @@
 //
 
 #import <Foundation/Foundation.h>
+#import <libavformat/avformat.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
 @interface SCPacket : NSObject
+
+@property (nonatomic, readonly) AVPacket *core;
 
 @end
 

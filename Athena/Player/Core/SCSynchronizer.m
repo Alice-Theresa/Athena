@@ -14,18 +14,9 @@
 @property (nonatomic, assign) NSTimeInterval audioFramePlayTime;
 @property (nonatomic, assign) NSTimeInterval audioFramePosition;
 
-@property (nonatomic, strong) dispatch_semaphore_t semaphore;
-
 @end
 
 @implementation SCSynchronizer
-
-- (instancetype)init {
-    if (self = [super init]) {
-        _semaphore = dispatch_semaphore_create(1);
-    }
-    return self;
-}
 
 - (void)updateAudioClock:(NSTimeInterval)position {
     @synchronized (self) {

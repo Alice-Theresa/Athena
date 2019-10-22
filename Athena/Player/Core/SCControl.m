@@ -39,18 +39,9 @@
 @property (nonatomic, strong) SCFrameQueue *videoFrameQueue;
 @property (nonatomic, strong) SCFrameQueue *audioFrameQueue;
 
-@property (nonatomic, strong) NSInvocationOperation *videoDecodeOperation;
-@property (nonatomic, strong) NSInvocationOperation *audioDecodeOperation;
-@property (nonatomic, strong) NSOperationQueue *controlQueue;
-
 @property (nonatomic, weak  ) MTKView *mtkView;
 
 @property (nonatomic, assign, readwrite) SCControlState controlState;
-
-//synchronize
-@property (nonatomic, assign) BOOL isSeeking;
-@property (nonatomic, assign) NSTimeInterval videoSeekingTime;
-@property (nonatomic, assign) NSTimeInterval audioSeekingTime;
 
 @property (nonatomic, strong) SCDemuxLayer *demuxLayer;
 @property (nonatomic, strong) SCRenderLayer *renderLayer;
@@ -69,8 +60,6 @@
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(appWillResignActive) name:UIApplicationWillResignActiveNotification object:nil];
         _videoFrameQueue  = [[SCFrameQueue alloc] init];
         _audioFrameQueue  = [[SCFrameQueue alloc] init];
-        _videoSeekingTime = -DBL_MAX;
-        _audioSeekingTime = -DBL_MAX;
         _mtkView = view;
     }
     return self;
@@ -103,11 +92,6 @@
     [self.renderLayer start];
     [self.decoderLayer start];
     
-    self.controlQueue = [[NSOperationQueue alloc] init];
-    self.controlQueue.qualityOfService = NSQualityOfServiceUserInteractive;
-    [self.controlQueue addOperation:self.videoDecodeOperation];
-    [self.controlQueue addOperation:self.audioDecodeOperation];
-    
     self.controlState = SCControlStatePlaying;
 }
 
@@ -130,17 +114,12 @@
     [self.decoderLayer close];
     [self.renderLayer close];
     self.controlState = SCControlStateClosed;
-    [self.controlQueue cancelAllOperations];
-    [self.controlQueue waitUntilAllOperationsAreFinished];
-    self.videoDecodeOperation = nil;
-    self.audioDecodeOperation = nil;
     [self.context closeFile];
 }
 
 - (void)seekingTime:(NSTimeInterval)percentage {
-    self.videoSeekingTime = percentage * self.context.duration;
-    self.audioSeekingTime = self.videoSeekingTime;
-    self.isSeeking = YES;
+    NSTimeInterval videoSeekingTime = percentage * self.context.duration;
+    [self.demuxLayer seekingTime:videoSeekingTime];
 }
 
 @end

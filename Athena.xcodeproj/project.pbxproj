@@ -603,6 +603,8 @@
 		52EAE6D921F03C6000D9B90B /* Model */ = {
 			isa = PBXGroup;
 			children = (
+				94BD54E823548727001B252C /* SCPacket.h */,
+				94BD54E923548727001B252C /* SCPacket.m */,
 				52296C0D21E6D98D006585FE /* SCFrame.h */,
 				52296C0E21E6D98D006585FE /* SCFrame.m */,
 				52296C0A21E6037B006585FE /* SCAudioFrame.h */,
@@ -615,8 +617,6 @@
 				520EB42322003084002243DC /* SCTrack.m */,
 				520B5C222202CD6C00758299 /* SCMetaData.h */,
 				520B5C232202CD6C00758299 /* SCMetaData.m */,
-				94BD54E823548727001B252C /* SCPacket.h */,
-				94BD54E923548727001B252C /* SCPacket.m */,
 			);
 			path = Model;
 			sourceTree = "<group>";

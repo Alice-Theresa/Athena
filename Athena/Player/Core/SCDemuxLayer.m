@@ -12,14 +12,15 @@
 #import "SCControl.h"
 #import "SCPacketQueue.h"
 
-@interface SCDemuxLayer () 
+@interface SCDemuxLayer ()
 
-@property (nonatomic, assign) BOOL isSeeking;
-@property (nonatomic, assign) NSTimeInterval videoSeekingTime;
-@property (nonatomic, strong) SCFormatContext *context;
-@property (nonatomic, assign) SCControlState controlState;
-
+@property (nonatomic, strong) SCFormatContext  *context;
 @property (nonatomic, strong) NSOperationQueue *controlQueue;
+@property (nonatomic, strong) NSBlockOperation *op;
+
+@property (nonatomic, assign) BOOL             isSeeking;
+@property (nonatomic, assign) NSTimeInterval   videoSeekingTime;
+@property (nonatomic, assign) SCControlState   controlState;
 
 @end
 
@@ -34,10 +35,10 @@
 }
 
 - (void)start {
-    NSBlockOperation *op = [NSBlockOperation blockOperationWithBlock:^{
+    self.op = [NSBlockOperation blockOperationWithBlock:^{
         [self readPacket];
     }];
-    [self.controlQueue addOperation:op];
+    [self.controlQueue addOperation:self.op];
     self.controlState = SCControlStatePlaying;
 }
 
@@ -69,11 +70,7 @@
         if (self.controlState == SCControlStateClosed) {
             break;
         }
-        if (self.controlState == SCControlStatePaused) {
-            [NSThread sleepForTimeInterval:0.03];
-            continue;
-        }
-        if ([self.delegate packetQueueIsFull]) {
+        if (self.controlState == SCControlStatePaused || [self.delegate packetQueueIsFull]) {
             [NSThread sleepForTimeInterval:0.03];
             continue;
         }

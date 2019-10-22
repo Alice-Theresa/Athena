@@ -21,8 +21,8 @@
 
 @property (nonatomic, strong) SCPacketQueue *videoPacketQueue;
 @property (nonatomic, strong) SCPacketQueue *audioPacketQueue;
-@property (nonatomic, strong) SCFrameQueue *videoFrameQueue;
-@property (nonatomic, strong) SCFrameQueue *audioFrameQueue;
+@property (nonatomic, strong) SCFrameQueue  *videoFrameQueue;
+@property (nonatomic, strong) SCFrameQueue  *audioFrameQueue;
 
 @property (nonatomic, assign) BOOL isSeeking;
 @property (nonatomic, assign) NSTimeInterval videoSeekingTime;
@@ -143,6 +143,8 @@
         }
     }
 }
+
+# pragma mark - delegate
 
 - (void)enqueue:(AVPacket)packet {
     if (packet.stream_index == self.context.videoIndex) {
