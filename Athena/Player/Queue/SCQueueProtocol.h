@@ -12,12 +12,13 @@
 NS_ASSUME_NONNULL_BEGIN
 
 @class SCFrame;
+@class SCPacket;
 
 @protocol DemuxToQueueProtocol <NSObject>
 
 - (void)flush;
 - (BOOL)packetQueueIsFull;
-- (void)enqueue:(AVPacket)packet;
+- (void)enqueue:(SCPacket *)packet;
 
 @end
 

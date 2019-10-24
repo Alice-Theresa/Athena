@@ -11,6 +11,7 @@
 #import "SCFormatContext.h"
 #import "SCControl.h"
 #import "SCPacketQueue.h"
+#import "SCPacket.h"
 
 @interface SCDemuxLayer ()
 
@@ -35,10 +36,10 @@
 }
 
 - (void)start {
-    self.op = [NSBlockOperation blockOperationWithBlock:^{
+    NSBlockOperation *op = [NSBlockOperation blockOperationWithBlock:^{
         [self readPacket];
     }];
-    [self.controlQueue addOperation:self.op];
+    [self.controlQueue addOperation:op];
     self.controlState = SCControlStatePlaying;
 }
 
@@ -80,9 +81,8 @@
             self.isSeeking = NO;
             continue;
         }
-        AVPacket packet;
-        av_init_packet(&packet);
-        int result = [self.context readFrame:&packet];
+        SCPacket *packet = [[SCPacket alloc] init];
+        int result = [self.context readFrame:packet.core];
         if (result < 0) {
             NSLog(@"read packet error");
             break;

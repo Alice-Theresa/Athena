@@ -9,6 +9,8 @@
 #import <libavformat/avformat.h>
 #import <Foundation/Foundation.h>
 
+@class SCPacket;
+
 NS_ASSUME_NONNULL_BEGIN
 
 @interface SCPacketQueue : NSObject
@@ -16,8 +18,8 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, assign, readonly) NSUInteger packetTotalSize;
 
 - (void)enqueueDiscardPacket;
-- (void)enqueuePacket:(AVPacket)packet;
-- (AVPacket)dequeuePacket;
+- (void)enqueuePacket:(SCPacket *)packet;
+- (SCPacket *)dequeuePacket;
 - (void)flush;
 
 @end

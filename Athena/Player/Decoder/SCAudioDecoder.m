@@ -9,6 +9,7 @@
 #import "SCAudioDecoder.h"
 #import "SCFormatContext.h"
 #import "SCAudioFrame.h"
+#import "SCPacket.h"
 
 #include <libswresample/swresample.h>
 #import <Accelerate/Accelerate.h>
@@ -68,13 +69,13 @@
     }
 }
 
-- (NSArray<SCFrame *> *)decode:(AVPacket)packet {
+- (NSArray<SCFrame *> *)decode:(SCPacket *)packet {
     NSArray *defaultArray = @[];
     NSMutableArray *array = [NSMutableArray array];
-    if (packet.data == NULL) {
+    if (packet.core->data == NULL) {
         return defaultArray;
     }
-    int result = avcodec_send_packet(self.codecContext, &packet);
+    int result = avcodec_send_packet(self.codecContext, packet.core);
     if (result < 0 && result != AVERROR(EAGAIN) && result != AVERROR_EOF) {
         return defaultArray;
     }
@@ -86,12 +87,12 @@
             }
             break;
         }
-        SCAudioFrame *frame = [self innerDecode:packet.size];
+        SCAudioFrame *frame = [self innerDecode:packet.core->size];
         if (frame) {
             [array addObject:frame];
         }
     }
-    av_packet_unref(&packet);
+//    av_packet_unref(&packet);
     return [array copy];
 }
 

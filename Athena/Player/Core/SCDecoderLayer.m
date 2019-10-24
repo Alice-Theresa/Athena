@@ -16,6 +16,7 @@
 #import "SCAudioDecoder.h"
 #import "SCQueueProtocol.h"
 #import "SCDemuxLayer.h"
+#import "SCPacket.h"
 
 @interface SCDecoderLayer () <DemuxToQueueProtocol>
 
@@ -97,17 +98,16 @@
             continue;
         }
         @autoreleasepool {
-            AVPacket packet = [self.videoPacketQueue dequeuePacket];
-            if (packet.flags == AV_PKT_FLAG_DISCARD) {
+            SCPacket *packet = [self.videoPacketQueue dequeuePacket];
+            if (packet.core->flags == AV_PKT_FLAG_DISCARD) {
                 avcodec_flush_buffers(self.context.videoCodecContext);
                 [self.videoFrameQueue flush];
                 SCFrame *frame = [[SCFrame alloc] init];
                 frame.duration = -1;
                 [self.videoFrameQueue enqueueFramesAndSort:@[frame]];
-                av_packet_unref(&packet);
                 continue;
             }
-            if (packet.data != NULL && packet.stream_index >= 0) {
+            if (packet.core->data != NULL && packet.core->stream_index >= 0) {
                 NSArray<SCFrame *> *frames = [self.videoDecoder decode:packet];
                 [self.videoFrameQueue enqueueFramesAndSort:frames];
             }
@@ -126,17 +126,16 @@
             continue;
         }
         @autoreleasepool {
-            AVPacket packet = [self.audioPacketQueue dequeuePacket];
-            if (packet.flags == AV_PKT_FLAG_DISCARD) {
+            SCPacket *packet = [self.audioPacketQueue dequeuePacket];
+            if (packet.core->flags == AV_PKT_FLAG_DISCARD) {
                 avcodec_flush_buffers(self.context.audioCodecContext);
                 [self.audioFrameQueue flush];
                 SCFrame *frame = [[SCFrame alloc] init];
                 frame.duration = -1;
                 [self.audioFrameQueue enqueueFramesAndSort:@[frame]];
-                av_packet_unref(&packet);
                 continue;
             }
-            if (packet.data != NULL && packet.stream_index >= 0) {
+            if (packet.core->data != NULL && packet.core->stream_index >= 0) {
                 NSArray<SCFrame *> *frames = [self.audioDecoder decode:packet];
                 [self.audioFrameQueue enqueueFramesAndSort:frames];
             }
@@ -146,13 +145,13 @@
 
 # pragma mark - delegate
 
-- (void)enqueue:(AVPacket)packet {
-    if (packet.stream_index == self.context.videoIndex) {
+- (void)enqueue:(SCPacket *)packet {
+    if (packet.core->stream_index == self.context.videoIndex) {
         [self.videoPacketQueue enqueuePacket:packet];
-    } else if (packet.stream_index == self.context.audioIndex) {
+    } else if (packet.core->stream_index == self.context.audioIndex) {
         [self.audioPacketQueue enqueuePacket:packet];
-    } else if (packet.stream_index == self.context.subtitleIndex) {
-        NSData *data = [[NSData alloc] initWithBytes:packet.data length:packet.size];
+    } else if (packet.core->stream_index == self.context.subtitleIndex) {
+        NSData *data = [[NSData alloc] initWithBytes:packet.core->data length:packet.core->size];
         NSString *string = [[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding];
         NSLog(@"%@", string);
     }

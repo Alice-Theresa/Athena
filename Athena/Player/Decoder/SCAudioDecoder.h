@@ -7,7 +7,9 @@
 //
 
 #import "SCDecoderInterface.h"
+
 @class SCFrame;
+@class SCPacket;
 @class SCFormatContext;
 
 NS_ASSUME_NONNULL_BEGIN
@@ -16,7 +18,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (instancetype)init NS_UNAVAILABLE;
 - (instancetype)initWithFormatContext:(SCFormatContext *)formatContext;
-- (NSArray<SCFrame *> *)decode:(AVPacket)packet;
+- (NSArray<SCFrame *> *)decode:(SCPacket *)packet;
 
 @end
 

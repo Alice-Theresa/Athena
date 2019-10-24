@@ -11,6 +11,7 @@
 #import "SCFormatContext.h"
 #import "SCNV12VideoFrame.h"
 #import "SCI420VideoFrame.h"
+#import "SCPacket.h"
 
 @interface SCVideoDecoder () {
     AVFrame *_temp_frame;
@@ -35,10 +36,10 @@
     return self;
 }
 
-- (NSArray<SCFrame *> *)decode:(AVPacket)packet {
+- (NSArray<SCFrame *> *)decode:(SCPacket *)packet {
     NSArray *defaultArray = @[];
     NSMutableArray *array = [NSMutableArray array];
-    int result = avcodec_send_packet(self.context.videoCodecContext, &packet);
+    int result = avcodec_send_packet(self.context.videoCodecContext, packet.core);
     if (result < 0) {
         return defaultArray;
     }
@@ -50,13 +51,13 @@
             }
             break;
         } else {
-            SCI420VideoFrame *frame = [self videoFrameFromTempFrame:packet.size];
+            SCI420VideoFrame *frame = [self videoFrameFromTempFrame:packet.core->size];
             if (frame) {
                 [array addObject:frame];
             }
         }
     }
-    av_packet_unref(&packet);
+//    av_packet_unref(&packet);
     return [array copy];
 }
 

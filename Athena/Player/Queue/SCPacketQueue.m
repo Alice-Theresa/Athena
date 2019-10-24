@@ -7,13 +7,14 @@
 //
 
 #import "SCPacketQueue.h"
+#import "SCPacket.h"
 
 @interface SCPacketQueue ()
 
 @property (nonatomic, assign, readwrite) NSUInteger packetTotalSize;
 
 @property (nonatomic, strong) NSCondition *condition;
-@property (nonatomic, strong) NSMutableArray <NSValue *> *packets;
+@property (nonatomic, strong) NSMutableArray <SCPacket *> *packets;
 
 @end
 
@@ -29,45 +30,50 @@
 
 - (void)enqueueDiscardPacket {
     [self.condition lock];
-    AVPacket packet;
-    av_init_packet(&packet);
-    self.packetTotalSize += packet.size;
-    packet.flags = AV_PKT_FLAG_DISCARD;
-    NSValue *value = [NSValue value:&packet withObjCType:@encode(AVPacket)];
-    [self.packets addObject:value];
+    SCPacket *packet = [[SCPacket alloc] init];
+    packet.core->flags = AV_PKT_FLAG_DISCARD;
+    self.packetTotalSize += packet.core->size;
+//    AVPacket packet;
+//    av_init_packet(&packet);
+//    self.packetTotalSize += packet.size;
+//    packet.flags = AV_PKT_FLAG_DISCARD;
+//    NSValue *value = [NSValue value:&packet withObjCType:@encode(AVPacket)];
+    [self.packets addObject:packet];
     [self.condition unlock];
 }
 
-- (void)enqueuePacket:(AVPacket)packet {
+- (void)enqueuePacket:(SCPacket *)packet {
     [self.condition lock];
-    self.packetTotalSize += packet.size;
-    NSValue *value = [NSValue value:&packet withObjCType:@encode(AVPacket)];
-    [self.packets addObject:value];
+    self.packetTotalSize += packet.core->size;
+//    NSValue *value = [NSValue value:&packet withObjCType:@encode(AVPacket)];
+    [self.packets addObject:packet];
     [self.condition unlock];
 }
 
-- (AVPacket)dequeuePacket {
+- (SCPacket *)dequeuePacket {
     [self.condition lock];
-    AVPacket packet;
-    packet.stream_index = -1;
+//    AVPacket packet;
+//    packet.stream_index = -1;
+    SCPacket *packet;
     if (self.packets.count <= 0) {
         [self.condition unlock];
         return packet;
     }
-    [self.packets.firstObject getValue:&packet];
+//    [self.packets.firstObject getValue:&packet];
+    packet = self.packets.firstObject;
     [self.packets removeObjectAtIndex:0];
-    self.packetTotalSize -= packet.size;
+    self.packetTotalSize -= packet.core->size;
     [self.condition unlock];
     return packet;
 }
 
 - (void)flush {
     [self.condition lock];
-    for (NSValue * value in self.packets) {
-        AVPacket packet;
-        [value getValue:&packet];
-        av_packet_unref(&packet);
-    }
+//    for (NSValue * value in self.packets) {
+//        AVPacket packet;
+//        [value getValue:&packet];
+//        av_packet_unref(&packet);
+//    }
     [self.packets removeAllObjects];
     self.packetTotalSize = 0;
     [self.condition unlock];

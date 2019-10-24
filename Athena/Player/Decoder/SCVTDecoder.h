@@ -9,6 +9,7 @@
 #import "SCDecoderInterface.h"
 
 @class SCFrame;
+@class SCPacket;
 @class SCFormatContext;
 
 NS_ASSUME_NONNULL_BEGIN

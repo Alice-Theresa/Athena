@@ -31,11 +31,6 @@
 
 @property (nonatomic, strong) SCFormatContext *context;
 
-@property (nonatomic, strong) SCVTDecoder *VTDecoder;
-@property (nonatomic, strong) SCVideoDecoder *videoDecoder;
-@property (nonatomic, strong) id<SCDecoderInterface> currentDecoder;
-@property (nonatomic, strong) SCAudioDecoder *audioDecoder;
-
 @property (nonatomic, strong) SCFrameQueue *videoFrameQueue;
 @property (nonatomic, strong) SCFrameQueue *audioFrameQueue;
 
@@ -72,11 +67,6 @@
 - (void)openPath:(NSString *)filename {
     _context = [[SCFormatContext alloc] init];
     [_context openPath:filename];
-    
-    _VTDecoder    = [[SCVTDecoder alloc] initWithFormatContext:_context];
-    _videoDecoder = [[SCVideoDecoder alloc] initWithFormatContext:_context];
-    _audioDecoder = [[SCAudioDecoder alloc] initWithFormatContext:_context];
-    _currentDecoder = _videoDecoder;
     
     self.demuxLayer = [[SCDemuxLayer alloc] initWithContext:self.context];
     self.renderLayer = [[SCRenderLayer alloc] initWithContext:self.context renderView:self.mtkView video:self.videoFrameQueue audio:self.audioFrameQueue];

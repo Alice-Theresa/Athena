@@ -13,7 +13,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface SCPacket : NSObject
 
-@property (nonatomic, readonly) AVPacket *core;
+@property (nonatomic, assign) AVPacket *core;
 
 @end
 
