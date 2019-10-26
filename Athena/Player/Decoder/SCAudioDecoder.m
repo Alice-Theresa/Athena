@@ -49,6 +49,10 @@
     return self;
 }
 
+- (void)flush {
+    [self.codecContext flush];
+}
+
 - (void)setupSwsContext {
     _samplingRate = 44100;
     _channelCount = 2;

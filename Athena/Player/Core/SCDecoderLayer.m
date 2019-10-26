@@ -18,6 +18,7 @@
 #import "SCDemuxLayer.h"
 #import "SCPacket.h"
 #import "SCVideoFrame.h"
+#import "SCPlayerState.h"
 
 @interface SCDecoderLayer () <DemuxToQueueProtocol>
 
@@ -29,7 +30,7 @@
 @property (nonatomic, assign) BOOL isSeeking;
 @property (nonatomic, assign) NSTimeInterval videoSeekingTime;
 @property (nonatomic, strong) SCFormatContext *context;
-@property (nonatomic, assign) SCControlState controlState;
+@property (nonatomic, assign) SCPlayerState controlState;
 
 @property (nonatomic, strong) NSOperationQueue *controlQueue;
 
@@ -70,26 +71,26 @@
     self.controlQueue.qualityOfService = NSQualityOfServiceUserInteractive;
     [self.controlQueue addOperation:videoDecodeOperation];
     [self.controlQueue addOperation:audioDecodeOperation];
-    self.controlState = SCControlStatePlaying;
+    self.controlState = SCPlayerStatePlaying;
 }
 
 - (void)resume {
-    self.controlState = SCControlStatePlaying;
+    self.controlState = SCPlayerStatePlaying;
 }
 
 - (void)pause {
-    self.controlState = SCControlStatePaused;
+    self.controlState = SCPlayerStatePaused;
 }
 
 - (void)close {
-    self.controlState = SCControlStateClosed;
+    self.controlState = SCPlayerStateClosed;
     [self.controlQueue cancelAllOperations];
     [self.controlQueue waitUntilAllOperationsAreFinished];
 }
 
 - (void)decodeVideoFrame {
-    while (self.controlState != SCControlStateClosed) {
-        if (self.controlState == SCControlStatePaused) {
+    while (self.controlState != SCPlayerStateClosed) {
+        if (self.controlState == SCPlayerStatePaused) {
             [NSThread sleepForTimeInterval:0.03];
             continue;
         }
@@ -99,11 +100,14 @@
         }
         @autoreleasepool {
             SCPacket *packet = [self.videoPacketQueue dequeuePacket];
+            if (!packet) {
+                continue;
+            }
             if (packet.core->flags == AV_PKT_FLAG_DISCARD) {
-//                avcodec_flush_buffers(self.context.videoCodecContext); // todo
+                [self.videoDecoder flush];
                 [self.videoFrameQueue flush];
                 SCFrame *frame = [[SCFrame alloc] init];
-                frame.duration = -1;
+                frame.type = SCFrameTypeDiscard;
                 [self.videoFrameQueue enqueueFramesAndSort:@[frame]];
                 continue;
             }
@@ -121,8 +125,8 @@
 }
 
 - (void)decodeAudioFrame {
-    while (self.controlState != SCControlStateClosed) {
-        if (self.controlState == SCControlStatePaused) {
+    while (self.controlState != SCPlayerStateClosed) {
+        if (self.controlState == SCPlayerStatePaused) {
             [NSThread sleepForTimeInterval:0.03];
             continue;
         }
@@ -132,11 +136,14 @@
         }
         @autoreleasepool {
             SCPacket *packet = [self.audioPacketQueue dequeuePacket];
+            if (!packet) {
+                continue;
+            }
             if (packet.core->flags == AV_PKT_FLAG_DISCARD) {
-//                avcodec_flush_buffers(self.context.audioCodecContext);
+                [self.audioDecoder flush];
                 [self.audioFrameQueue flush];
                 SCFrame *frame = [[SCFrame alloc] init];
-                frame.duration = -1;
+                frame.type = SCFrameTypeDiscard;
                 [self.audioFrameQueue enqueueFramesAndSort:@[frame]];
                 continue;
             }

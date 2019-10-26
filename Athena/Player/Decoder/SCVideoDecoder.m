@@ -35,6 +35,10 @@
     return self;
 }
 
+- (void)flush {
+    [self.codecContext flush];
+}
+
 - (void)checkCodec:(SCPacket *)packet {
     if (!self.codecContext) {
         self.codecContext = [[SCCodecContext alloc] initWithTimebase:packet.codecDescriptor.timebase

@@ -48,7 +48,6 @@
 - (void)close {
     if (self.core) {
         avcodec_free_context(&self->_core);
-        self.core = nil;
     }
 }
 
@@ -63,10 +62,8 @@
     if (!codecContext) {
         return nil;
     }
-//    codecContext->opaque = (__bridge void *)self;
     
     int result = avcodec_parameters_to_context(codecContext, self.codecpar);
-//    NSError *error = SGGetFFError(result, SGActionCodeCodecSetParametersToContext);
     if (result < 0) {
         avcodec_free_context(&codecContext);
         return nil;
@@ -83,26 +80,14 @@
     }
     codecContext->codec_id = codec->id;
     
-    AVDictionary *opts = NULL;//SGDictionaryNS2FF(self->_options.options);
-//    if (self->_options.threadsAuto &&
-//        !av_dict_get(opts, "threads", NULL, 0))
-//    {
-        av_dict_set(&opts, "threads", "auto", 0);
-//    }
-//    if (self->_options.refcountedFrames &&
-//        !av_dict_get(opts, "refcounted_frames", NULL, 0) &&
-//        (codecContext->codec_type == AVMEDIA_TYPE_VIDEO || codecContext->codec_type == AVMEDIA_TYPE_AUDIO))
-//    {
-        av_dict_set(&opts, "refcounted_frames", "1", 0);
-//    }
+    AVDictionary *opts = NULL;
+    av_dict_set(&opts, "threads", "auto", 0);
+    av_dict_set(&opts, "refcounted_frames", "1", 0);
     
     result = avcodec_open2(codecContext, codec, &opts);
-    
     if (opts) {
         av_dict_free(&opts);
     }
-    
-//    error = SGGetFFError(result, SGActionCodeCodecOpen2);
     if (result < 0) {
         avcodec_free_context(&codecContext);
         return nil;

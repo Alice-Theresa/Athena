@@ -13,22 +13,23 @@
 #import "SCControl.h"
 #import "SCFrameQueue.h"
 #import "SCAudioFrame.h"
-#import "SCFrame.h"
+#import "SCVideoFrame.h"
 #import "SCRender.h"
 #import "SCSynchronizer.h"
 #import "SCAudioManager.h"
-
+#import "SCPlayerState.h"
+ 
 @interface SCRenderLayer () <SCAudioManagerDelegate, MTKViewDelegate>
 
 @property (nonatomic, strong) SCFrameQueue *videoFrameQueue;
 @property (nonatomic, strong) SCFrameQueue *audioFrameQueue;
 
 @property (nonatomic, strong) SCFormatContext *context;
-@property (nonatomic, assign) SCControlState  controlState;
+@property (nonatomic, assign) SCPlayerState   controlState;
 @property (nonatomic, strong) SCRender        *render;
 @property (nonatomic, strong) MTKView         *mtkView;
 
-@property (nonatomic, strong) SCFrame *videoFrame;
+@property (nonatomic, strong) SCVideoFrame *videoFrame;
 @property (nonatomic, strong) SCAudioFrame *audioFrame;
 @property (nonatomic, strong) SCSynchronizer *syncor;
 
@@ -66,25 +67,25 @@
 
 - (void)resume {
     [[SCAudioManager shared] play];
-    self.controlState = SCControlStatePlaying;
+    self.controlState = SCPlayerStatePlaying;
     self.mtkView.paused = NO;
 }
 
 - (void)pause {
     [[SCAudioManager shared] stop];
-    self.controlState = SCControlStatePaused;
+    self.controlState = SCPlayerStatePaused;
     self.mtkView.paused = YES;
 }
 
 - (void)close {
     [[SCAudioManager shared] stop];
-    self.controlState = SCControlStateClosed;
+    self.controlState = SCPlayerStateClosed;
 }
 
 - (void)rendering {
     if (!self.videoFrame) {
         self.videoFrame = [self.videoFrameQueue dequeueFrame];
-        if (!self.videoFrame) {
+        if (!self.videoFrame || self.videoFrame.type == SCFrameTypeDiscard) {
             return;
         }
     }
@@ -112,8 +113,9 @@
             if (!self.audioFrame) {
                 self.audioFrame = (SCAudioFrame *)[self.audioFrameQueue dequeueFrame];
             }
-            if (!self.audioFrame) {
+            if (!self.audioFrame || self.audioFrame.type == SCFrameTypeDiscard) {
                 memset(outputData, 0, numberOfFrames * numberOfChannels * sizeof(SInt16));
+                self.audioFrame = nil;
                 break;
             }
             [self.syncor updateAudioClock:self.audioFrame.position];

@@ -10,7 +10,6 @@
 
 @interface SCVideoFrame ()
 {
-    CVPixelBufferRef _pixelBuffer;
     int _linesize[8];
     uint8_t *_data[8];
 }
@@ -19,6 +18,7 @@
 @implementation SCVideoFrame
 
 @synthesize core = _core;
+@synthesize type = _type;
 
 - (instancetype)init {
     if (self = [super init]) {

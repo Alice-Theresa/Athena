@@ -13,6 +13,7 @@
 #import "SCFrame.h"
 #import "SCRenderDataInterface.h"
 #import "SCPlayerControlView.h"
+#import "SCPlayerState.h"
 
 @interface SCPlayerViewController () <ControlCenterProtocol>
 
@@ -73,10 +74,10 @@
 }
 
 - (void)resumeOrPause {
-    if (self.controler.controlState == SCControlStatePlaying) {
+    if (self.controler.controlState == SCPlayerStatePlaying) {
         [self.controler pause];
         [self.controlView settingPause];
-    } else if (self.controler.controlState == SCControlStatePaused) {
+    } else if (self.controler.controlState == SCPlayerStatePaused) {
         [self.controler resume];
         [self.controlView settingPlay];
     }

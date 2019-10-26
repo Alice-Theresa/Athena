@@ -36,9 +36,9 @@
 
 - (void)render:(SCVideoFrame *)frame drawIn:(MTKView *)mtkView {
     if (frame.type == SCFrameTypeNV12) {
-        [self renderNV12:(SCVideoFrame *)frame drawIn:mtkView];
+        [self renderNV12:frame drawIn:mtkView];
     } else if (frame.type == SCFrameTypeI420) {
-        [self renderI420:(SCVideoFrame *)frame drawIn:mtkView];
+        [self renderI420:frame drawIn:mtkView];
     } else {
         NSLog(@"error: no corresponding method");
     }

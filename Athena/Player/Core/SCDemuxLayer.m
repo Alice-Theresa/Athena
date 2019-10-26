@@ -10,9 +10,9 @@
 #import "SCDemuxLayer.h"
 #import "SCFormatContext.h"
 #import "SCControl.h"
-#import "SCPacketQueue.h"
 #import "SCPacket.h"
 #import "SCCodecDescriptor.h"
+#import "SCPlayerState.h"
 
 @interface SCDemuxLayer ()
 
@@ -21,7 +21,7 @@
 
 @property (nonatomic, assign) BOOL             isSeeking;
 @property (nonatomic, assign) NSTimeInterval   videoSeekingTime;
-@property (nonatomic, assign) SCControlState   controlState;
+@property (nonatomic, assign) SCPlayerState   controlState;
 
 @end
 
@@ -40,19 +40,19 @@
         [self readPacket];
     }];
     [self.controlQueue addOperation:op];
-    self.controlState = SCControlStatePlaying;
+    self.controlState = SCPlayerStatePlaying;
 }
 
 - (void)resume {
-    self.controlState = SCControlStatePlaying;
+    self.controlState = SCPlayerStatePlaying;
 }
 
 - (void)pause {
-    self.controlState = SCControlStatePaused;
+    self.controlState = SCPlayerStatePaused;
 }
 
 - (void)close {
-    self.controlState = SCControlStateClosed;
+    self.controlState = SCPlayerStateClosed;
     [self.controlQueue cancelAllOperations];
     [self.controlQueue waitUntilAllOperationsAreFinished];
 }
@@ -68,10 +68,10 @@
             [NSThread sleepForTimeInterval:0.03];
             continue;
         }
-        if (self.controlState == SCControlStateClosed) {
+        if (self.controlState == SCPlayerStateClosed) {
             break;
         }
-        if (self.controlState == SCControlStatePaused || [self.delegate packetQueueIsFull]) {
+        if (self.controlState == SCPlayerStatePaused || [self.delegate packetQueueIsFull]) {
             [NSThread sleepForTimeInterval:0.03];
             continue;
         }

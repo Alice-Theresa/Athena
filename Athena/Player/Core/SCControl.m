@@ -35,7 +35,7 @@
 
 @property (nonatomic, weak  ) MTKView *mtkView;
 
-@property (nonatomic, assign, readwrite) SCControlState controlState;
+@property (nonatomic, assign, readwrite) SCPlayerState controlState;
 
 @property (nonatomic, strong) SCDemuxLayer *demuxLayer;
 @property (nonatomic, strong) SCRenderLayer *renderLayer;
@@ -81,28 +81,28 @@
     [self.renderLayer start];
     [self.decoderLayer start];
     
-    self.controlState = SCControlStatePlaying;
+    self.controlState = SCPlayerStatePlaying;
 }
 
 - (void)pause {
     [self.demuxLayer pause];
     [self.decoderLayer pause];
     [self.renderLayer pause];
-    self.controlState = SCControlStatePaused;
+    self.controlState = SCPlayerStatePaused;
 }
 
 - (void)resume {
     [self.demuxLayer resume];
     [self.decoderLayer resume];
     [self.renderLayer resume];
-    self.controlState = SCControlStatePlaying;
+    self.controlState = SCPlayerStatePlaying;
 }
 
 - (void)close {
     [self.demuxLayer close];
     [self.decoderLayer close];
     [self.renderLayer close];
-    self.controlState = SCControlStateClosed;
+    self.controlState = SCPlayerStateClosed;
     [self.context closeFile];
 }
 
