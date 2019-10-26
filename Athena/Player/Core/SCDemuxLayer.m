@@ -12,12 +12,12 @@
 #import "SCControl.h"
 #import "SCPacketQueue.h"
 #import "SCPacket.h"
+#import "SCCodecDescriptor.h"
 
 @interface SCDemuxLayer ()
 
 @property (nonatomic, strong) SCFormatContext  *context;
 @property (nonatomic, strong) NSOperationQueue *controlQueue;
-@property (nonatomic, strong) NSBlockOperation *op;
 
 @property (nonatomic, assign) BOOL             isSeeking;
 @property (nonatomic, assign) NSTimeInterval   videoSeekingTime;
@@ -57,9 +57,9 @@
     [self.controlQueue waitUntilAllOperationsAreFinished];
 }
 
-- (void)seekingTime:(NSTimeInterval)percentage {
+- (void)seekingTime:(NSTimeInterval)time {
     self.isSeeking = true;
-    self.videoSeekingTime = percentage;
+    self.videoSeekingTime = time;
 }
 
 - (void)readPacket {
@@ -87,8 +87,12 @@
             NSLog(@"read packet error");
             break;
         } else {
+            SCCodecDescriptor *cd = [[SCCodecDescriptor alloc] init];
+            AVStream *stream = self.context.formatContext->streams[packet.core->stream_index];
+            cd.timebase = stream->time_base;
+            cd.codecpar = stream->codecpar;
+            packet.codecDescriptor = cd;
             [self.delegate enqueue:packet];
-            
         }
     }
 }

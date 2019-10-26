@@ -12,13 +12,16 @@
 #import "SCNV12VideoFrame.h"
 #import "SCI420VideoFrame.h"
 #import "SCPacket.h"
+#import "SCCodecContext.h"
+#import "SCCodecDescriptor.h"
 
 @interface SCVideoDecoder () {
     AVFrame *_temp_frame;
 }
 
-@property (nonatomic, weak) SCFormatContext *context;
-@property (nonatomic, assign) NSUInteger counter;
+@property (nonatomic, strong) SCCodecContext *codecContext;
+@property (nonatomic, strong) SCFormatContext *context;
+
 @end
 
 @implementation SCVideoDecoder
@@ -32,19 +35,28 @@
     if (self = [super init]) {
         _context = formatContext;
         _temp_frame = av_frame_alloc();
+        
     }
     return self;
 }
 
+- (void)checkCodec:(SCPacket *)packet {
+    if (!self.codecContext) {
+        self.codecContext = [[SCCodecContext alloc] initWithTimebase:packet.codecDescriptor.timebase
+                                                            codecpar:packet.codecDescriptor.codecpar];
+    }
+}
+
 - (NSArray<SCFrame *> *)decode:(SCPacket *)packet {
+    [self checkCodec:packet];
     NSArray *defaultArray = @[];
     NSMutableArray *array = [NSMutableArray array];
-    int result = avcodec_send_packet(self.context.videoCodecContext, packet.core);
+    int result = avcodec_send_packet(self.codecContext.core, packet.core);
     if (result < 0) {
         return defaultArray;
     }
     while (result >= 0) {
-        result = avcodec_receive_frame(self.context.videoCodecContext, _temp_frame);
+        result = avcodec_receive_frame(self.codecContext.core, _temp_frame);
         if (result < 0) {
             if (result != AVERROR(EAGAIN) && result != AVERROR_EOF) {
                 return defaultArray;
@@ -57,7 +69,6 @@
             }
         }
     }
-//    av_packet_unref(&packet);
     return [array copy];
 }
 
@@ -65,15 +76,9 @@
     if (!_temp_frame->data[0] || !_temp_frame->data[1] || !_temp_frame->data[2]) {
         return nil;
     }
-    
-    if (AV_PICTURE_TYPE_I == _temp_frame->pict_type) {
-        printf("%d\n", self.counter);
-        self.counter = 0;
-    }
-    self.counter++;
     SCI420VideoFrame *videoFrame = [[SCI420VideoFrame alloc] initWithFrameData:_temp_frame
-                                                                         width:self.context.videoCodecContext->width
-                                                                        height:self.context.videoCodecContext->height];
+                                                                         width:self.codecContext.core->width
+                                                                        height:self.codecContext.core->height];
     videoFrame.position = av_frame_get_best_effort_timestamp(_temp_frame) * self.context.videoTimebase;
     videoFrame.position += _temp_frame->repeat_pict * self.context.videoTimebase * 0.5;
     videoFrame.duration = av_frame_get_pkt_duration(_temp_frame) * self.context.videoTimebase;

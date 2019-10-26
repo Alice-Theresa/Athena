@@ -16,7 +16,6 @@
 #import "SCAudioFrame.h"
 
 #import "SCAudioDecoder.h"
-#import "SCVTDecoder.h"
 #import "SCVideoDecoder.h"
 #import "SCDecoderInterface.h"
 #import "SCFrameQueue.h"

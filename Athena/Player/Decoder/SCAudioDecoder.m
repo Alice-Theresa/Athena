@@ -10,6 +10,8 @@
 #import "SCFormatContext.h"
 #import "SCAudioFrame.h"
 #import "SCPacket.h"
+#import "SCCodecContext.h"
+#import "SCCodecDescriptor.h"
 
 #include <libswresample/swresample.h>
 #import <Accelerate/Accelerate.h>
@@ -25,8 +27,8 @@
     int _audio_swr_buffer_size;
 }
 
-@property (nonatomic, weak  ) SCFormatContext *context;
-@property (nonatomic, assign) AVCodecContext *codecContext;
+@property (nonatomic, strong) SCCodecContext *codecContext;
+@property (nonatomic, strong) SCFormatContext *context;
 
 @end
 
@@ -41,9 +43,8 @@
 - (instancetype)initWithFormatContext:(SCFormatContext *)formatContext {
     if (self = [super init]) {
         _context = formatContext;
-        _codecContext = formatContext.audioCodecContext;
         _temp_frame = av_frame_alloc();
-        [self setupSwsContext];
+        
     }
     return self;
 }
@@ -55,9 +56,9 @@
                                             av_get_default_channel_layout(_channelCount),
                                             AV_SAMPLE_FMT_S16,
                                             _samplingRate,
-                                            av_get_default_channel_layout(self.codecContext->channels),
-                                            self.codecContext->sample_fmt,
-                                            self.codecContext->sample_rate,
+                                            av_get_default_channel_layout(self.codecContext.core->channels),
+                                            self.codecContext.core->sample_fmt,
+                                            self.codecContext.core->sample_rate,
                                             0,
                                             NULL);
     
@@ -69,18 +70,27 @@
     }
 }
 
+- (void)checkCodec:(SCPacket *)packet {
+    if (!self.codecContext) {
+        self.codecContext = [[SCCodecContext alloc] initWithTimebase:packet.codecDescriptor.timebase
+                                                            codecpar:packet.codecDescriptor.codecpar];
+        [self setupSwsContext];
+    }
+}
+
 - (NSArray<SCFrame *> *)decode:(SCPacket *)packet {
+    [self checkCodec:packet];
     NSArray *defaultArray = @[];
     NSMutableArray *array = [NSMutableArray array];
     if (packet.core->data == NULL) {
         return defaultArray;
     }
-    int result = avcodec_send_packet(self.codecContext, packet.core);
+    int result = avcodec_send_packet(self.codecContext.core, packet.core);
     if (result < 0 && result != AVERROR(EAGAIN) && result != AVERROR_EOF) {
         return defaultArray;
     }
     while (result >= 0) {
-        result = avcodec_receive_frame(self.codecContext, _temp_frame);
+        result = avcodec_receive_frame(self.codecContext.core, _temp_frame);
         if (result < 0) {
             if (result != AVERROR(EAGAIN) && result != AVERROR_EOF) {
                 return defaultArray;
@@ -92,7 +102,6 @@
             [array addObject:frame];
         }
     }
-//    av_packet_unref(&packet);
     return [array copy];
 }
 
@@ -105,7 +114,7 @@
     void *audioDataBuffer;
     
     if (_audio_swr_context) {
-        const int ratio = MAX(1, _samplingRate / self.codecContext->sample_rate) * MAX(1, _channelCount / self.codecContext->channels) * 2;
+        const int ratio = MAX(1, _samplingRate / self.codecContext.core->sample_rate) * MAX(1, _channelCount / self.codecContext.core->channels) * 2;
         const int buffer_size = av_samples_get_buffer_size(NULL, _channelCount, _temp_frame->nb_samples * ratio, AV_SAMPLE_FMT_S16, 1);
         
         if (!_audio_swr_buffer || _audio_swr_buffer_size < buffer_size) {

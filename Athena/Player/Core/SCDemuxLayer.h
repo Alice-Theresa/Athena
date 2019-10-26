@@ -24,7 +24,7 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)resume;
 - (void)pause;
 - (void)close;
-- (void)seekingTime:(NSTimeInterval)percentage;
+- (void)seekingTime:(NSTimeInterval)time;
 
 @end
 

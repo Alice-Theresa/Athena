@@ -11,9 +11,12 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
+@class SCCodecDescriptor;
+
 @interface SCPacket : NSObject
 
 @property (nonatomic, assign) AVPacket *core;
+@property (nonatomic, strong) SCCodecDescriptor *codecDescriptor;
 
 @end
 

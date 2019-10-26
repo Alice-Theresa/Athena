@@ -10,11 +10,9 @@
 #import "SCTrack.h"
 #import "SCMetaData.h"
 
-@interface SCFormatContext () {
-    AVFormatContext *formatContext;
-    AVCodec *videoCodec;
-    AVCodec *audioCodec;
-}
+@interface SCFormatContext ()
+
+@property (nonatomic, assign, readwrite) AVFormatContext *formatContext;
 
 @property (nonatomic, assign, readwrite) int videoIndex;
 @property (nonatomic, assign, readwrite) int audioIndex;
@@ -24,6 +22,7 @@
 @property (nonatomic, assign, readwrite) NSTimeInterval audioTimebase;
 @property (nonatomic, assign, readwrite) NSTimeInterval duration;
 
+@property (nonatomic, strong, readwrite) NSArray<SCTrack *> *tracks;
 @property (nonatomic, strong, readwrite) NSArray<SCTrack *> *videoTracks;
 @property (nonatomic, strong, readwrite) NSArray<SCTrack *> *audioTracks;
 @property (nonatomic, strong, readwrite) NSArray<SCTrack *> *subtitleTracks;
@@ -48,15 +47,15 @@
         av_register_all();
         avformat_network_init();
     });
-    formatContext = avformat_alloc_context();
+    self.formatContext = avformat_alloc_context();
 }
 
 - (void)openPath:(NSString *)path {
-    if(avformat_open_input(&formatContext, [path UTF8String], NULL, NULL) != 0){
+    if(avformat_open_input(&self->_formatContext, [path UTF8String], NULL, NULL) != 0){
         printf("Couldn't open input stream.\n");
         return ;
     }
-    if(avformat_find_stream_info(formatContext, NULL) < 0){
+    if(avformat_find_stream_info(self.formatContext, NULL) < 0){
         printf("Couldn't find stream information.\n");
         return;
     }
@@ -64,22 +63,22 @@
     NSMutableArray *videoTracks = [NSMutableArray array];
     NSMutableArray *audioTracks = [NSMutableArray array];
     NSMutableArray *subtitleTracks = [NSMutableArray array];
-    for (int i = 0; i < formatContext->nb_streams; i++) {
-        switch (formatContext->streams[i]->codecpar->codec_type) {
+    for (int i = 0; i < self.formatContext->nb_streams; i++) {
+        switch (self.formatContext->streams[i]->codecpar->codec_type) {
             case AVMEDIA_TYPE_VIDEO:
                 [videoTracks addObject:[[SCTrack alloc] initWithIndex:i
                                                                  type:SCTrackTypeVideo
-                                                                 meta:[SCMetaData metadataWithAVDictionary:formatContext->streams[i]->metadata]]];
+                                                                 meta:[SCMetaData metadataWithAVDictionary:self.formatContext->streams[i]->metadata]]];
                 break;
             case AVMEDIA_TYPE_AUDIO:
                 [audioTracks addObject:[[SCTrack alloc] initWithIndex:i
                                                                  type:SCTrackTypeAudio
-                                                                 meta:[SCMetaData metadataWithAVDictionary:formatContext->streams[i]->metadata]]];
+                                                                 meta:[SCMetaData metadataWithAVDictionary:self.formatContext->streams[i]->metadata]]];
                 break;
             case AVMEDIA_TYPE_SUBTITLE:
                 [subtitleTracks addObject:[[SCTrack alloc] initWithIndex:i
                                                                     type:SCTrackTypeSubtitle
-                                                                    meta:[SCMetaData metadataWithAVDictionary:formatContext->streams[i]->metadata]]];
+                                                                    meta:[SCMetaData metadataWithAVDictionary:self.formatContext->streams[i]->metadata]]];
                 break;
             default:
                 break;
@@ -88,6 +87,7 @@
     self.videoTracks = videoTracks;
     self.audioTracks = audioTracks;
     self.subtitleTracks = subtitleTracks;
+    self.tracks = @[videoTracks, audioTracks];
     if (self.videoTracks.count <= 0) {
         printf("Couldn't find a video stream.\n");
     } else if (self.audioTracks.count <= 0) {
@@ -98,54 +98,33 @@
     self.videoIndex = self.videoTracks.firstObject.index;
     self.audioIndex = self.audioTracks.firstObject.index;
     self.subtitleIndex = self.subtitleTracks.firstObject.index;
-    
-    AVStream *videoStream = formatContext->streams[self.videoIndex];
-    AVStream *audioStream = formatContext->streams[self.audioIndex];
-    videoCodec =  avcodec_find_decoder(videoStream->codecpar->codec_id);
-    audioCodec =  avcodec_find_decoder(audioStream->codecpar->codec_id);
-    _videoCodecContext = avcodec_alloc_context3(videoCodec);
-    _audioCodecContext = avcodec_alloc_context3(audioCodec);
-    avcodec_parameters_to_context(_videoCodecContext, videoStream->codecpar);
-    avcodec_parameters_to_context(_audioCodecContext, audioStream->codecpar);
-//    av_codec_set_pkt_timebase(codec_ctx, stream->time_base);
-    if(audioCodec == NULL || videoCodec == NULL) {
-        printf("Couldn't find Codec.\n");
-        return;
-    }
-    if(avcodec_open2(self.audioCodecContext, audioCodec, NULL) < 0 || avcodec_open2(self.videoCodecContext, videoCodec, NULL) < 0) {
-        printf("Couldn't open codec.\n");
-        return;
-    }
-    
     [self settingTimeBase];
     [self settingDuration];
 }
 
 - (void)closeFile {
-    avcodec_close(_videoCodecContext);
-    avcodec_close(_audioCodecContext);
-    avformat_close_input(&formatContext);
+    avformat_close_input(&self->_formatContext);
 }
 
 - (int)readFrame:(AVPacket *)packet {
-    return av_read_frame(formatContext, packet);
+    return av_read_frame(self.formatContext, packet);
 }
 
 - (void)seekingTime:(NSTimeInterval)time {
     int64_t seek_pos = time * AV_TIME_BASE;
-    int64_t seek_target = av_rescale_q(seek_pos, AV_TIME_BASE_Q, formatContext->streams[self.videoIndex]->time_base);
-    av_seek_frame(formatContext, self.videoIndex, seek_target, AVSEEK_FLAG_BACKWARD);
+    int64_t seek_target = av_rescale_q(seek_pos, AV_TIME_BASE_Q, self.formatContext->streams[self.videoIndex]->time_base);
+    av_seek_frame(self.formatContext, self.videoIndex, seek_target, AVSEEK_FLAG_BACKWARD);
 }
 
 - (void)settingTimeBase {
-    AVStream *stream = formatContext->streams[self.videoIndex];
+    AVStream *stream = self.formatContext->streams[self.videoIndex];
     if (stream->time_base.den > 0 && stream->time_base.num > 0) {
         self.videoTimebase = av_q2d(stream->time_base);
     } else {
         NSAssert(NO, @"no time base");
     }
     
-    AVStream *audioStream = formatContext->streams[self.audioIndex];
+    AVStream *audioStream = self.formatContext->streams[self.audioIndex];
     if (audioStream->time_base.den > 0 && audioStream->time_base.num > 0) {
         self.audioTimebase = av_q2d(audioStream->time_base);
     } else {
@@ -154,7 +133,7 @@
 }
 
 - (void)settingDuration {
-    self.duration = formatContext->duration / AV_TIME_BASE;
+    self.duration = self.formatContext->duration / AV_TIME_BASE;
 }
 
 @end

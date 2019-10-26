@@ -100,7 +100,7 @@
         @autoreleasepool {
             SCPacket *packet = [self.videoPacketQueue dequeuePacket];
             if (packet.core->flags == AV_PKT_FLAG_DISCARD) {
-                avcodec_flush_buffers(self.context.videoCodecContext);
+//                avcodec_flush_buffers(self.context.videoCodecContext); // todo
                 [self.videoFrameQueue flush];
                 SCFrame *frame = [[SCFrame alloc] init];
                 frame.duration = -1;
@@ -128,7 +128,7 @@
         @autoreleasepool {
             SCPacket *packet = [self.audioPacketQueue dequeuePacket];
             if (packet.core->flags == AV_PKT_FLAG_DISCARD) {
-                avcodec_flush_buffers(self.context.audioCodecContext);
+//                avcodec_flush_buffers(self.context.audioCodecContext);
                 [self.audioFrameQueue flush];
                 SCFrame *frame = [[SCFrame alloc] init];
                 frame.duration = -1;
