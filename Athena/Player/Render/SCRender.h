@@ -12,11 +12,13 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
+@class SCVideoFrame;
+
 @interface SCRender : NSObject
 
 @property (nonatomic, strong) id<MTLDevice> device;
 
-- (void)render:(id<SCRenderDataInterface>)frame drawIn:(MTKView *)mtkView;
+- (void)render:(SCVideoFrame *)frame drawIn:(MTKView *)mtkView;
 
 @end
 

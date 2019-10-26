@@ -124,10 +124,10 @@ static enum AVPixelFormat SCCodecContextGetFormat(struct AVCodecContext *s, cons
                 break;
             }
             AVHWFramesContext *frames_ctx_data = (AVHWFramesContext *)frames_ctx->data;
-            frames_ctx_data->format = AV_PIX_FMT_VIDEOTOOLBOX;
-            frames_ctx_data->sw_format = AV_PIX_FMT_YUV420P;//AV_PIX_FMT_NV12;
-            frames_ctx_data->width = s->width;
-            frames_ctx_data->height = s->height;
+            frames_ctx_data->format            = AV_PIX_FMT_VIDEOTOOLBOX;
+            frames_ctx_data->sw_format         = AV_PIX_FMT_NV12;
+            frames_ctx_data->width             = s->width;
+            frames_ctx_data->height            = s->height;
             int err = av_hwframe_ctx_init(frames_ctx);
             if (err < 0) {
                 av_buffer_unref(&frames_ctx);

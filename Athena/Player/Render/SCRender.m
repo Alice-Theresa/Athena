@@ -9,6 +9,7 @@
 #import <AVFoundation/AVUtilities.h>
 #import "SCRender.h"
 #import "SCShaderType.h"
+#import "SCVideoFrame.h"
 
 @interface SCRender ()
 
@@ -33,17 +34,17 @@
     return self;
 }
 
-- (void)render:(id<SCRenderDataInterface>)frame drawIn:(MTKView *)mtkView {
-    if ([frame conformsToProtocol:@protocol(SCRenderDataNV12Interface)]) {
-        [self renderNV12:(id<SCRenderDataNV12Interface>)frame drawIn:mtkView];
-    } else if ([frame conformsToProtocol:@protocol(SCRenderDataI420Interface)]) {
-        [self renderI420:(id<SCRenderDataI420Interface>)frame drawIn:mtkView];
+- (void)render:(SCVideoFrame *)frame drawIn:(MTKView *)mtkView {
+    if (frame.type == SCFrameTypeNV12) {
+        [self renderNV12:(SCVideoFrame *)frame drawIn:mtkView];
+    } else if (frame.type == SCFrameTypeI420) {
+        [self renderI420:(SCVideoFrame *)frame drawIn:mtkView];
     } else {
         NSLog(@"error: no corresponding method");
     }
 }
 
-- (void)renderNV12:(id<SCRenderDataNV12Interface>)frame drawIn:(MTKView *)mtkView {
+- (void)renderNV12:(SCVideoFrame *)frame drawIn:(MTKView *)mtkView {
     CVMetalTextureCacheRef textureCache;
     CVMetalTextureCacheCreate(0, nil, self.device, nil, &textureCache);
     
@@ -90,7 +91,7 @@
     [encoder endEncoding];
     [commandBuffer presentDrawable:currentDrawable];
     [commandBuffer commit];
-    [commandBuffer waitUntilCompleted]; //fix screen tearing problem or flush texture at the very beinging
+    [commandBuffer waitUntilCompleted]; //fix screen tearing problem or flush texture at the very begining
     
     [self flushTexture];
     CVMetalTextureCacheFlush(textureCache, 0);
@@ -99,7 +100,7 @@
     }
 }
 
-- (void)renderI420:(id<SCRenderDataI420Interface>)frame drawIn:(MTKView *)mtkView {
+- (void)renderI420:(SCVideoFrame *)frame drawIn:(MTKView *)mtkView {
     size_t width = frame.width;
     size_t height = frame.height;
     
@@ -112,9 +113,9 @@
     id<MTLTexture> yTexture = [self.device newTextureWithDescriptor:yDesc];
     id<MTLTexture> uTexture = [self.device newTextureWithDescriptor:uvDesc];
     id<MTLTexture> vTexture = [self.device newTextureWithDescriptor:uvDesc];
-    [yTexture replaceRegion:yRegion mipmapLevel:0 withBytes:frame.luma_channel_pixels bytesPerRow:width];
-    [uTexture replaceRegion:uvRegion mipmapLevel:0 withBytes:frame.chromaB_channel_pixels bytesPerRow:width / 2];
-    [vTexture replaceRegion:uvRegion mipmapLevel:0 withBytes:frame.chromaR_channel_pixels bytesPerRow:width / 2];
+    [yTexture replaceRegion:yRegion mipmapLevel:0 withBytes:frame.data[0] bytesPerRow:width];
+    [uTexture replaceRegion:uvRegion mipmapLevel:0 withBytes:frame.data[1] bytesPerRow:width / 2];
+    [vTexture replaceRegion:uvRegion mipmapLevel:0 withBytes:frame.data[2] bytesPerRow:width / 2];
     
     MTLRenderPassDescriptor *descriptor = [mtkView currentRenderPassDescriptor];
     id<CAMetalDrawable> currentDrawable = [mtkView currentDrawable];

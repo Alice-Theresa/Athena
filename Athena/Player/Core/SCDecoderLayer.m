@@ -17,6 +17,7 @@
 #import "SCQueueProtocol.h"
 #import "SCDemuxLayer.h"
 #import "SCPacket.h"
+#import "SCVideoFrame.h"
 
 @interface SCDecoderLayer () <DemuxToQueueProtocol>
 
@@ -86,14 +87,13 @@
     [self.controlQueue waitUntilAllOperationsAreFinished];
 }
 
-
 - (void)decodeVideoFrame {
     while (self.controlState != SCControlStateClosed) {
         if (self.controlState == SCControlStatePaused) {
             [NSThread sleepForTimeInterval:0.03];
             continue;
         }
-        if (self.videoFrameQueue.count > 10) {
+        if (self.videoFrameQueue.count > 5) {
             [NSThread sleepForTimeInterval:0.03];
             continue;
         }
@@ -109,7 +109,12 @@
             }
             if (packet.core->data != NULL && packet.core->stream_index >= 0) {
                 NSArray<SCFrame *> *frames = [self.videoDecoder decode:packet];
-                [self.videoFrameQueue enqueueFramesAndSort:frames];
+                NSMutableArray *array = [NSMutableArray array];
+                for (SCVideoFrame *frame in frames) {
+                    [frame fillData];
+                    [array addObject:frame];
+                }
+                [self.videoFrameQueue enqueueFramesAndSort:[array copy]];
             }
         }
     }

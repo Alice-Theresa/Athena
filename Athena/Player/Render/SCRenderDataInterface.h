@@ -18,22 +18,4 @@ NS_ASSUME_NONNULL_BEGIN
 
 @end
 
-@protocol SCRenderDataNV12Interface <SCRenderDataInterface>
-
-@property (nonatomic, assign, readonly) CVPixelBufferRef pixelBuffer;
-
-- (instancetype)initWithAVPixelBuffer:(CVPixelBufferRef)pixelBuffer;
-
-@end
-
-@protocol SCRenderDataI420Interface <SCRenderDataInterface>
-
-@property (nonatomic, assign, readonly) UInt8 *luma_channel_pixels;
-@property (nonatomic, assign, readonly) UInt8 *chromaB_channel_pixels;
-@property (nonatomic, assign, readonly) UInt8 *chromaR_channel_pixels;
-
-- (instancetype)initWithFrameData:(AVFrame *)frame width:(int)width height:(int)height;
-
-@end
-
 NS_ASSUME_NONNULL_END
