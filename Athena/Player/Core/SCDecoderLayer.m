@@ -24,8 +24,6 @@
 
 @property (nonatomic, strong) SCPacketQueue *videoPacketQueue;
 @property (nonatomic, strong) SCPacketQueue *audioPacketQueue;
-@property (nonatomic, strong) SCFrameQueue  *videoFrameQueue;
-@property (nonatomic, strong) SCFrameQueue  *audioFrameQueue;
 
 @property (nonatomic, assign) BOOL isSeeking;
 @property (nonatomic, assign) NSTimeInterval videoSeekingTime;
@@ -41,16 +39,12 @@
 
 @implementation SCDecoderLayer
 
-- (instancetype)initWithContext:(SCFormatContext *)context
-                          demuxLayer:(SCDemuxLayer *)demuxLayer
-                          video:(SCFrameQueue *)videoFrameQueue
-                          audio:(SCFrameQueue *)audioFrameQueue {
+- (instancetype)initWithContext:(SCFormatContext *)context demuxLayer:(SCDemuxLayer *)demuxLayer{
     if (self = [super init]) {
         _context = context;
         _videoPacketQueue = [[SCPacketQueue alloc] init];
         _audioPacketQueue = [[SCPacketQueue alloc] init];
-        _videoFrameQueue = videoFrameQueue;
-        _audioFrameQueue = audioFrameQueue;
+
         demuxLayer.delegate = self;
         _videoDecoder = [[SCVideoDecoder alloc] initWithFormatContext:context];
         _audioDecoder = [[SCAudioDecoder alloc] initWithFormatContext:context];
@@ -94,7 +88,7 @@
             [NSThread sleepForTimeInterval:0.03];
             continue;
         }
-        if (self.videoFrameQueue.count > 5) {
+        if ([self.delegate videoFrameQueueIsFull]) {
             [NSThread sleepForTimeInterval:0.03];
             continue;
         }
@@ -105,10 +99,10 @@
             }
             if (packet.core->flags == AV_PKT_FLAG_DISCARD) {
                 [self.videoDecoder flush];
-                [self.videoFrameQueue flush];
+                [self.delegate videoFrameQueueFlush];
                 SCFrame *frame = [[SCFrame alloc] init];
                 frame.type = SCFrameTypeDiscard;
-                [self.videoFrameQueue enqueueFramesAndSort:@[frame]];
+                [self.delegate enqueueVideoFrames:@[frame]];
                 continue;
             }
             if (packet.core->data != NULL && packet.core->stream_index >= 0) {
@@ -118,7 +112,7 @@
                     [frame fillData];
                     [array addObject:frame];
                 }
-                [self.videoFrameQueue enqueueFramesAndSort:[array copy]];
+                [self.delegate enqueueVideoFrames:[array copy]];
             }
         }
     }
@@ -130,7 +124,7 @@
             [NSThread sleepForTimeInterval:0.03];
             continue;
         }
-        if (self.audioFrameQueue.count > 10) {
+        if ([self.delegate audioFrameQueueIsFull]) {
             [NSThread sleepForTimeInterval:0.03];
             continue;
         }
@@ -141,15 +135,15 @@
             }
             if (packet.core->flags == AV_PKT_FLAG_DISCARD) {
                 [self.audioDecoder flush];
-                [self.audioFrameQueue flush];
+                [self.delegate audioFrameQueueFlush];
                 SCFrame *frame = [[SCFrame alloc] init];
                 frame.type = SCFrameTypeDiscard;
-                [self.audioFrameQueue enqueueFramesAndSort:@[frame]];
+                [self.delegate enqueueAudioFrames:@[frame]];
                 continue;
             }
             if (packet.core->data != NULL && packet.core->stream_index >= 0) {
                 NSArray<SCFrame *> *frames = [self.audioDecoder decode:packet];
-                [self.audioFrameQueue enqueueFramesAndSort:frames];
+                [self.delegate enqueueAudioFrames:frames];
             }
         }
     }

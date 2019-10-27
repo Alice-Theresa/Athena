@@ -10,15 +10,13 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
+@class SCDecoderLayer;
 @class SCFormatContext;
 @class SCFrameQueue;
 
 @interface SCRenderLayer : NSObject
 
-- (instancetype)initWithContext:(SCFormatContext *)context
-                     renderView:(MTKView *)view
-                          video:(SCFrameQueue *)videoFrameQueue
-                          audio:(SCFrameQueue *)audioFrameQueue;
+- (instancetype)initWithContext:(SCFormatContext *)context decoderLayer:(SCDecoderLayer *)decoderLayer renderView:(MTKView *)view;
 - (void)start;
 - (void)resume;
 - (void)pause;

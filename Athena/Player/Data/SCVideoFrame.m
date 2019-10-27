@@ -10,7 +10,7 @@
 
 @interface SCVideoFrame ()
 {
-    int _linesize[8];
+//    int _linesize[8];
     uint8_t *_data[8];
 }
 @end
@@ -33,9 +33,9 @@
     }
 }
 
-- (int *)linesize {
-    return self->_linesize;
-}
+//- (int *)linesize {
+//    return self->_linesize;
+//}
 
 - (uint8_t **)data {
     return self->_data;
@@ -48,6 +48,7 @@
         _pixelBuffer = (CVPixelBufferRef)(frame->data[3]);
         _width = CVPixelBufferGetWidth(_pixelBuffer);
         _height = CVPixelBufferGetHeight(_pixelBuffer);
+        _type = SCFrameTypeNV12;
 //        self->_descriptor.cv_format = CVPixelBufferGetPixelFormatType(self->_pixelBuffer);
     } else {
         _type = SCFrameTypeI420;
@@ -56,7 +57,7 @@
     }
     for (int i = 0; i < 8; i++) {
         self->_data[i] = frame->data[i];
-        self->_linesize[i] = frame->linesize[i];
+//        self->_linesize[i] = frame->linesize[i];
     }
 }
 

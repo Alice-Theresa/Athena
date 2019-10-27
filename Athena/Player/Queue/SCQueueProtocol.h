@@ -24,9 +24,12 @@ NS_ASSUME_NONNULL_BEGIN
 
 @protocol DecodeToQueueProtocol <NSObject>
 
-- (void)flush;
-- (BOOL)frameQueueIsFull;
-- (void)enqueueFramesAndSort:(NSArray<SCFrame *> *)frames;
+- (void)videoFrameQueueFlush;
+- (void)audioFrameQueueFlush;
+- (BOOL)videoFrameQueueIsFull;
+- (BOOL)audioFrameQueueIsFull;
+- (void)enqueueVideoFrames:(NSArray<SCFrame *> *)frames;
+- (void)enqueueAudioFrames:(NSArray<SCFrame *> *)frames;
 
 @end
 

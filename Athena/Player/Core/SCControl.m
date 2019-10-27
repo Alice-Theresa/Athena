@@ -29,10 +29,6 @@
 @interface SCControl () 
 
 @property (nonatomic, strong) SCFormatContext *context;
-
-@property (nonatomic, strong) SCFrameQueue *videoFrameQueue;
-@property (nonatomic, strong) SCFrameQueue *audioFrameQueue;
-
 @property (nonatomic, weak  ) MTKView *mtkView;
 
 @property (nonatomic, assign, readwrite) SCPlayerState controlState;
@@ -52,8 +48,6 @@
 - (instancetype)initWithRenderView:(MTKView *)view {
     if (self = [super init]) {
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(appWillResignActive) name:UIApplicationWillResignActiveNotification object:nil];
-        _videoFrameQueue  = [[SCFrameQueue alloc] init];
-        _audioFrameQueue  = [[SCFrameQueue alloc] init];
         _mtkView = view;
     }
     return self;
@@ -68,11 +62,8 @@
     [_context openPath:filename];
     
     self.demuxLayer = [[SCDemuxLayer alloc] initWithContext:self.context];
-    self.renderLayer = [[SCRenderLayer alloc] initWithContext:self.context renderView:self.mtkView video:self.videoFrameQueue audio:self.audioFrameQueue];
-    self.decoderLayer = [[SCDecoderLayer alloc] initWithContext:self.context
-                                                     demuxLayer:self.demuxLayer
-                                                          video:self.videoFrameQueue
-                                                          audio:self.audioFrameQueue];
+    self.decoderLayer = [[SCDecoderLayer alloc] initWithContext:self.context demuxLayer:self.demuxLayer];
+    self.renderLayer = [[SCRenderLayer alloc] initWithContext:self.context decoderLayer:self.decoderLayer renderView:self.mtkView];
     [self start];
 }
 

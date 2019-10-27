@@ -18,7 +18,7 @@
 
 @property (nonatomic, assign, readonly) CVPixelBufferRef pixelBuffer;
 
-- (int *)linesize;
+//- (int *)linesize;
 - (uint8_t **)data;
 - (void)fillData;
 

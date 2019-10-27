@@ -18,12 +18,9 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface SCDecoderLayer : NSObject
 
-@property (nonatomic, weak  ) id<DemuxToQueueProtocol> delegate;
+@property (nonatomic, weak  ) id<DecodeToQueueProtocol> delegate;
 
-- (instancetype)initWithContext:(SCFormatContext *)context
-                     demuxLayer:(SCDemuxLayer *)demuxLayer
-                          video:(SCFrameQueue *)videoFrameQueue
-                          audio:(SCFrameQueue *)audioFrameQueue;
+- (instancetype)initWithContext:(SCFormatContext *)context demuxLayer:(SCDemuxLayer *)demuxLayer;
 - (void)start;
 - (void)resume;
 - (void)pause;

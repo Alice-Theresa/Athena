@@ -352,13 +352,13 @@
 		520EB41B22002A72002243DC /* Queue */ = {
 			isa = PBXGroup;
 			children = (
+				94BD54E7235484D0001B252C /* SCQueueProtocol.h */,
 				76C3E2DD21FD65E900EDC6AB /* SCFrameNode.h */,
 				76C3E2DE21FD65E900EDC6AB /* SCFrameNode.m */,
 				520EB41F22002B9B002243DC /* SCPacketQueue.h */,
 				520EB42022002B9B002243DC /* SCPacketQueue.m */,
 				76C3E2DA21FD63ED00EDC6AB /* SCFrameQueue.h */,
 				76C3E2DB21FD63ED00EDC6AB /* SCFrameQueue.m */,
-				94BD54E7235484D0001B252C /* SCQueueProtocol.h */,
 			);
 			path = Queue;
 			sourceTree = "<group>";

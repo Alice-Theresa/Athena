@@ -16,4 +16,10 @@ typedef NS_ENUM(NSUInteger, SCPlayerState) {
     SCPlayerStateClosed
 };
 
+@protocol ControlableProtocol <NSObject>
+
+
+
+@end
+
 #endif /* SCPlayerState_h */

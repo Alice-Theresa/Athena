@@ -18,7 +18,6 @@
 }
 
 - (void)dealloc {
-
     if (self->_core) {
         av_frame_free(&self->_core);
         self->_core = nil;

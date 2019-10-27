@@ -18,8 +18,9 @@
 #import "SCSynchronizer.h"
 #import "SCAudioManager.h"
 #import "SCPlayerState.h"
- 
-@interface SCRenderLayer () <SCAudioManagerDelegate, MTKViewDelegate>
+#import "SCDecoderLayer.h"
+
+@interface SCRenderLayer () <SCAudioManagerDelegate, MTKViewDelegate, DecodeToQueueProtocol>
 
 @property (nonatomic, strong) SCFrameQueue *videoFrameQueue;
 @property (nonatomic, strong) SCFrameQueue *audioFrameQueue;
@@ -37,14 +38,11 @@
 
 @implementation SCRenderLayer
 
-- (instancetype)initWithContext:(SCFormatContext *)context
-                     renderView:(MTKView *)view
-                          video:(SCFrameQueue *)videoFrameQueue
-                          audio:(SCFrameQueue *)audioFrameQueue {
+- (instancetype)initWithContext:(SCFormatContext *)context decoderLayer:(SCDecoderLayer *)decoderLayer renderView:(MTKView *)view {
     if (self = [super init]) {
         _context = context;
-        _videoFrameQueue = videoFrameQueue;
-        _audioFrameQueue = audioFrameQueue;
+        _videoFrameQueue  = [[SCFrameQueue alloc] init];
+        _audioFrameQueue  = [[SCFrameQueue alloc] init];
 
         _render                          = [[SCRender alloc] init];
         _mtkView                         = view;
@@ -56,6 +54,7 @@
         
         [SCAudioManager shared].delegate = self;
         
+        decoderLayer.delegate = self;
         _syncor = [[SCSynchronizer alloc] init];
     }
     return self;
@@ -86,6 +85,7 @@
     if (!self.videoFrame) {
         self.videoFrame = [self.videoFrameQueue dequeueFrame];
         if (!self.videoFrame || self.videoFrame.type == SCFrameTypeDiscard) {
+            self.videoFrame = nil;
             return;
         }
     }
@@ -137,6 +137,32 @@
             }
         }
     }
+}
+
+
+
+- (void)audioFrameQueueFlush {
+    [self.audioFrameQueue flush];
+}
+
+- (BOOL)audioFrameQueueIsFull {
+    return self.audioFrameQueue.count > 5;
+}
+
+- (void)enqueueAudioFrames:(nonnull NSArray<SCFrame *> *)frames {
+    [self.audioFrameQueue enqueueFramesAndSort:frames];
+}
+
+- (void)enqueueVideoFrames:(nonnull NSArray<SCFrame *> *)frames {
+    [self.videoFrameQueue enqueueFramesAndSort:frames];
+}
+
+- (void)videoFrameQueueFlush {
+    [self.videoFrameQueue flush];
+}
+
+- (BOOL)videoFrameQueueIsFull {
+    return self.videoFrameQueue.count > 5;
 }
 
 @end
