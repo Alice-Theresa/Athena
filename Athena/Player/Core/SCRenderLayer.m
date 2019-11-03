@@ -8,9 +8,7 @@
 
 #import <MetalKit/MetalKit.h>
 #import "SCRenderLayer.h"
-#import "SCDemuxLayer.h"
 #import "SCFormatContext.h"
-#import "SCControl.h"
 #import "SCFrameQueue.h"
 #import "SCAudioFrame.h"
 #import "SCVideoFrame.h"
@@ -43,19 +41,14 @@
         _context = context;
         _videoFrameQueue  = [[SCFrameQueue alloc] init];
         _audioFrameQueue  = [[SCFrameQueue alloc] init];
-
-        _render                          = [[SCRender alloc] init];
-        _mtkView                         = view;
-        _mtkView.device                  = _render.device;
-        _mtkView.depthStencilPixelFormat = MTLPixelFormatInvalid;
-        _mtkView.framebufferOnly         = false;
-        _mtkView.colorPixelFormat        = MTLPixelFormatBGRA8Unorm;
-        _mtkView.delegate                = self;
+        _syncor = [[SCSynchronizer alloc] init];
+        _render = [[SCRender alloc] init];
         
-        [SCAudioManager shared].delegate = self;
+        self.mtkView.frame = view.bounds;
+        [view insertSubview:self.mtkView atIndex:0];
         
         decoderLayer.delegate = self;
-        _syncor = [[SCSynchronizer alloc] init];
+        [SCAudioManager shared].delegate = self;
     }
     return self;
 }
@@ -89,7 +82,7 @@
             return;
         }
     }
-    if (![self.syncor shouldRenderVideoFrame:self.videoFrame.position duration:self.videoFrame.duration]) {
+    if (![self.syncor shouldRenderVideoFrame:self.videoFrame.timeStamp duration:self.videoFrame.duration]) {
         return;
     }
     [self.render render:(id<SCRenderDataInterface>)self.videoFrame drawIn:self.mtkView];
@@ -118,20 +111,20 @@
                 self.audioFrame = nil;
                 break;
             }
-            [self.syncor updateAudioClock:self.audioFrame.position];
+            [self.syncor updateAudioClock:self.audioFrame.timeStamp];
             
-            const Byte * bytes = (Byte *)self.audioFrame.sampleData.bytes + self.audioFrame->output_offset;
-            const NSUInteger bytesLeft = self.audioFrame.sampleData.length - self.audioFrame->output_offset;
-            const NSUInteger frameSizeOf = numberOfChannels * sizeof(SInt16);
-            const NSUInteger bytesToCopy = MIN(numberOfFrames * frameSizeOf, bytesLeft);
-            const NSUInteger framesToCopy = bytesToCopy / frameSizeOf;
+            Byte * bytes = (Byte *)self.audioFrame.sampleData.bytes + self.audioFrame.outputOffset;
+            NSUInteger bytesLeft = self.audioFrame.sampleData.length - self.audioFrame.outputOffset;
+            NSUInteger frameSizeOf = numberOfChannels * sizeof(SInt16);
+            NSUInteger bytesToCopy = MIN(numberOfFrames * frameSizeOf, bytesLeft);
+            NSUInteger framesToCopy = bytesToCopy / frameSizeOf;
             
             memcpy(outputData, bytes, bytesToCopy);
             numberOfFrames -= framesToCopy;
             outputData += framesToCopy * numberOfChannels;
             
             if (bytesToCopy < bytesLeft) {
-                self.audioFrame->output_offset += bytesToCopy;
+                self.audioFrame.outputOffset += bytesToCopy;
             } else {
                 self.audioFrame = nil;
             }
@@ -139,7 +132,17 @@
     }
 }
 
-
+- (MTKView *)mtkView {
+    if (!_mtkView) {
+        _mtkView                         = [[MTKView alloc] initWithFrame:CGRectZero];
+        _mtkView.device                  = self.render.device;
+        _mtkView.depthStencilPixelFormat = MTLPixelFormatInvalid;
+        _mtkView.framebufferOnly         = false;
+        _mtkView.colorPixelFormat        = MTLPixelFormatBGRA8Unorm;
+        _mtkView.delegate = self;
+    }
+    return _mtkView;
+}
 
 - (void)audioFrameQueueFlush {
     [self.audioFrameQueue flush];

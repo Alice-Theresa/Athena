@@ -39,12 +39,12 @@
     if (self.count == 0) {
         self.header = node;
         self.tailer = node;
-    } else if (self.tailer.frame.position > frame.position) {
+    } else if (self.tailer.frame.timeStamp > frame.timeStamp) {
         SCFrameNode *search = self.tailer.pre;
-        while (search.frame.position > frame.position) {
+        while (search.frame.timeStamp > frame.timeStamp) {
             search = search.pre;
         }
-        NSAssert(search.frame.position < frame.position, @"err");
+        NSAssert(search.frame.timeStamp < frame.timeStamp, @"err");
         node.next = search.next;
         search.next.pre = node;
         node.pre = search;

@@ -8,15 +8,19 @@
 
 #import <Foundation/Foundation.h>
 #import <libavformat/avformat.h>
+#import "SCFlowData.h"
 
 NS_ASSUME_NONNULL_BEGIN
 
 @class SCCodecDescriptor;
 
-@interface SCPacket : NSObject
+@interface SCPacket : NSObject <SCFlowData>
 
-@property (nonatomic, assign) AVPacket *core;
+@property (nonatomic, assign, nullable) AVPacket *core;
 @property (nonatomic, strong) SCCodecDescriptor *codecDescriptor;
+
+@property (nonatomic, assign) NSTimeInterval timeStamp;
+@property (nonatomic, assign) NSTimeInterval duration;
 
 @end
 

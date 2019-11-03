@@ -12,6 +12,7 @@
 
 - (void)dealloc {
     av_packet_unref(_core);
+    self.core = nil;
 }
 
 - (instancetype)init {

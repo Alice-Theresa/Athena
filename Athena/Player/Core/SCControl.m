@@ -29,7 +29,7 @@
 @interface SCControl () 
 
 @property (nonatomic, strong) SCFormatContext *context;
-@property (nonatomic, weak  ) MTKView *mtkView;
+@property (nonatomic, strong) UIView *view;
 
 @property (nonatomic, assign, readwrite) SCPlayerState controlState;
 
@@ -45,10 +45,10 @@
     [[NSNotificationCenter defaultCenter] removeObserver:self name:UIApplicationWillResignActiveNotification object:nil];
 }
 
-- (instancetype)initWithRenderView:(MTKView *)view {
+- (instancetype)initWithRenderView:(UIView *)view {
     if (self = [super init]) {
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(appWillResignActive) name:UIApplicationWillResignActiveNotification object:nil];
-        _mtkView = view;
+        _view = view;
     }
     return self;
 }
@@ -63,7 +63,7 @@
     
     self.demuxLayer = [[SCDemuxLayer alloc] initWithContext:self.context];
     self.decoderLayer = [[SCDecoderLayer alloc] initWithContext:self.context demuxLayer:self.demuxLayer];
-    self.renderLayer = [[SCRenderLayer alloc] initWithContext:self.context decoderLayer:self.decoderLayer renderView:self.mtkView];
+    self.renderLayer = [[SCRenderLayer alloc] initWithContext:self.context decoderLayer:self.decoderLayer renderView:(MTKView *)self.view];
     [self start];
 }
 
@@ -71,7 +71,6 @@
     [self.demuxLayer start];
     [self.renderLayer start];
     [self.decoderLayer start];
-    
     self.controlState = SCPlayerStatePlaying;
 }
 

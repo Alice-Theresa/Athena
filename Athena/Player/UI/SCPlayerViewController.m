@@ -17,7 +17,7 @@
 
 @interface SCPlayerViewController () <ControlCenterProtocol>
 
-@property (nonatomic, strong) MTKView *mtkView;
+@property (nonatomic, strong) UIView *bg;
 @property (nonatomic, strong) SCPlayerControlView *controlView;
 
 @property (nonatomic, strong) SCControl *controler;
@@ -52,12 +52,12 @@
 
 - (void)setup {
     self.view.backgroundColor = [UIColor blackColor];
-    self.mtkView              = [[MTKView alloc] initWithFrame:self.view.bounds];
+    self.bg                   = [[UIView alloc] initWithFrame:self.view.bounds];
     self.controlView          = [[SCPlayerControlView alloc] initWithFrame:self.view.bounds];
-    [self.view addSubview:self.mtkView];
-    [self.mtkView addSubview:self.controlView];
+    [self.view addSubview:self.bg];
+    [self.bg addSubview:self.controlView];
     
-    self.controler = [[SCControl alloc] initWithRenderView:self.mtkView];
+    self.controler = [[SCControl alloc] initWithRenderView:self.bg];
 //    self.controler.delegate = self;
     
     [self.controlView.actionButton addTarget:self action:@selector(resumeOrPause) forControlEvents:UIControlEventTouchUpInside];

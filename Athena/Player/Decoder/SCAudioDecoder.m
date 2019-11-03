@@ -18,7 +18,7 @@
 
 @interface SCAudioDecoder () {
     
-    AVFrame *_temp_frame;
+//    AVFrame *_temp_frame;
     SwrContext *_audio_swr_context;
     Float64 _samplingRate;
     UInt32 _channelCount;
@@ -35,7 +35,7 @@
 @implementation SCAudioDecoder
 
 - (void)dealloc {
-    av_frame_free(&_temp_frame);
+//    av_frame_free(&_temp_frame);
     swr_free(&_audio_swr_context);
     NSLog(@"Audio Decoder dealloc");    
 }
@@ -43,7 +43,7 @@
 - (instancetype)initWithFormatContext:(SCFormatContext *)formatContext {
     if (self = [super init]) {
         _context = formatContext;
-        _temp_frame = av_frame_alloc();
+//        _temp_frame = av_frame_alloc();
         
     }
     return self;
@@ -86,40 +86,33 @@
     [self checkCodec:packet];
     NSArray *defaultArray = @[];
     NSMutableArray *array = [NSMutableArray array];
-    if (packet.core->data == NULL) {
-        return defaultArray;
-    }
     int result = avcodec_send_packet(self.codecContext.core, packet.core);
-    if (result < 0 && result != AVERROR(EAGAIN) && result != AVERROR_EOF) {
+    if (result < 0) {
         return defaultArray;
     }
     while (result >= 0) {
-        result = avcodec_receive_frame(self.codecContext.core, _temp_frame);
+        SCAudioFrame *frame = [[SCAudioFrame alloc] init];
+        result = avcodec_receive_frame(self.codecContext.core, frame.core);
         if (result < 0) {
             if (result != AVERROR(EAGAIN) && result != AVERROR_EOF) {
                 return defaultArray;
             }
             break;
-        }
-        SCAudioFrame *frame = [self innerDecode:packet.core->size];
-        if (frame) {
+        } else {
+            [self innerDecode:frame];
             [array addObject:frame];
         }
     }
     return [array copy];
 }
 
-- (SCAudioFrame *)innerDecode:(int)packetSize {
-    if (!_temp_frame->data[0]) {
-        return nil;
-    }
-    
+- (void)innerDecode:(SCAudioFrame *)audioFrame {
     int numberOfFrames;
     void *audioDataBuffer;
     
     if (_audio_swr_context) {
         const int ratio = MAX(1, _samplingRate / self.codecContext.core->sample_rate) * MAX(1, _channelCount / self.codecContext.core->channels) * 2;
-        const int buffer_size = av_samples_get_buffer_size(NULL, _channelCount, _temp_frame->nb_samples * ratio, AV_SAMPLE_FMT_S16, 1);
+        const int buffer_size = av_samples_get_buffer_size(NULL, _channelCount, audioFrame.core->nb_samples * ratio, AV_SAMPLE_FMT_S16, 1);
         
         if (!_audio_swr_buffer || _audio_swr_buffer_size < buffer_size) {
             _audio_swr_buffer_size = buffer_size;
@@ -129,24 +122,19 @@
         Byte *outyput_buffer[2] = {_audio_swr_buffer, 0};
         numberOfFrames = swr_convert(_audio_swr_context,
                                      outyput_buffer,
-                                     _temp_frame->nb_samples * ratio,
-                                     (const uint8_t **)_temp_frame->data,
-                                     _temp_frame->nb_samples);
+                                     audioFrame.core->nb_samples * ratio,
+                                     (const uint8_t **)audioFrame.core->data,
+                                     audioFrame.core->nb_samples);
         audioDataBuffer = _audio_swr_buffer;
-    } else {
-        // Todo
-        @[][1];
     }
     
-    SCAudioFrame *audioFrame = [[SCAudioFrame alloc] init];
-    audioFrame.position = av_frame_get_best_effort_timestamp(_temp_frame) * self.context.audioTimebase;
-    audioFrame.duration = av_frame_get_pkt_duration(_temp_frame) * self.context.audioTimebase;
+    audioFrame.timeStamp = av_frame_get_best_effort_timestamp(audioFrame.core) * self.context.audioTimebase;
+    audioFrame.duration = av_frame_get_pkt_duration(audioFrame.core) * self.context.audioTimebase;
     
     const NSUInteger numberOfElements = numberOfFrames * _channelCount;
     NSMutableData *pcmData = [NSMutableData dataWithLength:numberOfElements * sizeof(SInt16)];
     memcpy(pcmData.mutableBytes, audioDataBuffer, numberOfElements * sizeof(SInt16));
     audioFrame.sampleData = pcmData;
-    return audioFrame;
 }
 
 @end

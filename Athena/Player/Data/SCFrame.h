@@ -8,6 +8,7 @@
 
 #import <libavformat/avformat.h>
 #import <Foundation/Foundation.h>
+#import "SCFlowData.h"
 
 typedef NS_ENUM(int, SCFrameType) {
     SCFrameTypeDiscard = 1,
@@ -17,13 +18,13 @@ typedef NS_ENUM(int, SCFrameType) {
 
 NS_ASSUME_NONNULL_BEGIN
 
-@interface SCFrame : NSObject
+@interface SCFrame : NSObject <SCFlowData>
 
-@property (nonatomic, assign) AVFrame *core;
+@property (nonatomic, assign, nullable) AVFrame *core;
 
 @property (nonatomic, assign) SCFrameType type;
 
-@property (nonatomic, assign) NSTimeInterval position;
+@property (nonatomic, assign) NSTimeInterval timeStamp;
 @property (nonatomic, assign) NSTimeInterval duration;
 
 @end

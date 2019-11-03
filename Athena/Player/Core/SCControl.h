@@ -25,7 +25,7 @@ NS_ASSUME_NONNULL_BEGIN
 //@property (nonatomic, weak) id<ControlCenterProtocol> delegate;
 
 - (instancetype)init NS_UNAVAILABLE;
-- (instancetype)initWithRenderView:(MTKView *)view;
+- (instancetype)initWithRenderView:(UIView *)view;
 
 - (void)openPath:(NSString *)filename;
 - (void)pause;

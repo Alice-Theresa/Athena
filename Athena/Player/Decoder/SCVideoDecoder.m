@@ -71,8 +71,8 @@
 }
 
 - (void)process:(SCFrame *)videoFrame {
-    videoFrame.position = av_frame_get_best_effort_timestamp(videoFrame.core) * self.context.videoTimebase;
-    videoFrame.position += videoFrame.core->repeat_pict * self.context.videoTimebase * 0.5;
+    videoFrame.timeStamp = av_frame_get_best_effort_timestamp(videoFrame.core) * self.context.videoTimebase;
+    videoFrame.timeStamp += videoFrame.core->repeat_pict * self.context.videoTimebase * 0.5;
     videoFrame.duration = av_frame_get_pkt_duration(videoFrame.core) * self.context.videoTimebase;
 }
 
