@@ -16,7 +16,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 @protocol SCDecoderInterface <NSObject>
 
-@property (nonatomic, weak, readonly) SCFormatContext *context;
+@property (nonatomic, strong, readonly) SCFormatContext *context;
 
 - (instancetype)initWithFormatContext:(SCFormatContext *)formatContext;
 - (NSArray<SCFrame *> *)decode:(AVPacket)packet;

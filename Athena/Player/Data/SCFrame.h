@@ -11,6 +11,7 @@
 #import "SCFlowData.h"
 
 typedef NS_ENUM(int, SCFrameType) {
+    SCFrameTypeNone,
     SCFrameTypeDiscard = 1,
     SCFrameTypeNV12,
     SCFrameTypeI420,
@@ -20,7 +21,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface SCFrame : NSObject <SCFlowData>
 
-@property (nonatomic, assign, nullable) AVFrame *core;
+
 
 @property (nonatomic, assign) SCFrameType type;
 

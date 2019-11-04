@@ -22,7 +22,7 @@
 
 - (instancetype)init {
     if (self = [super init]) {
-        self->_core = av_frame_alloc();
+        _core = av_frame_alloc();
     }
     return self;
 }

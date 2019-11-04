@@ -19,6 +19,7 @@
 #import "SCPacket.h"
 #import "SCVideoFrame.h"
 #import "SCPlayerState.h"
+#import "SCAudioFrame.h"
 
 @interface SCDecoderLayer () <DemuxToQueueProtocol>
 

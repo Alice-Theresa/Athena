@@ -12,39 +12,28 @@
 #import "SCPacket.h"
 #import "SCCodecContext.h"
 #import "SCCodecDescriptor.h"
+#import "SCSWResample.h"
+#import "SCAudioDescriptor.h"
 
 #include <libswresample/swresample.h>
 #import <Accelerate/Accelerate.h>
 
-@interface SCAudioDecoder () {
-    
-//    AVFrame *_temp_frame;
-    SwrContext *_audio_swr_context;
-    Float64 _samplingRate;
-    UInt32 _channelCount;
-    
-    void *_audio_swr_buffer;
-    int _audio_swr_buffer_size;
-}
+@interface SCAudioDecoder ()
 
+@property (nonatomic, strong) SCSWResample *resample;
 @property (nonatomic, strong) SCCodecContext *codecContext;
-@property (nonatomic, strong) SCFormatContext *context;
 
 @end
 
 @implementation SCAudioDecoder
 
 - (void)dealloc {
-//    av_frame_free(&_temp_frame);
-    swr_free(&_audio_swr_context);
     NSLog(@"Audio Decoder dealloc");    
 }
 
 - (instancetype)initWithFormatContext:(SCFormatContext *)formatContext {
     if (self = [super init]) {
         _context = formatContext;
-//        _temp_frame = av_frame_alloc();
-        
     }
     return self;
 }
@@ -53,32 +42,9 @@
     [self.codecContext flush];
 }
 
-- (void)setupSwsContext {
-    _samplingRate = 44100;
-    _channelCount = 2;
-    _audio_swr_context = swr_alloc_set_opts(NULL,
-                                            av_get_default_channel_layout(_channelCount),
-                                            AV_SAMPLE_FMT_S16,
-                                            _samplingRate,
-                                            av_get_default_channel_layout(self.codecContext.core->channels),
-                                            self.codecContext.core->sample_fmt,
-                                            self.codecContext.core->sample_rate,
-                                            0,
-                                            NULL);
-    
-    int result = swr_init(_audio_swr_context);
-    if (result < 0 || !_audio_swr_context) {
-        if (_audio_swr_context) {
-            swr_free(&_audio_swr_context);
-        }
-    }
-}
-
 - (void)checkCodec:(SCPacket *)packet {
     if (!self.codecContext) {
-        self.codecContext = [[SCCodecContext alloc] initWithTimebase:packet.codecDescriptor.timebase
-                                                            codecpar:packet.codecDescriptor.codecpar];
-        [self setupSwsContext];
+        self.codecContext = [[SCCodecContext alloc] initWithTimebase:packet.codecDescriptor.timebase codecpar:packet.codecDescriptor.codecpar];
     }
 }
 
@@ -99,42 +65,57 @@
             }
             break;
         } else {
-            [self innerDecode:frame];
-            [array addObject:frame];
+//            ;
+            [array addObject:[self innerDecode:frame]];
         }
     }
     return [array copy];
 }
 
-- (void)innerDecode:(SCAudioFrame *)audioFrame {
-    int numberOfFrames;
-    void *audioDataBuffer;
-    
-    if (_audio_swr_context) {
-        const int ratio = MAX(1, _samplingRate / self.codecContext.core->sample_rate) * MAX(1, _channelCount / self.codecContext.core->channels) * 2;
-        const int buffer_size = av_samples_get_buffer_size(NULL, _channelCount, audioFrame.core->nb_samples * ratio, AV_SAMPLE_FMT_S16, 1);
-        
-        if (!_audio_swr_buffer || _audio_swr_buffer_size < buffer_size) {
-            _audio_swr_buffer_size = buffer_size;
-            _audio_swr_buffer = realloc(_audio_swr_buffer, _audio_swr_buffer_size);
-        }
-        
-        Byte *outyput_buffer[2] = {_audio_swr_buffer, 0};
-        numberOfFrames = swr_convert(_audio_swr_context,
-                                     outyput_buffer,
-                                     audioFrame.core->nb_samples * ratio,
-                                     (const uint8_t **)audioFrame.core->data,
-                                     audioFrame.core->nb_samples);
-        audioDataBuffer = _audio_swr_buffer;
+- (SCAudioFrame *)innerDecode:(SCAudioFrame *)audioFrame {
+    if (!self.resample) {
+        self.resample = [[SCSWResample alloc] init];
+        self.resample.inputDescriptor = [[SCAudioDescriptor alloc] initWithFrame:audioFrame];
+        self.resample.outputDescriptor = [[SCAudioDescriptor alloc] init];
+        [self.resample open];
     }
+    [audioFrame fillData];
+    int nb_samples = [self.resample write:audioFrame.data nb_samples:audioFrame.numberOfSamples];
     
-    audioFrame.timeStamp = av_frame_get_best_effort_timestamp(audioFrame.core) * self.context.audioTimebase;
-    audioFrame.duration = av_frame_get_pkt_duration(audioFrame.core) * self.context.audioTimebase;
+    SCAudioFrame * frame = [self.class audioFrameWithDescriptor:self.resample.outputDescriptor numberOfSamples:nb_samples];
     
-    const NSUInteger numberOfElements = numberOfFrames * _channelCount;
-    NSMutableData *pcmData = [NSMutableData dataWithLength:numberOfElements * sizeof(SInt16)];
-    memcpy(pcmData.mutableBytes, audioDataBuffer, numberOfElements * sizeof(SInt16));
-    audioFrame.sampleData = pcmData;
+    int nb_planes = self.resample.outputDescriptor.numberOfPlanes;
+    
+    uint8_t *data[8] = { NULL };
+    for (int i = 0; i < nb_planes; i++) {
+        data[i] = frame.core->data[i];
+    }
+    [self.resample read:data nb_samples:nb_samples];
+    [frame fillData];
+    frame.timeStamp = av_frame_get_best_effort_timestamp(audioFrame.core) * self.context.audioTimebase;
+    frame.duration = av_frame_get_pkt_duration(audioFrame.core) * self.context.audioTimebase;
+    return frame;
+}
+
++ (SCAudioFrame *)audioFrameWithDescriptor:(SCAudioDescriptor *)descriptor numberOfSamples:(int)numberOfSamples
+{
+    SCAudioFrame *frame = [[SCAudioFrame alloc] init];
+    frame.core->format = descriptor.format;
+    frame.core->sample_rate = descriptor.sampleRate;
+    frame.core->channels = descriptor.numberOfChannels;
+    frame.core->channel_layout = descriptor.channelLayout;
+    frame.core->nb_samples = numberOfSamples;
+    int linesize = [descriptor linesize:numberOfSamples];
+    int numberOfPlanes = descriptor.numberOfPlanes;
+    for (int i = 0; i < numberOfPlanes; i++) {
+        uint8_t *data = av_mallocz(linesize);
+        memset(data, 0, linesize);
+        AVBufferRef *buffer = av_buffer_create(data, linesize, av_buffer_default_free, NULL, 0);
+        frame.core->buf[i] = buffer;
+        frame.core->data[i] = buffer->data;
+        frame.core->linesize[i] = buffer->size;
+    }
+    return frame;
 }
 
 @end

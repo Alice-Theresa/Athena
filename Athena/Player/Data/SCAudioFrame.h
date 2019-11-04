@@ -8,13 +8,12 @@
 
 #import "SCFrame.h"
 
-NS_ASSUME_NONNULL_BEGIN
-
 @interface SCAudioFrame : SCFrame
 
-@property (nonatomic, strong) NSData *sampleData;
-@property (nonatomic, assign) NSInteger outputOffset;
+@property (nonatomic, assign) int numberOfSamples;
+@property (nonatomic, assign, nullable) AVFrame *core;
+
+- (uint8_t **)data;
+- (void)fillData;
 
 @end
-
-NS_ASSUME_NONNULL_END

@@ -16,6 +16,8 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface SCAudioDecoder : NSObject <SCDecoderInterface>
 
+@property (nonatomic, strong, readonly) SCFormatContext *context;
+
 - (instancetype)init NS_UNAVAILABLE;
 - (instancetype)initWithFormatContext:(SCFormatContext *)formatContext;
 - (NSArray<SCFrame *> *)decode:(SCPacket *)packet;

@@ -12,22 +12,25 @@
 
 @interface SCSWResample ()
 
+{
+    AVBufferRef *_buffer[8];
+}
+
 @property (nonatomic, readonly) SwrContext *context;
 
 @end
 
 @implementation SCSWResample
 
-- (void)dealloc
-{
+- (void)dealloc {
     if (self.context) {
         swr_free(&self->_context);
         self->_context = nil;
     }
-//    for (int i = 0; i < SGFramePlaneCount; i++) {
-//        av_buffer_unref(&self->_buffer[i]);
-//        self->_buffer[i] = nil;
-//    }
+    for (int i = 0; i < 8; i++) {
+        av_buffer_unref(&self->_buffer[i]);
+        self->_buffer[i] = nil;
+    }
 }
 
 - (BOOL)open {
@@ -48,31 +51,31 @@
     return YES;
 }
 
-//- (int)write:(uint8_t **)data nb_samples:(int)nb_samples {
-//    int numberOfPlanes = self->_outputDescriptor.numberOfPlanes;
-//    int numberOfSamples = swr_get_out_samples(self->_context, nb_samples);
-//    int linesize = [self->_outputDescriptor linesize:numberOfSamples];
-//    uint8_t *o_data[SGFramePlaneCount] = {NULL};
-//    for (int i = 0; i < numberOfPlanes; i++) {
-//        if (!self->_buffer[i] || self->_buffer[i]->size < linesize) {
-//            av_buffer_realloc(&self->_buffer[i], linesize);
-//        }
-//        o_data[i] = self->_buffer[i]->data;
-//    }
-//    return swr_convert(self->_context,
-//                       (uint8_t **)o_data,
-//                       numberOfSamples,
-//                       (const uint8_t **)data,
-//                       nb_samples);
-//}
+- (int)write:(uint8_t **)data nb_samples:(int)nb_samples {
+    int numberOfPlanes = self->_outputDescriptor.numberOfPlanes;
+    int numberOfSamples = swr_get_out_samples(self->_context, nb_samples);
+    int linesize = [self->_outputDescriptor linesize:numberOfSamples];
+    uint8_t *o_data[8] = {NULL};
+    for (int i = 0; i < numberOfPlanes; i++) {
+        if (!self->_buffer[i] || self->_buffer[i]->size < linesize) {
+            av_buffer_realloc(&self->_buffer[i], linesize);
+        }
+        o_data[i] = self->_buffer[i]->data;
+    }
+    return swr_convert(self->_context,
+                       (uint8_t **)o_data,
+                       numberOfSamples,
+                       (const uint8_t **)data,
+                       nb_samples);
+}
 
-//- (int)read:(uint8_t **)data nb_samples:(int)nb_samples {
-//    int numberOfPlanes = self->_outputDescriptor.numberOfPlanes;
-//    int linesize = [self->_outputDescriptor linesize:nb_samples];
-//    for (int i = 0; i < numberOfPlanes; i++) {
-//        memcpy(data[i], self->_buffer[i]->data, linesize);
-//    }
-//    return nb_samples;
-//}
+- (int)read:(uint8_t **)data nb_samples:(int)nb_samples {
+    int numberOfPlanes = self->_outputDescriptor.numberOfPlanes;
+    int linesize = [self->_outputDescriptor linesize:nb_samples];
+    for (int i = 0; i < numberOfPlanes; i++) {
+        memcpy(data[i], self->_buffer[i]->data, linesize);
+    }
+    return nb_samples;
+}
 
 @end

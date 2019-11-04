@@ -18,7 +18,10 @@
 #import "SCPlayerState.h"
 #import "SCDecoderLayer.h"
 
-@interface SCRenderLayer () <SCAudioManagerDelegate, MTKViewDelegate, DecodeToQueueProtocol>
+@interface SCRenderLayer () <SCAudioManagerDelegate, MTKViewDelegate, DecodeToQueueProtocol> {
+    int currentFrameCopiedFrames;
+    int bufferCopiedFrames;
+}
 
 @property (nonatomic, strong) SCFrameQueue *videoFrameQueue;
 @property (nonatomic, strong) SCFrameQueue *audioFrameQueue;
@@ -100,36 +103,52 @@
 
 #pragma mark - audio delegate
 
-- (void)fetchoutputData:(SInt16 *)outputData numberOfFrames:(UInt32)numberOfFrames numberOfChannels:(UInt32)numberOfChannels {
-    @autoreleasepool {
-        while (numberOfFrames > 0) {
-            if (!self.audioFrame) {
-                self.audioFrame = (SCAudioFrame *)[self.audioFrameQueue dequeueFrame];
-            }
-            if (!self.audioFrame || self.audioFrame.type == SCFrameTypeDiscard) {
-                memset(outputData, 0, numberOfFrames * numberOfChannels * sizeof(SInt16));
-                self.audioFrame = nil;
-                break;
-            }
-            [self.syncor updateAudioClock:self.audioFrame.timeStamp];
-            
-            Byte * bytes = (Byte *)self.audioFrame.sampleData.bytes + self.audioFrame.outputOffset;
-            NSUInteger bytesLeft = self.audioFrame.sampleData.length - self.audioFrame.outputOffset;
-            NSUInteger frameSizeOf = numberOfChannels * sizeof(SInt16);
-            NSUInteger bytesToCopy = MIN(numberOfFrames * frameSizeOf, bytesLeft);
-            NSUInteger framesToCopy = bytesToCopy / frameSizeOf;
-            
-            memcpy(outputData, bytes, bytesToCopy);
-            numberOfFrames -= framesToCopy;
-            outputData += framesToCopy * numberOfChannels;
-            
-            if (bytesToCopy < bytesLeft) {
-                self.audioFrame.outputOffset += bytesToCopy;
-            } else {
-                self.audioFrame = nil;
-            }
-        }
-    }
+- (void)fetchoutputData:(AudioBufferList *)data numberOfFrames:(UInt32)numberOfFrames {
+     bufferCopiedFrames = 0;
+           UInt32 bufferLeftFrames = numberOfFrames;
+           while (YES) {
+               if (bufferLeftFrames <= 0) {
+                   break;
+               }
+               if (!self.audioFrame) {
+                   SCAudioFrame *frame = (SCAudioFrame *)[self.audioFrameQueue dequeueFrame];
+                   if (!frame) {
+                       break;
+                   }
+                   self.audioFrame = frame;
+               }
+               if (!self.audioFrame || self.audioFrame.type == SCFrameTypeDiscard) {
+                   self.audioFrame = nil;
+                   break;
+               }
+               [self.syncor updateAudioClock:self.audioFrame.timeStamp];
+
+               UInt32 currentFrameLeftFrames = self.audioFrame.numberOfSamples - currentFrameCopiedFrames;
+               UInt32 framesToCopy           = MIN(bufferLeftFrames, currentFrameLeftFrames);
+               UInt32 sizeToCopy             = framesToCopy * (UInt32)sizeof(float);
+               UInt32 bufferOffset           = bufferCopiedFrames * (UInt32)sizeof(float);
+               UInt32 currentFrameOffset     = currentFrameCopiedFrames * (UInt32)sizeof(float);
+               for (int i = 0; i < data->mNumberBuffers; i++) { //wtf
+                   memcpy(data->mBuffers[i].mData + bufferOffset, self.audioFrame.data[i] + currentFrameOffset, sizeToCopy);
+               }
+
+               bufferCopiedFrames += framesToCopy;
+               currentFrameCopiedFrames += framesToCopy;
+
+               if (self.audioFrame.numberOfSamples <= currentFrameCopiedFrames) {
+                   self.audioFrame = nil;
+                   currentFrameCopiedFrames = 0;
+               }
+               bufferLeftFrames -= framesToCopy;
+           }
+           UInt32 framesCopied = numberOfFrames - bufferLeftFrames;
+           UInt32 sizeCopied = framesCopied * (UInt32)sizeof(float);
+           for (int i = 0; i < data->mNumberBuffers; i++) {
+               UInt32 sizeLeft = data->mBuffers[i].mDataByteSize - sizeCopied;
+               if (sizeLeft > 0) {
+                   memset(data->mBuffers[i].mData + sizeCopied, 0, sizeLeft);
+               }
+           }
 }
 
 - (MTKView *)mtkView {

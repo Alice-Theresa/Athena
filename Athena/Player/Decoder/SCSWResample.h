@@ -8,15 +8,15 @@
 
 #import <Foundation/Foundation.h>
 
-NS_ASSUME_NONNULL_BEGIN
-
 @class SCAudioDescriptor;
 
 @interface SCSWResample : NSObject
 
-@property (nonatomic, copy) SCAudioDescriptor *inputDescriptor;
-@property (nonatomic, copy) SCAudioDescriptor *outputDescriptor;
+@property (nonatomic, strong) SCAudioDescriptor *inputDescriptor;
+@property (nonatomic, strong) SCAudioDescriptor *outputDescriptor;
+
+- (BOOL)open;
+- (int)write:(uint8_t **)data nb_samples:(int)nb_samples;
+- (int)read:(uint8_t **)data nb_samples:(int)nb_samples;
 
 @end
-
-NS_ASSUME_NONNULL_END

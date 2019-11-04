@@ -13,6 +13,8 @@
 
 @interface SCVideoFrame : SCFrame
 
+@property (nonatomic, assign, nullable) AVFrame *core;
+
 @property (nonatomic, assign, readonly) NSUInteger width;
 @property (nonatomic, assign, readonly) NSUInteger height;
 

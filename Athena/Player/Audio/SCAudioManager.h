@@ -6,13 +6,14 @@
 //  Copyright © 2019 Theresa. All rights reserved.
 //
 
+#import <AudioToolbox/AudioToolbox.h>
 #import <Foundation/Foundation.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
 @protocol SCAudioManagerDelegate <NSObject>
 
-- (void)fetchoutputData:(SInt16 *)outputData numberOfFrames:(UInt32)numberOfFrames numberOfChannels:(UInt32)numberOfChannels;
+- (void)fetchoutputData:(AudioBufferList *)outputData numberOfFrames:(UInt32)numberOfFrames;
 
 @end
 
