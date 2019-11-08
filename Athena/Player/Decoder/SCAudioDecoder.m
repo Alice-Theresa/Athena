@@ -79,10 +79,10 @@
         self.resample.outputDescriptor = [[SCAudioDescriptor alloc] init];
         [self.resample open];
     }
-    [audioFrame fillData];
-    int nb_samples = [self.resample write:audioFrame.data nb_samples:audioFrame.numberOfSamples];
+    audioFrame.numberOfSamples = audioFrame.core->nb_samples;
+    int nb_samples = [self.resample write:audioFrame.core->data nb_samples:audioFrame.numberOfSamples];
     
-    SCAudioFrame * frame = [self.class audioFrameWithDescriptor:self.resample.outputDescriptor numberOfSamples:nb_samples];
+    SCAudioFrame * frame = [SCAudioFrame audioFrameWithDescriptor:self.resample.outputDescriptor numberOfSamples:nb_samples];
     
     int nb_planes = self.resample.outputDescriptor.numberOfPlanes;
     
@@ -94,27 +94,6 @@
     [frame fillData];
     frame.timeStamp = av_frame_get_best_effort_timestamp(audioFrame.core) * self.context.audioTimebase;
     frame.duration = av_frame_get_pkt_duration(audioFrame.core) * self.context.audioTimebase;
-    return frame;
-}
-
-+ (SCAudioFrame *)audioFrameWithDescriptor:(SCAudioDescriptor *)descriptor numberOfSamples:(int)numberOfSamples
-{
-    SCAudioFrame *frame = [[SCAudioFrame alloc] init];
-    frame.core->format = descriptor.format;
-    frame.core->sample_rate = descriptor.sampleRate;
-    frame.core->channels = descriptor.numberOfChannels;
-    frame.core->channel_layout = descriptor.channelLayout;
-    frame.core->nb_samples = numberOfSamples;
-    int linesize = [descriptor linesize:numberOfSamples];
-    int numberOfPlanes = descriptor.numberOfPlanes;
-    for (int i = 0; i < numberOfPlanes; i++) {
-        uint8_t *data = av_mallocz(linesize);
-        memset(data, 0, linesize);
-        AVBufferRef *buffer = av_buffer_create(data, linesize, av_buffer_default_free, NULL, 0);
-        frame.core->buf[i] = buffer;
-        frame.core->data[i] = buffer->data;
-        frame.core->linesize[i] = buffer->size;
-    }
     return frame;
 }
 

@@ -131,8 +131,7 @@
     AUGraphInitialize(_graph);
 }
 
-- (void)disconnectNodeInput:(AUNode)sourceNode destNode:(AUNode)destNode
-{
+- (void)disconnectNodeInput:(AUNode)sourceNode destNode:(AUNode)destNode {
     UInt32 count = 8;
     AUNodeInteraction interactions[8];
     if (AUGraphGetNodeInteractions(_graph, destNode, &count, interactions) == noErr) {
@@ -149,8 +148,7 @@
     }
 }
 
-- (void)setVolume:(float)volume
-{
+- (void)setVolume:(float)volume {
     AudioUnitParameterID param = kMultiChannelMixerParam_Volume;
     if (AudioUnitSetParameter(_mixerUnit, param, kAudioUnitScope_Input, 0, volume, 0) == noErr) {
         _volume = volume;
@@ -158,8 +156,7 @@
 }
 
 
-- (void)setRate:(float)rate
-{
+- (void)setRate:(float)rate {
     if (_rate == rate) {
         return;
     }
@@ -180,8 +177,7 @@
     }
 }
 
-- (void)setAsbd:(AudioStreamBasicDescription)asbd
-{
+- (void)setAsbd:(AudioStreamBasicDescription)asbd {
     UInt32 size = sizeof(AudioStreamBasicDescription);
     AudioUnitPropertyID param = kAudioUnitProperty_StreamFormat;
     if (AudioUnitSetProperty(_mixerUnit, param, kAudioUnitScope_Global, 0, &asbd, size) == noErr &&
@@ -215,6 +211,5 @@ static OSStatus inputCallback(void *inRefCon,
 - (void)stop {
     AUGraphStop(_graph);//AudioOutputUnitStop(self.audioUnit);
 }
-
 
 @end

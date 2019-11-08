@@ -20,6 +20,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (instancetype)initWithFormatContext:(SCFormatContext *)formatContext;
 - (NSArray<SCFrame *> *)decode:(AVPacket)packet;
+- (void)flush;
 
 @end
 

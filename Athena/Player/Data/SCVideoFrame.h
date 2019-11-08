@@ -2,16 +2,15 @@
 //  SCVideoFrame.h
 //  Athena
 //
-//  Created by Theresa on 2018/12/28.
-//  Copyright © 2018 Theresa. All rights reserved.
+//  Created by Skylar on 2019/11/8.
+//  Copyright © 2019 Theresa. All rights reserved.
 //
 
-#import <libavformat/avformat.h>
-#import <AVFoundation/AVFoundation.h>
 #import "SCFrame.h"
-#import "SCRenderDataInterface.h"
 
-@interface SCVideoFrame : SCFrame
+NS_ASSUME_NONNULL_BEGIN
+
+@interface SCVideoFrame : SCFrame <SCFlowData>
 
 @property (nonatomic, assign, nullable) AVFrame *core;
 
@@ -20,9 +19,9 @@
 
 @property (nonatomic, assign, readonly) CVPixelBufferRef pixelBuffer;
 
-//- (int *)linesize;
 - (uint8_t **)data;
 - (void)fillData;
 
 @end
 
+NS_ASSUME_NONNULL_END

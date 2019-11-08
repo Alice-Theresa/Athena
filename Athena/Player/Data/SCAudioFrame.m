@@ -2,21 +2,43 @@
 //  SCAudioFrame.m
 //  Athena
 //
-//  Created by Theresa on 2019/01/09.
+//  Created by Skylar on 2019/11/8.
 //  Copyright © 2019 Theresa. All rights reserved.
 //
 
 #import "SCAudioFrame.h"
+#import "SCAudioDescriptor.h"
 
 @implementation SCAudioFrame {
     uint8_t *_data[8];
 }
 
-@synthesize core = _core;
+@synthesize type = _type;
+
++ (SCAudioFrame *)audioFrameWithDescriptor:(SCAudioDescriptor *)descriptor numberOfSamples:(int)numberOfSamples {
+    SCAudioFrame *frame        = [[SCAudioFrame alloc] init];
+    frame.core->format         = descriptor.format;
+    frame.core->sample_rate    = descriptor.sampleRate;
+    frame.core->channels       = descriptor.numberOfChannels;
+    frame.core->channel_layout = descriptor.channelLayout;
+    frame.core->nb_samples     = numberOfSamples;
+    int linesize               = [descriptor linesize:numberOfSamples];
+    int numberOfPlanes         = descriptor.numberOfPlanes;
+    for (int i = 0; i < numberOfPlanes; i++) {
+        uint8_t *data = av_mallocz(linesize);
+        memset(data, 0, linesize);
+        AVBufferRef *buffer     = av_buffer_create(data, linesize, av_buffer_default_free, NULL, 0);
+        frame.core->buf[i]      = buffer;
+        frame.core->data[i]     = buffer->data;
+        frame.core->linesize[i] = buffer->size;
+    }
+    return frame;
+}
 
 - (instancetype)init {
     if (self = [super init]) {
         _core = av_frame_alloc();
+        _type = SCFrameTypeAudio;
     }
     return self;
 }
@@ -40,3 +62,4 @@
 }
 
 @end
+

@@ -2,22 +2,21 @@
 //  SCVideoFrame.m
 //  Athena
 //
-//  Created by Theresa on 2018/12/28.
-//  Copyright © 2018 Theresa. All rights reserved.
+//  Created by Skylar on 2019/11/8.
+//  Copyright © 2019 Theresa. All rights reserved.
 //
 
 #import "SCVideoFrame.h"
 
 @interface SCVideoFrame ()
 {
-//    int _linesize[8];
     uint8_t *_data[8];
 }
+
 @end
 
 @implementation SCVideoFrame
 
-@synthesize core = _core;
 @synthesize type = _type;
 
 - (instancetype)init {
@@ -32,10 +31,6 @@
         av_frame_free(&self->_core);
     }
 }
-
-//- (int *)linesize {
-//    return self->_linesize;
-//}
 
 - (uint8_t **)data {
     return self->_data;
@@ -57,9 +52,7 @@
     }
     for (int i = 0; i < 8; i++) {
         self->_data[i] = frame->data[i];
-//        self->_linesize[i] = frame->linesize[i];
     }
 }
-
 
 @end

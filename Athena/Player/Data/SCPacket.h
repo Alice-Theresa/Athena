@@ -16,7 +16,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface SCPacket : NSObject <SCFlowData>
 
-@property (nonatomic, assign, nullable) AVPacket *core;
+@property (nonatomic, assign, nullable, readonly) AVPacket *core;
 @property (nonatomic, strong) SCCodecDescriptor *codecDescriptor;
 
 @property (nonatomic, assign) NSTimeInterval timeStamp;

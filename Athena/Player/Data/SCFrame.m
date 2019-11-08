@@ -10,18 +10,4 @@
 
 @implementation SCFrame
 
-//- (void)dealloc {
-//    if (self.core) {
-//        av_frame_free(&self->_core);
-//        self.core = nil;
-//    }
-//}
-//
-//- (instancetype)init {
-//    if (self = [super init]) {
-//        _core = av_frame_alloc();
-//    }
-//    return self;
-//}
-
 @end
