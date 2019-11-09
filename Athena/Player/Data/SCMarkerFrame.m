@@ -10,6 +10,8 @@
 
 @implementation SCMarkerFrame
 
+@synthesize type = _type;
+
 - (instancetype)init {
     if (self = [super init]) {
         _type = SCFrameTypeDiscard;

@@ -23,9 +23,6 @@
 @property (nonatomic, assign, readwrite) NSTimeInterval duration;
 
 @property (nonatomic, strong, readwrite) NSArray<SCTrack *> *tracks;
-@property (nonatomic, strong, readwrite) NSArray<SCTrack *> *videoTracks;
-@property (nonatomic, strong, readwrite) NSArray<SCTrack *> *audioTracks;
-@property (nonatomic, strong, readwrite) NSArray<SCTrack *> *subtitleTracks;
 
 @end
 
@@ -33,9 +30,6 @@
 
 - (instancetype)init {
     if (self = [super init]) {
-        _videoIndex = -1;
-        _audioIndex = -1;
-        _subtitleIndex = -1;
         [self setupDecoder];
     }
     return self;
@@ -60,44 +54,16 @@
         return;
     }
     
-    NSMutableArray *videoTracks = [NSMutableArray array];
-    NSMutableArray *audioTracks = [NSMutableArray array];
-    NSMutableArray *subtitleTracks = [NSMutableArray array];
+    NSMutableArray *allTracks = [NSMutableArray array];
     for (int i = 0; i < self.formatContext->nb_streams; i++) {
-        switch (self.formatContext->streams[i]->codecpar->codec_type) {
-            case AVMEDIA_TYPE_VIDEO:
-                [videoTracks addObject:[[SCTrack alloc] initWithIndex:i
-                                                                 type:SCTrackTypeVideo
-                                                                 meta:[SCMetaData metadataWithAVDictionary:self.formatContext->streams[i]->metadata]]];
-                break;
-            case AVMEDIA_TYPE_AUDIO:
-                [audioTracks addObject:[[SCTrack alloc] initWithIndex:i
-                                                                 type:SCTrackTypeAudio
-                                                                 meta:[SCMetaData metadataWithAVDictionary:self.formatContext->streams[i]->metadata]]];
-                break;
-            case AVMEDIA_TYPE_SUBTITLE:
-                [subtitleTracks addObject:[[SCTrack alloc] initWithIndex:i
-                                                                    type:SCTrackTypeSubtitle
-                                                                    meta:[SCMetaData metadataWithAVDictionary:self.formatContext->streams[i]->metadata]]];
-                break;
-            default:
-                break;
-        }
+        [allTracks addObject:[[SCTrack alloc] initWithIndex:i
+                                                       type:self.formatContext->streams[i]->codecpar->codec_type
+                                                       meta:[SCMetaData metadataWithAVDictionary:self.formatContext->streams[i]->metadata]]];
     }
-    self.videoTracks = videoTracks;
-    self.audioTracks = audioTracks;
-    self.subtitleTracks = subtitleTracks;
-    self.tracks = @[videoTracks, audioTracks];
-    if (self.videoTracks.count <= 0) {
-        printf("Couldn't find a video stream.\n");
-    } else if (self.audioTracks.count <= 0) {
-        printf("Couldn't find a audio stream.\n");
-    } else if (self.subtitleTracks.count <= 0) {
-        printf("Couldn't find a subtitle stream.\n");
-    }
-    self.videoIndex = self.videoTracks.firstObject.index;
-    self.audioIndex = self.audioTracks.firstObject.index;
-    self.subtitleIndex = self.subtitleTracks.firstObject.index;
+    self.tracks = allTracks;
+    self.videoIndex = 0;
+    self.audioIndex = 1;
+    self.subtitleIndex = 2;
     [self settingTimeBase];
     [self settingDuration];
 }

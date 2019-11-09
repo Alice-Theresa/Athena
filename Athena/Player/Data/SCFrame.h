@@ -23,9 +23,13 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface SCFrame : NSObject <SCFlowData>
 
+@property (nonatomic, assign, nullable) AVFrame *core;
+
 @property (nonatomic, assign) SCFrameType type;
 @property (nonatomic, assign) NSTimeInterval timeStamp;
 @property (nonatomic, assign) NSTimeInterval duration;
+
+- (void)fillData;
 
 @end
 

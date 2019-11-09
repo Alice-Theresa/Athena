@@ -12,7 +12,6 @@ NS_ASSUME_NONNULL_BEGIN
 
 @class SCDecoderLayer;
 @class SCFormatContext;
-@class SCFrameQueue;
 
 @interface SCRenderLayer : NSObject
 

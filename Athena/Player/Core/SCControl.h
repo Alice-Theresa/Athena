@@ -22,7 +22,6 @@ NS_ASSUME_NONNULL_BEGIN
 @interface SCControl : NSObject
 
 @property (nonatomic, assign, readonly) SCPlayerState controlState;
-//@property (nonatomic, weak) id<ControlCenterProtocol> delegate;
 
 - (instancetype)init NS_UNAVAILABLE;
 - (instancetype)initWithRenderView:(UIView *)view;

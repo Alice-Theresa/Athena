@@ -10,12 +10,7 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-@interface SCMarkerFrame : NSObject <SCFlowData>
-
-@property (nonatomic, assign) SCFrameType type;
-
-@property (nonatomic, assign) NSTimeInterval timeStamp;
-@property (nonatomic, assign) NSTimeInterval duration;
+@interface SCMarkerFrame : SCFrame <SCFlowData>
 
 @end
 

@@ -17,6 +17,7 @@
 
 @implementation SCVideoFrame
 
+@synthesize core = _core;
 @synthesize type = _type;
 
 - (instancetype)init {

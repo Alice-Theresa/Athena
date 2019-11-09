@@ -14,6 +14,7 @@
 
 @interface SCCodecContext ()
 
+@property (nonatomic, copy  ) Class frameClass;
 @property (nonatomic, assign) AVRational timebase;
 @property (nonatomic, assign) AVCodecParameters *codecpar;
 
@@ -25,35 +26,47 @@
     [self close];
 }
 
-- (instancetype)initWithTimebase:(AVRational)timebase codecpar:(AVCodecParameters *)codecpar {
+- (instancetype)initWithTimebase:(AVRational)timebase codecpar:(AVCodecParameters *)codecpar frameClass:(Class)frameClass {
     if (self = [super init]) {
+        _frameClass = frameClass;
         _timebase = timebase;
         _codecpar = codecpar;
-        [self open];
+        _core = [self createCcodecContext];
     }
     return self;
 }
 
-- (BOOL)open {
-    if (!self.codecpar) {
-        return NO;
+- (NSArray<SCFrame *> *)decode:(SCPacket *)packet {
+    NSArray *defaultArray = @[];
+    NSMutableArray *array = [NSMutableArray array];
+    int result = avcodec_send_packet(self.core, packet.core);
+    if (result < 0) {
+        return defaultArray;
     }
-    self.core = [self createCcodecContext];
-    if (!self.core) {
-        return NO;
+    while (result >= 0) {
+        SCFrame *frame = [[self.frameClass alloc] init];
+        result = avcodec_receive_frame(self.core, frame.core);
+        if (result < 0) {
+            if (result != AVERROR(EAGAIN) && result != AVERROR_EOF) {
+                return defaultArray;
+            }
+            break;
+        } else {
+            [array addObject:frame];
+        }
     }
-    return YES;
-}
-
-- (void)close {
-    if (self.core) {
-        avcodec_free_context(&self->_core);
-    }
+    return array;
 }
 
 - (void)flush {
     if (self.core) {
         avcodec_flush_buffers(self.core);
+    }
+}
+
+- (void)close {
+    if (self.core) {
+        avcodec_free_context(&self->_core);
     }
 }
 

@@ -17,9 +17,9 @@ NS_ASSUME_NONNULL_BEGIN
 
 @property (nonatomic, assign, readonly) AVFormatContext *formatContext;
 
-@property (nonatomic, assign, readonly) int videoIndex;
-@property (nonatomic, assign, readonly) int audioIndex;
-@property (nonatomic, assign, readonly) int subtitleIndex;
+//@property (nonatomic, assign, readonly) int videoIndex;
+//@property (nonatomic, assign, readonly) int audioIndex;
+//@property (nonatomic, assign, readonly) int subtitleIndex;
 
 @property (nonatomic, assign, readonly) NSTimeInterval videoTimebase;
 @property (nonatomic, assign, readonly) NSTimeInterval audioTimebase;
@@ -27,9 +27,6 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, assign, readonly) NSTimeInterval duration;    //unit: second
 
 @property (nonatomic, strong, readonly) NSArray<SCTrack *> *tracks;
-@property (nonatomic, strong, readonly) NSArray<SCTrack *> *videoTracks;
-@property (nonatomic, strong, readonly) NSArray<SCTrack *> *audioTracks;
-@property (nonatomic, strong, readonly) NSArray<SCTrack *> *subtitleTracks;
 
 - (int)readFrame:(AVPacket *)packet;
 - (void)seekingTime:(NSTimeInterval)time;

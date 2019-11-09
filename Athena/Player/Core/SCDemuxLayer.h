@@ -12,11 +12,10 @@
 NS_ASSUME_NONNULL_BEGIN
 
 @class SCFormatContext;
-@class SCPacketQueue;
 
 @interface SCDemuxLayer : NSObject
 
-@property (nonatomic, weak  ) id<DemuxToQueueProtocol> delegate;
+@property (nonatomic, weak) id<DemuxToQueueProtocol> delegate;
 
 - (instancetype)initWithContext:(SCFormatContext *)context;
 

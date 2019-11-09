@@ -9,9 +9,13 @@
 #import <Foundation/Foundation.h>
 
 typedef NS_ENUM(int, SCTrackType) {
-    SCTrackTypeVideo = 0,
-    SCTrackTypeAudio = 1,
-    SCTrackTypeSubtitle = 2,
+    SCTrackTypeUnknown = -1,
+    SCTrackTypeVideo,
+    SCTrackTypeAudio,
+    SCTrackTypeData,
+    SCTrackTypeSubtitle,
+    SCTrackTypeAttachment,
+    SCTrackTypeNB,
 };
 
 @class SCMetaData;

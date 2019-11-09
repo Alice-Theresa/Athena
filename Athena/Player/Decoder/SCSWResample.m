@@ -62,7 +62,7 @@
         }
         o_data[i] = self->_buffer[i]->data;
     }
-    return swr_convert(self->_context,
+    return swr_convert(self.context,
                        (uint8_t **)o_data,
                        numberOfSamples,
                        (const uint8_t **)data,

@@ -10,12 +10,15 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
+@class SCFrame;
+@class SCPacket;
+
 @interface SCCodecContext : NSObject
 
-@property (nonatomic, assign) AVCodecContext *core;
+@property (nonatomic, assign, readonly) AVCodecContext *core;
 
-- (instancetype)initWithTimebase:(AVRational)timebase codecpar:(AVCodecParameters *)codecpar;
-- (void)close;
+- (instancetype)initWithTimebase:(AVRational)timebase codecpar:(AVCodecParameters *)codecpar frameClass:(Class)frameClass;
+- (NSArray<SCFrame *> *)decode:(SCPacket *)packet;
 - (void)flush;
 
 @end

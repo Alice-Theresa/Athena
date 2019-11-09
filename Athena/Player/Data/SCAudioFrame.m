@@ -13,6 +13,7 @@
     uint8_t *_data[8];
 }
 
+@synthesize core = _core;
 @synthesize type = _type;
 
 + (SCAudioFrame *)audioFrameWithDescriptor:(SCAudioDescriptor *)descriptor numberOfSamples:(int)numberOfSamples {
@@ -28,11 +29,27 @@
         uint8_t *data = av_mallocz(linesize);
         memset(data, 0, linesize);
         AVBufferRef *buffer     = av_buffer_create(data, linesize, av_buffer_default_free, NULL, 0);
-        frame.core->buf[i]      = buffer;
+//        frame.core->buf[i]      = buffer;
         frame.core->data[i]     = buffer->data;
-        frame.core->linesize[i] = buffer->size;
+//        frame.core->linesize[i] = buffer->size;
     }
     return frame;
+}
+
+- (void)createBuffer:(SCAudioDescriptor *)descriptor numberOfSamples:(int)numberOfSamples {
+    _core->format         = descriptor.format;
+    _core->sample_rate    = descriptor.sampleRate;
+    _core->channels       = descriptor.numberOfChannels;
+    _core->channel_layout = descriptor.channelLayout;
+    _core->nb_samples     = numberOfSamples;
+    int linesize               = [descriptor linesize:numberOfSamples];
+    int numberOfPlanes         = descriptor.numberOfPlanes;
+    for (int i = 0; i < numberOfPlanes; i++) {
+        uint8_t *data = av_mallocz(linesize);
+        memset(data, 0, linesize);
+        AVBufferRef *buffer = av_buffer_create(data, linesize, av_buffer_default_free, NULL, 0);
+        _core->data[i] = buffer->data;
+    }
 }
 
 - (instancetype)init {

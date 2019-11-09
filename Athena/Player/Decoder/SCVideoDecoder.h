@@ -6,7 +6,7 @@
 //  Copyright © 2019 Theresa. All rights reserved.
 //
 
-#import "SCDecoderInterface.h"
+#import <Foundation/Foundation.h>
 
 @class SCFrame;
 @class SCPacket;
@@ -14,10 +14,8 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-@interface SCVideoDecoder : NSObject <SCDecoderInterface>
+@interface SCVideoDecoder : NSObject
 
-- (instancetype)init NS_UNAVAILABLE;
-- (instancetype)initWithFormatContext:(SCFormatContext *)formatContext;
 - (NSArray<SCFrame *> *)decode:(SCPacket *)packet;
 - (void)flush;
 
