@@ -17,11 +17,11 @@ NS_ASSUME_NONNULL_BEGIN
 
 @property (nonatomic, strong) NSDictionary * metadata;
 
-@property (nonatomic, copy) NSString * language;
-@property (nonatomic, assign) long long BPS;
-@property (nonatomic, copy) NSString * duration;
-@property (nonatomic, assign) long long number_of_bytes;
-@property (nonatomic, assign) long long number_of_frames;
+@property (nonatomic, copy  ) NSString     * language;
+@property (nonatomic, assign) long long         BPS;
+@property (nonatomic, copy  ) NSString     * duration;
+@property (nonatomic, assign) long long         number_of_bytes;
+@property (nonatomic, assign) long long         number_of_frames;
 
 @end
 

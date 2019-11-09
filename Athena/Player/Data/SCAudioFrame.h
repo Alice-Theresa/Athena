@@ -15,11 +15,8 @@ NS_ASSUME_NONNULL_BEGIN
 @interface SCAudioFrame : SCFrame
 
 @property (nonatomic, assign) int numberOfSamples;
-@property (nonatomic, assign, nullable) AVFrame *core;
 
-+ (SCAudioFrame *)audioFrameWithDescriptor:(SCAudioDescriptor *)descriptor numberOfSamples:(int)numberOfSamples;
 - (void)createBuffer:(SCAudioDescriptor *)descriptor numberOfSamples:(int)numberOfSamples;
-
 - (uint8_t **)data;
 - (void)fillData;
 

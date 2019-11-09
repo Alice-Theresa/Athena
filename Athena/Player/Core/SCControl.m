@@ -14,6 +14,7 @@
 #import "SCSynchronizer.h"
 #import "SCFrame.h"
 #import "SCAudioFrame.h"
+#import "ALCQueueManager.h"
 
 #import "SCAudioDecoder.h"
 #import "SCVideoDecoder.h"
@@ -31,6 +32,7 @@
 @property (nonatomic, strong) UIView *view;
 
 @property (nonatomic, assign, readwrite) SCPlayerState controlState;
+@property (nonatomic, strong) ALCQueueManager *queueManager;
 
 @property (nonatomic, strong) SCDemuxLayer *demuxLayer;
 @property (nonatomic, strong) SCRenderLayer *renderLayer;
@@ -59,9 +61,9 @@
 - (void)openPath:(NSString *)filename {
     _context = [[SCFormatContext alloc] init];
     [_context openPath:filename];
-    
-    self.demuxLayer = [[SCDemuxLayer alloc] initWithContext:self.context];
-    self.decoderLayer = [[SCDecoderLayer alloc] initWithContext:self.context demuxLayer:self.demuxLayer];
+    self.queueManager = [[ALCQueueManager alloc] initWithContext:self.context];
+    self.demuxLayer = [[SCDemuxLayer alloc] initWithContext:self.context queueManager:self.queueManager];
+    self.decoderLayer = [[SCDecoderLayer alloc] initWithContext:self.context queueManager:self.queueManager];
     self.renderLayer = [[SCRenderLayer alloc] initWithContext:self.context decoderLayer:self.decoderLayer renderView:(MTKView *)self.view];
     [self start];
 }

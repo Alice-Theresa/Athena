@@ -7,20 +7,10 @@
 //
 
 #import <Foundation/Foundation.h>
-#import <libavformat/avformat.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
 @class SCFrame;
-@class SCPacket;
-
-@protocol DemuxToQueueProtocol <NSObject>
-
-- (void)flush;
-- (BOOL)packetQueueIsFull;
-- (void)enqueue:(SCPacket *)packet;
-
-@end
 
 @protocol DecodeToQueueProtocol <NSObject>
 

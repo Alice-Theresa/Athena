@@ -104,51 +104,51 @@
 #pragma mark - audio delegate
 
 - (void)fetchoutputData:(AudioBufferList *)data numberOfFrames:(UInt32)numberOfFrames {
-     bufferCopiedFrames = 0;
-           UInt32 bufferLeftFrames = numberOfFrames;
-           while (YES) {
-               if (bufferLeftFrames <= 0) {
-                   break;
-               }
-               if (!self.audioFrame) {
-                   SCAudioFrame *frame = (SCAudioFrame *)[self.audioFrameQueue dequeueFrame];
-                   if (!frame) {
-                       break;
-                   }
-                   self.audioFrame = frame;
-               }
-               if (!self.audioFrame || self.audioFrame.type == SCFrameTypeDiscard) {
-                   self.audioFrame = nil;
-                   break;
-               }
-               [self.syncor updateAudioClock:self.audioFrame.timeStamp];
-
-               UInt32 currentFrameLeftFrames = self.audioFrame.numberOfSamples - currentFrameCopiedFrames;
-               UInt32 framesToCopy           = MIN(bufferLeftFrames, currentFrameLeftFrames);
-               UInt32 sizeToCopy             = framesToCopy * (UInt32)sizeof(float);
-               UInt32 bufferOffset           = bufferCopiedFrames * (UInt32)sizeof(float);
-               UInt32 currentFrameOffset     = currentFrameCopiedFrames * (UInt32)sizeof(float);
-               for (int i = 0; i < data->mNumberBuffers; i++) { //wtf
-                   memcpy(data->mBuffers[i].mData + bufferOffset, self.audioFrame.data[i] + currentFrameOffset, sizeToCopy);
-               }
-
-               bufferCopiedFrames += framesToCopy;
-               currentFrameCopiedFrames += framesToCopy;
-
-               if (self.audioFrame.numberOfSamples <= currentFrameCopiedFrames) {
-                   self.audioFrame = nil;
-                   currentFrameCopiedFrames = 0;
-               }
-               bufferLeftFrames -= framesToCopy;
+    bufferCopiedFrames = 0;
+    UInt32 bufferLeftFrames = numberOfFrames;
+    while (YES) {
+       if (bufferLeftFrames <= 0) {
+           break;
+       }
+       if (!self.audioFrame) {
+           SCAudioFrame *frame = (SCAudioFrame *)[self.audioFrameQueue dequeueFrame];
+           if (!frame) {
+               break;
            }
-           UInt32 framesCopied = numberOfFrames - bufferLeftFrames;
-           UInt32 sizeCopied = framesCopied * (UInt32)sizeof(float);
-           for (int i = 0; i < data->mNumberBuffers; i++) {
-               UInt32 sizeLeft = data->mBuffers[i].mDataByteSize - sizeCopied;
-               if (sizeLeft > 0) {
-                   memset(data->mBuffers[i].mData + sizeCopied, 0, sizeLeft);
-               }
-           }
+           self.audioFrame = frame;
+       }
+       if (!self.audioFrame || self.audioFrame.type == SCFrameTypeDiscard) {
+           self.audioFrame = nil;
+           break;
+       }
+       [self.syncor updateAudioClock:self.audioFrame.timeStamp];
+
+       UInt32 currentFrameLeftFrames = self.audioFrame.numberOfSamples - currentFrameCopiedFrames;
+       UInt32 framesToCopy           = MIN(bufferLeftFrames, currentFrameLeftFrames);
+       UInt32 sizeToCopy             = framesToCopy * (UInt32)sizeof(float);
+       UInt32 bufferOffset           = bufferCopiedFrames * (UInt32)sizeof(float);
+       UInt32 currentFrameOffset     = currentFrameCopiedFrames * (UInt32)sizeof(float);
+       for (int i = 0; i < data->mNumberBuffers; i++) { //wtf
+           memcpy(data->mBuffers[i].mData + bufferOffset, self.audioFrame.data[i] + currentFrameOffset, sizeToCopy);
+       }
+
+       bufferCopiedFrames += framesToCopy;
+       currentFrameCopiedFrames += framesToCopy;
+
+       if (self.audioFrame.numberOfSamples <= currentFrameCopiedFrames) {
+           self.audioFrame = nil;
+           currentFrameCopiedFrames = 0;
+       }
+       bufferLeftFrames -= framesToCopy;
+    }
+    UInt32 framesCopied = numberOfFrames - bufferLeftFrames;
+    UInt32 sizeCopied = framesCopied * (UInt32)sizeof(float);
+    for (int i = 0; i < data->mNumberBuffers; i++) {
+       UInt32 sizeLeft = data->mBuffers[i].mDataByteSize - sizeCopied;
+       if (sizeLeft > 0) {
+           memset(data->mBuffers[i].mData + sizeCopied, 0, sizeLeft);
+       }
+    }
 }
 
 - (MTKView *)mtkView {

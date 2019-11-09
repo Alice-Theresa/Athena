@@ -10,9 +10,7 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-@interface SCVideoFrame : SCFrame <SCFlowData>
-
-@property (nonatomic, assign, nullable) AVFrame *core;
+@interface SCVideoFrame : SCFrame
 
 @property (nonatomic, assign, readonly) NSUInteger width;
 @property (nonatomic, assign, readonly) NSUInteger height;

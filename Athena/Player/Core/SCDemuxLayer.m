@@ -13,6 +13,9 @@
 #import "SCPacket.h"
 #import "SCCodecDescriptor.h"
 #import "SCPlayerState.h"
+#import "ALCQueueManager.h"
+#import "SCTrack.h"
+#import "SCMetaData.h"
 
 @interface SCDemuxLayer ()
 
@@ -22,14 +25,16 @@
 @property (nonatomic, assign) BOOL             isSeeking;
 @property (nonatomic, assign) NSTimeInterval   videoSeekingTime;
 @property (nonatomic, assign) SCPlayerState   controlState;
+@property (nonatomic, strong) ALCQueueManager *queueManager;
 
 @end
 
 @implementation SCDemuxLayer
 
-- (instancetype)initWithContext:(SCFormatContext *)context{
+- (instancetype)initWithContext:(SCFormatContext *)context queueManager:(ALCQueueManager *)manager {
     if (self = [super init]) {
         _context = context;
+        _queueManager = manager;
         _controlQueue = [[NSOperationQueue alloc] init];
     }
     return self;
@@ -64,20 +69,16 @@
 
 - (void)readPacket {
     while (true) {
-        if (!self.delegate) {
-            [NSThread sleepForTimeInterval:0.03];
-            continue;
-        }
         if (self.controlState == SCPlayerStateClosed) {
             break;
         }
-        if (self.controlState == SCPlayerStatePaused || [self.delegate packetQueueIsFull]) {
+        if (self.controlState == SCPlayerStatePaused || [self.queueManager packetQueueIsFull]) {
             [NSThread sleepForTimeInterval:0.03];
             continue;
         }
         if (self.isSeeking) {
             [self.context seekingTime:self.videoSeekingTime];
-            [self.delegate flush];
+            [self.queueManager flushPacketQueue];
             self.isSeeking = NO;
             continue;
         }
@@ -88,11 +89,16 @@
             break;
         } else {
             SCCodecDescriptor *cd = [[SCCodecDescriptor alloc] init];
-            AVStream *stream = self.context.formatContext->streams[packet.core->stream_index];
+            int index = packet.core->stream_index;
+            AVStream *stream = self.context.formatContext->streams[index];
             cd.timebase = stream->time_base;
             cd.codecpar = stream->codecpar;
+            cd.track    = [[SCTrack alloc] initWithIndex:index
+                                                    type:stream->codecpar->codec_type
+                                                    meta:[SCMetaData metadataWithAVDictionary:stream->metadata]];
             packet.codecDescriptor = cd;
-            [self.delegate enqueue:packet];
+            packet.timeStamp = (double)packet.core->pts * stream->time_base.num / stream->time_base.den;
+            [self.queueManager enqueuePacket:packet];
         }
     }
 }

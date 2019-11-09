@@ -11,14 +11,14 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
+@class ALCQueueManager;
 @class SCFormatContext;
-@class SCDemuxLayer;
 
 @interface SCDecoderLayer : NSObject
 
 @property (nonatomic, weak  ) id<DecodeToQueueProtocol> delegate;
 
-- (instancetype)initWithContext:(SCFormatContext *)context demuxLayer:(SCDemuxLayer *)demuxLayer;
+- (instancetype)initWithContext:(SCFormatContext *)context queueManager:(ALCQueueManager *)manager;
 - (void)start;
 - (void)resume;
 - (void)pause;
