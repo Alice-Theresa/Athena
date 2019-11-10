@@ -8,6 +8,7 @@
 
 #import <libavformat/avformat.h>
 #import <Foundation/Foundation.h>
+#import "SCTrack.h"
 
 @class SCPacket;
 
@@ -15,6 +16,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface SCPacketQueue : NSObject
 
+@property (nonatomic, assign) SCTrackType type;
 @property (nonatomic, assign, readonly) NSUInteger packetTotalSize;
 
 - (void)enqueueDiscardPacket;

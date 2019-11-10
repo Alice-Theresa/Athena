@@ -41,8 +41,11 @@
 }
 
 - (void)start {
-    NSBlockOperation *op = [NSBlockOperation blockOperationWithBlock:^{
-        [self readPacket];
+    __weak id weakSelf = self;
+    __block NSBlockOperation *op = [NSBlockOperation blockOperationWithBlock:^{
+        if (!op.isCancelled) {
+            [weakSelf readPacket];
+        }
     }];
     [self.controlQueue addOperation:op];
     self.controlState = SCPlayerStatePlaying;
@@ -72,7 +75,8 @@
         if (self.controlState == SCPlayerStateClosed) {
             break;
         }
-        if (self.controlState == SCPlayerStatePaused || [self.queueManager packetQueueIsFull]) {
+        [self.queueManager packetQueueIsFull];
+        if (self.controlState == SCPlayerStatePaused) {
             [NSThread sleepForTimeInterval:0.03];
             continue;
         }

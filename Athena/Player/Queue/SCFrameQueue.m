@@ -12,9 +12,7 @@
 
 @interface SCFrameQueue ()
 
-@property (nonatomic, assign) BOOL isBlock;
 @property (nonatomic, assign, readwrite) NSInteger count;
-@property (nonatomic, strong) dispatch_semaphore_t semaphore;
 
 @property (nonatomic, strong) SCFrameNode *header;
 @property (nonatomic, strong) SCFrameNode *tailer;
@@ -29,7 +27,6 @@
 
 - (instancetype)init {
     if (self = [super init]) {
-        _semaphore = dispatch_semaphore_create(1);
     }
     return self;
 }
@@ -58,22 +55,17 @@
 }
 
 - (void)enqueueFramesAndSort:(NSArray<SCFrame *> *)frames {
-    dispatch_semaphore_wait(self.semaphore, DISPATCH_TIME_FOREVER);
-    if (frames.count == 0 || self.isBlock) {
-        dispatch_semaphore_signal(self.semaphore);
+    if (frames.count == 0) {
         return;
     }
     for (SCFrame *frame in frames) {
         [self enqueueAndSort:frame];
     }
-    dispatch_semaphore_signal(self.semaphore);
 }
 
 - (SCFrame *)dequeueFrame {
-    dispatch_semaphore_wait(self.semaphore, DISPATCH_TIME_FOREVER);
     SCFrame *frame;
     if (self.count <= 0) {
-        dispatch_semaphore_signal(self.semaphore);
         return frame;
     }
     frame = self.header.frame;
@@ -81,31 +73,13 @@
     next.pre = nil;
     self.header = next;
     self.count--;
-    dispatch_semaphore_signal(self.semaphore);
     return frame;
 }
 
-- (void)flushAndBlock {
-    dispatch_semaphore_wait(self.semaphore, DISPATCH_TIME_FOREVER);
-    self.header = nil;
-    self.tailer = nil;
-    self.count = 0;
-    self.isBlock = YES;
-    dispatch_semaphore_signal(self.semaphore);
-}
-
 - (void)flush {
-    dispatch_semaphore_wait(self.semaphore, DISPATCH_TIME_FOREVER);
     self.header = nil;
     self.tailer = nil;
     self.count = 0;
-    dispatch_semaphore_signal(self.semaphore);
-}
-
-- (void)unblock {
-    dispatch_semaphore_wait(self.semaphore, DISPATCH_TIME_FOREVER);
-    self.isBlock = NO;
-    dispatch_semaphore_signal(self.semaphore);
 }
 
 @end

@@ -13,10 +13,13 @@
 #import "SCTrack.h"
 #import "SCFormatContext.h"
 #import "SCFrameQueue.h"
+#import "ALCFlowDataQueue.h"
+#import "SCCodecDescriptor.h"
 
 @interface ALCQueueManager ()
 
-@property (nonatomic, strong) dispatch_semaphore_t semaphore;
+@property (nonatomic, strong) NSCondition *packetWakeup;
+@property (nonatomic, strong) NSCondition *frameWakeup;
 
 @property (nonatomic, copy  ) NSDictionary<NSString *, SCPacketQueue *> *packetsQueue;
 @property (nonatomic, strong) NSMutableDictionary<NSString *, NSNumber *> *timeStamps;
@@ -30,50 +33,61 @@
 
 - (instancetype)initWithContext:(SCFormatContext *)context {
     if (self = [super init]) {
-        _semaphore       = dispatch_semaphore_create(1);
+        _packetWakeup = [[NSCondition alloc] init];
+        _frameWakeup  = [[NSCondition alloc] init];
+
         _packetsQueue    = [NSMutableDictionary dictionary];
         _timeStamps      = [NSMutableDictionary dictionary];
         _videoFrameQueue = [[SCFrameQueue alloc] init];
         _audioFrameQueue = [[SCFrameQueue alloc] init];
         for (SCTrack *track in context.tracks) {
-            [_packetsQueue setValue:[[SCPacketQueue alloc] init] forKey:[NSString stringWithFormat:@"%d", track.index]];
+            SCPacketQueue *queue = [[SCPacketQueue alloc] init];
+            queue.type = track.type;
+            [_packetsQueue setValue:queue forKey:[NSString stringWithFormat:@"%d", track.index]];
         }
     }
     return self;
 }
 
-#pragma mark -
+#pragma mark - packet queue
 
-- (BOOL)packetQueueIsFull {
-    dispatch_semaphore_wait(self.semaphore, DISPATCH_TIME_FOREVER);
+- (void)packetQueueIsFull {
+    [self.packetWakeup lock];
     int total = 0;
     for (NSString *key in self.packetsQueue) {
         total += self.packetsQueue[key].packetTotalSize;
     }
     BOOL isFull = total > 10 * 1024 * 1024;
-    dispatch_semaphore_signal(self.semaphore);
-    return isFull;
+    if (isFull) {
+        [self.packetWakeup wait];
+    }
+    [self.packetWakeup unlock];
 }
 
 - (void)flushPacketQueue {
-    dispatch_semaphore_wait(self.semaphore, DISPATCH_TIME_FOREVER);
+    [self.packetWakeup lock];
     for (NSString *key in self.packetsQueue) {
         [self.packetsQueue[key] flush];
-        [self.packetsQueue[key] enqueueDiscardPacket];
+        SCPacket *packet = [[SCPacket alloc] init];
+        packet.core->flags = AV_PKT_FLAG_DISCARD;
+        SCCodecDescriptor *cd = [[SCCodecDescriptor alloc] init];
+        cd.track = [[SCTrack alloc] initWithIndex:-1 type:self.packetsQueue[key].type meta:NULL];
+        packet.codecDescriptor = cd;
+        [self.packetsQueue[key] enqueuePacket:packet];
     }
     [self.timeStamps removeAllObjects];
-    dispatch_semaphore_signal(self.semaphore);
+    [self.packetWakeup unlock];
 }
 
 - (void)enqueuePacket:(SCPacket *)packet {
-    dispatch_semaphore_wait(self.semaphore, DISPATCH_TIME_FOREVER);
+    [self.packetWakeup lock];
     SCPacketQueue *queue = [self.packetsQueue valueForKey:[NSString stringWithFormat:@"%d", packet.core->stream_index]];
     [queue enqueuePacket:packet];
-    dispatch_semaphore_signal(self.semaphore);
+    [self.packetWakeup unlock];
 }
 
 - (SCPacket *)dequeuePacket {
-    dispatch_semaphore_wait(self.semaphore, DISPATCH_TIME_FOREVER);
+    [self.packetWakeup lock];
     int streamIndex = -1;
     double min = DBL_MAX;
     for (NSString *key in self.packetsQueue) {
@@ -93,30 +107,87 @@
        }
     }
     if (streamIndex == -1) {
-       return nil;
+        [self.packetWakeup unlock];
+        return nil;
     }
     SCPacket *packet = [self.packetsQueue[@(streamIndex).stringValue] dequeuePacket];
     [self.timeStamps setValue:@(packet.timeStamp) forKey:@(streamIndex).stringValue];
-    dispatch_semaphore_signal(self.semaphore);
+    int total = 0;
+    for (NSString *key in self.packetsQueue) {
+        total += self.packetsQueue[key].packetTotalSize;
+    }
+    BOOL isFull = total > 10 * 1024 * 1024;
+    if (!isFull) {
+        [self.packetWakeup signal];
+    }
+    [self.packetWakeup unlock];
     return packet;
 }
 
 #pragma mark -
 
-- (BOOL)frameQueueIsFull {
-    return NO;
+- (void)videoFrameQueueFlush {
+    [self.frameWakeup lock];
+    [self.videoFrameQueue flush];
+    [self.frameWakeup unlock];
 }
 
-- (void)flushFrameQueue {
-
+- (void)audioFrameQueueFlush {
+    [self.frameWakeup lock];
+    [self.audioFrameQueue flush];
+    [self.frameWakeup unlock];
 }
 
-- (void)enqueueFrames:(NSArray<SCFrame *> *)frames {
-    
+- (void)videoFrameQueueIsFull {
+    [self.frameWakeup lock];
+    BOOL isFull = self.videoFrameQueue.count > 5;
+    if (isFull) {
+        [self.frameWakeup wait];
+    }
+    [self.frameWakeup unlock];
 }
 
-//- (SCFrame *)dequeueFrameByQueueIndex:(NSNumber *)index {
-//
-//}
+- (void)audioFrameQueueIsFull {
+    [self.frameWakeup lock];
+    BOOL isFull = self.audioFrameQueue.count > 5;
+    if (isFull) {
+        [self.frameWakeup wait];
+    }
+    [self.frameWakeup unlock];
+}
+
+- (void)enqueueAudioFrames:(nonnull NSArray<SCFrame *> *)frames {
+    [self.frameWakeup lock];
+    [self.audioFrameQueue enqueueFramesAndSort:frames];
+    [self.frameWakeup unlock];
+}
+
+- (void)enqueueVideoFrames:(nonnull NSArray<SCFrame *> *)frames {
+    [self.frameWakeup lock];
+    [self.videoFrameQueue enqueueFramesAndSort:frames];
+    [self.frameWakeup unlock];
+}
+
+- (SCFrame *)dequeueVideoFrame {
+    [self.frameWakeup lock];
+    SCFrame *frame = [self.videoFrameQueue dequeueFrame];
+    BOOL isFull = self.videoFrameQueue.count > 5;
+    if (!isFull) {
+        [self.frameWakeup signal];
+    }
+    [self.frameWakeup unlock];
+    return frame;
+}
+
+- (SCFrame *)dequeueAudioFrame {
+    [self.frameWakeup lock];
+    SCFrame *frame = [self.audioFrameQueue dequeueFrame];
+    BOOL isFull = self.audioFrameQueue.count > 5;
+    if (!isFull) {
+        [self.frameWakeup signal];
+    }
+    [self.frameWakeup unlock];
+    return frame;
+}
 
 @end

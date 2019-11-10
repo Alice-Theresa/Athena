@@ -7,7 +7,6 @@
 //
 
 #import <Foundation/Foundation.h>
-#import "SCQueueProtocol.h"
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -15,8 +14,6 @@ NS_ASSUME_NONNULL_BEGIN
 @class SCFormatContext;
 
 @interface SCDecoderLayer : NSObject
-
-@property (nonatomic, weak  ) id<DecodeToQueueProtocol> delegate;
 
 - (instancetype)initWithContext:(SCFormatContext *)context queueManager:(ALCQueueManager *)manager;
 - (void)start;

@@ -17,14 +17,14 @@
 #import "SCAudioManager.h"
 #import "SCPlayerState.h"
 #import "SCDecoderLayer.h"
+#import "ALCQueueManager.h"
 
-@interface SCRenderLayer () <SCAudioManagerDelegate, MTKViewDelegate, DecodeToQueueProtocol> {
+@interface SCRenderLayer () <SCAudioManagerDelegate, MTKViewDelegate> {
     int currentFrameCopiedFrames;
     int bufferCopiedFrames;
 }
 
-@property (nonatomic, strong) SCFrameQueue *videoFrameQueue;
-@property (nonatomic, strong) SCFrameQueue *audioFrameQueue;
+@property (nonatomic, strong) ALCQueueManager *manager;
 
 @property (nonatomic, strong) SCFormatContext *context;
 @property (nonatomic, assign) SCPlayerState   controlState;
@@ -39,18 +39,16 @@
 
 @implementation SCRenderLayer
 
-- (instancetype)initWithContext:(SCFormatContext *)context decoderLayer:(SCDecoderLayer *)decoderLayer renderView:(MTKView *)view {
+- (instancetype)initWithContext:(SCFormatContext *)context queueManager:(ALCQueueManager *)manager renderView:(MTKView *)view {
     if (self = [super init]) {
         _context = context;
-        _videoFrameQueue  = [[SCFrameQueue alloc] init];
-        _audioFrameQueue  = [[SCFrameQueue alloc] init];
+        _manager = manager;
         _syncor = [[SCSynchronizer alloc] init];
         _render = [[SCRender alloc] init];
         
         self.mtkView.frame = view.bounds;
         [view insertSubview:self.mtkView atIndex:0];
         
-        decoderLayer.delegate = self;
         [SCAudioManager shared].delegate = self;
     }
     return self;
@@ -79,16 +77,20 @@
 
 - (void)rendering {
     if (!self.videoFrame) {
-        self.videoFrame = [self.videoFrameQueue dequeueFrame];
-        if (!self.videoFrame || self.videoFrame.type == SCFrameTypeDiscard) {
-            self.videoFrame = nil;
+        self.videoFrame = [self.manager dequeueVideoFrame];
+        if (!self.videoFrame) {
             return;
         }
     }
-    if (![self.syncor shouldRenderVideoFrame:self.videoFrame.timeStamp duration:self.videoFrame.duration]) {
+    if (self.videoFrame.type == SCFrameTypeDiscard) {
+        self.videoFrame = nil;
         return;
     }
-    [self.render render:(id<SCRenderDataInterface>)self.videoFrame drawIn:self.mtkView];
+    if (![self.syncor shouldRenderVideoFrame:self.videoFrame.timeStamp duration:self.videoFrame.duration]) {
+        
+        return;
+    }
+    [self.render render:self.videoFrame drawIn:self.mtkView];
 //    if ([self.delegate respondsToSelector:@selector(controlCenter:didRender:duration:)] && !self.isSeeking) {
 //        [self.delegate controlCenter:self didRender:self.videoFrame.position duration:self.context.duration];
 //    }
@@ -111,7 +113,7 @@
            break;
        }
        if (!self.audioFrame) {
-           SCAudioFrame *frame = (SCAudioFrame *)[self.audioFrameQueue dequeueFrame];
+           SCAudioFrame *frame = (SCAudioFrame *)[self.manager dequeueAudioFrame];
            if (!frame) {
                break;
            }
@@ -163,28 +165,6 @@
     return _mtkView;
 }
 
-- (void)audioFrameQueueFlush {
-    [self.audioFrameQueue flush];
-}
 
-- (BOOL)audioFrameQueueIsFull {
-    return self.audioFrameQueue.count > 5;
-}
-
-- (void)enqueueAudioFrames:(nonnull NSArray<SCFrame *> *)frames {
-    [self.audioFrameQueue enqueueFramesAndSort:frames];
-}
-
-- (void)enqueueVideoFrames:(nonnull NSArray<SCFrame *> *)frames {
-    [self.videoFrameQueue enqueueFramesAndSort:frames];
-}
-
-- (void)videoFrameQueueFlush {
-    [self.videoFrameQueue flush];
-}
-
-- (BOOL)videoFrameQueueIsFull {
-    return self.videoFrameQueue.count > 5;
-}
 
 @end

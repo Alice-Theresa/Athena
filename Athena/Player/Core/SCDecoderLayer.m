@@ -13,7 +13,6 @@
 #import "SCMarkerFrame.h"
 #import "SCVideoDecoder.h"
 #import "SCAudioDecoder.h"
-#import "SCQueueProtocol.h"
 #import "SCPacket.h"
 #import "SCVideoFrame.h"
 #import "SCPlayerState.h"
@@ -49,18 +48,19 @@
         _manager      = manager;
         _videoDecoder = [[SCVideoDecoder alloc] init];
         _audioDecoder = [[SCAudioDecoder alloc] init];
+        _controlQueue = [[NSOperationQueue alloc] init];
     }
     return self;
 }
 
 - (void)start {
-    NSInvocationOperation *videoDecodeOperation = [[NSInvocationOperation alloc] initWithTarget:self selector:@selector(decodeVideoFrame) object:nil];
-    videoDecodeOperation.queuePriority = NSOperationQueuePriorityVeryHigh;
-    videoDecodeOperation.qualityOfService = NSQualityOfServiceUserInteractive;
-    
-    self.controlQueue = [[NSOperationQueue alloc] init];
-    self.controlQueue.qualityOfService = NSQualityOfServiceUserInteractive;
-    [self.controlQueue addOperation:videoDecodeOperation];
+    __weak id weakSelf = self;
+    __block NSBlockOperation *op = [NSBlockOperation blockOperationWithBlock:^{
+        if (!op.isCancelled) {
+            [weakSelf decodeVideoFrame];
+        }
+    }];
+    [self.controlQueue addOperation:op];
     self.controlState = SCPlayerStatePlaying;
 }
 
@@ -84,40 +84,47 @@
             [NSThread sleepForTimeInterval:0.03];
             continue;
         }
-        if ([self.delegate videoFrameQueueIsFull]) {
-            [NSThread sleepForTimeInterval:0.03];
-            continue;
-        }
         @autoreleasepool {
             SCPacket *packet = [self.manager dequeuePacket];
             if (!packet) {
                 continue;
             }
+            if (packet.codecDescriptor.track.type == SCTrackTypeVideo) {
+                [self.manager videoFrameQueueIsFull];
+            } else if (packet.codecDescriptor.track.type == SCTrackTypeAudio) {
+                [self.manager audioFrameQueueIsFull];
+            }
             if (packet.core->flags == AV_PKT_FLAG_DISCARD) {
-                [self.videoDecoder flush];
-                [self.audioDecoder flush];
-                [self.delegate videoFrameQueueFlush];
-                [self.delegate audioFrameQueueFlush];
+                
                 SCMarkerFrame *frame = [[SCMarkerFrame alloc] init];
-                SCMarkerFrame *frame1 = [[SCMarkerFrame alloc] init];
-                [self.delegate enqueueVideoFrames:@[frame]];
-                [self.delegate enqueueAudioFrames:@[frame1]];
+                if (packet.codecDescriptor.track.type == SCTrackTypeVideo) {
+                    [self.manager videoFrameQueueIsFull];
+                    [self.videoDecoder flush];
+                    [self.manager videoFrameQueueFlush];
+                    [self.manager enqueueVideoFrames:@[frame]];
+                } else if (packet.codecDescriptor.track.type == SCTrackTypeAudio) {
+                    [self.manager audioFrameQueueIsFull];
+                    [self.audioDecoder flush];
+                    [self.manager audioFrameQueueFlush];
+                    [self.manager enqueueAudioFrames:@[frame]];
+                }
                 continue;
             }
             if (packet.core->data != NULL && packet.core->stream_index >= 0) {
                 if (packet.codecDescriptor.track.type == SCTrackTypeVideo) {
                     NSArray<SCFrame *> *frames = [self.videoDecoder decode:packet];
                     for (SCVideoFrame *frame in frames) {
+                        frame.codecDescriptor = packet.codecDescriptor;
                         [self process:frame];
-                        [frame fillData];
                     }
-                    [self.delegate enqueueVideoFrames:frames];
+                    [self.manager enqueueVideoFrames:frames];
                 } else if (packet.codecDescriptor.track.type == SCTrackTypeAudio) {
                     NSArray<SCFrame *> *frames = [self.audioDecoder decode:packet];
                     for (SCAudioFrame *frame in frames) {
+                        frame.codecDescriptor = packet.codecDescriptor;
                         [self innerDecode:frame];
                     }
-                    [self.delegate enqueueAudioFrames:frames];
+                    [self.manager enqueueAudioFrames:frames];
                 }
                 
             }

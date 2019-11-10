@@ -19,15 +19,24 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (instancetype)initWithContext:(SCFormatContext *)context;
 
-- (BOOL)packetQueueIsFull;
+- (void)packetQueueIsFull;
 - (void)flushPacketQueue;
 - (void)enqueuePacket:(SCPacket *)packet;
 - (SCPacket *)dequeuePacket;
 
-- (void)flushFrameQueue;
-- (BOOL)frameQueueIsFull;
-- (void)enqueueFrames:(NSArray<SCFrame *> *)frames;
-- (SCFrame *)dequeueFrameByQueueIndex:(NSNumber *)index;
+//- (void)flushFrameQueue;
+//- (BOOL)frameQueueIsFull:(NSUInteger)index;
+//- (void)enqueueFrames:(NSArray<SCFrame *> *)frames;
+//- (SCFrame *)dequeueFrameByQueueIndex:(NSNumber *)index;
+- (void)videoFrameQueueFlush;
+- (void)audioFrameQueueFlush;
+- (void)videoFrameQueueIsFull;
+- (void)audioFrameQueueIsFull;
+- (void)enqueueVideoFrames:(NSArray<SCFrame *> *)frames;
+- (void)enqueueAudioFrames:(NSArray<SCFrame *> *)frames;
+
+- (SCFrame *)dequeueVideoFrame;
+- (SCFrame *)dequeueAudioFrame;
 
 @end
 

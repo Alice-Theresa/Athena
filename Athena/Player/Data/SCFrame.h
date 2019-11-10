@@ -21,12 +21,16 @@ typedef NS_ENUM(int, SCFrameType) {
 
 NS_ASSUME_NONNULL_BEGIN
 
+@class SCCodecDescriptor;
+
 @interface SCFrame : NSObject <SCFlowData>
 
 @property (nonatomic, assign) NSTimeInterval timeStamp;
 @property (nonatomic, assign) NSTimeInterval duration;
 
 @property (nonatomic, assign, nullable) AVFrame *core;
+@property (nonatomic, strong) SCCodecDescriptor *codecDescriptor;
+
 @property (nonatomic, assign) SCFrameType type;
 
 - (void)fillData;

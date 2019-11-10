@@ -12,8 +12,6 @@
 @interface SCPacketQueue ()
 
 @property (nonatomic, assign, readwrite) NSUInteger packetTotalSize;
-
-@property (nonatomic, strong) NSCondition *condition;
 @property (nonatomic, strong) NSMutableArray <SCPacket *> *packets;
 
 @end
@@ -23,46 +21,36 @@
 - (instancetype)init {
     if (self = [super init]) {
         self.packets = [NSMutableArray array];
-        self.condition = [[NSCondition alloc] init];
     }
     return self;
 }
 
 - (void)enqueueDiscardPacket {
-    [self.condition lock];
     SCPacket *packet = [[SCPacket alloc] init];
     packet.core->flags = AV_PKT_FLAG_DISCARD;
     self.packetTotalSize += packet.core->size;
     [self.packets addObject:packet];
-    [self.condition unlock];
 }
 
 - (void)enqueuePacket:(SCPacket *)packet {
-    [self.condition lock];
     self.packetTotalSize += packet.core->size;
     [self.packets addObject:packet];
-    [self.condition unlock];
 }
 
 - (SCPacket *)dequeuePacket {
-    [self.condition lock];
     SCPacket *packet;
     if (self.packets.count <= 0) {
-        [self.condition unlock];
         return packet;
     }
     packet = self.packets.firstObject;
     [self.packets removeObjectAtIndex:0];
     self.packetTotalSize -= packet.core->size;
-    [self.condition unlock];
     return packet;
 }
 
 - (void)flush {
-    [self.condition lock];
     [self.packets removeAllObjects];
     self.packetTotalSize = 0;
-    [self.condition unlock];
 }
 
 @end

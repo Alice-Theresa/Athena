@@ -43,7 +43,7 @@
 @implementation SCControl
 
 - (void)dealloc {
-    [[NSNotificationCenter defaultCenter] removeObserver:self name:UIApplicationWillResignActiveNotification object:nil];
+    [[NSNotificationCenter defaultCenter] removeObserver:self];
 }
 
 - (instancetype)initWithRenderView:(UIView *)view {
@@ -62,9 +62,9 @@
     _context = [[SCFormatContext alloc] init];
     [_context openPath:filename];
     self.queueManager = [[ALCQueueManager alloc] initWithContext:self.context];
-    self.demuxLayer = [[SCDemuxLayer alloc] initWithContext:self.context queueManager:self.queueManager];
+    self.demuxLayer   = [[SCDemuxLayer alloc] initWithContext:self.context queueManager:self.queueManager];
     self.decoderLayer = [[SCDecoderLayer alloc] initWithContext:self.context queueManager:self.queueManager];
-    self.renderLayer = [[SCRenderLayer alloc] initWithContext:self.context decoderLayer:self.decoderLayer renderView:(MTKView *)self.view];
+    self.renderLayer  = [[SCRenderLayer alloc] initWithContext:self.context queueManager:self.queueManager renderView:(MTKView *)self.view];
     [self start];
 }
 
@@ -99,6 +99,7 @@
 
 - (void)seekingTime:(NSTimeInterval)percentage {
     NSTimeInterval videoSeekingTime = percentage * self.context.duration;
+    NSLog(@"%f", videoSeekingTime);
     [self.demuxLayer seekingTime:videoSeekingTime];
 }
 
