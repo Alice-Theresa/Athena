@@ -12,10 +12,15 @@ NS_ASSUME_NONNULL_BEGIN
 
 @class SCAudioDescriptor;
 
-@interface SCAudioFrame : SCFrame
-
+@interface SCAudioFrame : NSObject <SCFrame, SCFlowData>
+@property (nonatomic, assign) NSTimeInterval timeStamp;
+@property (nonatomic, assign) NSTimeInterval duration;
 @property (nonatomic, assign) int numberOfSamples;
+@property (nonatomic, assign) AVFrame *core;
+@property (nonatomic, strong) SCCodecDescriptor *codecDescriptor;
+@property (nonatomic, assign) SCFrameType type;
 
++ (instancetype)audioFrameWithDescriptor:(SCAudioDescriptor *)descriptor numberOfSamples:(int)numberOfSamples;
 - (void)createBuffer:(SCAudioDescriptor *)descriptor numberOfSamples:(int)numberOfSamples;
 - (uint8_t **)data;
 - (void)fillData;

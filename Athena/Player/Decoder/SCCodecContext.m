@@ -11,6 +11,8 @@
 #import "SCCodecContext.h"
 #import "SCFrame.h"
 #import "SCPacket.h"
+#import "SCVideoFrame.h"
+#import "SCAudioFrame.h"
 
 @interface SCCodecContext ()
 
@@ -44,7 +46,7 @@
         return defaultArray;
     }
     while (result >= 0) {
-        SCFrame *frame = [[self.frameClass alloc] init];
+        id<SCFrame> frame = [[self.frameClass alloc] init]; 
         result = avcodec_receive_frame(self.core, frame.core);
         if (result < 0) {
             if (result != AVERROR(EAGAIN) && result != AVERROR_EOF) {

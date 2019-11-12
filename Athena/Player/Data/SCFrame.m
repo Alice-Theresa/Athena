@@ -8,22 +8,25 @@
 
 #import "SCFrame.h"
 
-@implementation SCFrame
-
-- (instancetype)init {
-    if (self = [super init]) {
-        _core = av_frame_alloc();
-    }
-    return self;
-}
-
-- (void)dealloc {
-    if (self.core) {
-        av_frame_free(&self->_core);
-    }
-}
-- (void)fillData {
-    
-}
-
-@end
+//@implementation SCFrame
+//
+//- (instancetype)init {
+//    if (self = [super init]) {
+//        _core = av_frame_alloc();
+//    }
+//    return self;
+//}
+//
+//- (void)dealloc {
+//    [self clear];
+//}
+//
+//- (void)clear {
+//    if (self.core) {
+//        av_frame_unref(self->_core);
+//        av_frame_free(&self->_core);
+//        self->_core = nil;
+//    }
+//}
+//
+//@end

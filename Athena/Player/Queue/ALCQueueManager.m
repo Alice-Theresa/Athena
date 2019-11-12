@@ -12,7 +12,7 @@
 #import "SCFrame.h"
 #import "SCTrack.h"
 #import "SCFormatContext.h"
-#import "SCFrameQueue.h"
+
 #import "ALCFlowDataQueue.h"
 #import "SCCodecDescriptor.h"
 
@@ -24,8 +24,8 @@
 @property (nonatomic, copy  ) NSDictionary<NSString *, SCPacketQueue *> *packetsQueue;
 @property (nonatomic, strong) NSMutableDictionary<NSString *, NSNumber *> *timeStamps;
 
-@property (nonatomic, strong) SCFrameQueue *videoFrameQueue;
-@property (nonatomic, strong) SCFrameQueue *audioFrameQueue;
+@property (nonatomic, strong) ALCFlowDataQueue *videoFrameQueue;
+@property (nonatomic, strong) ALCFlowDataQueue *audioFrameQueue;
 
 @end
 
@@ -38,8 +38,8 @@
 
         _packetsQueue    = [NSMutableDictionary dictionary];
         _timeStamps      = [NSMutableDictionary dictionary];
-        _videoFrameQueue = [[SCFrameQueue alloc] init];
-        _audioFrameQueue = [[SCFrameQueue alloc] init];
+        _videoFrameQueue = [[ALCFlowDataQueue alloc] init];
+        _audioFrameQueue = [[ALCFlowDataQueue alloc] init];
         for (SCTrack *track in context.tracks) {
             SCPacketQueue *queue = [[SCPacketQueue alloc] init];
             queue.type = track.type;
@@ -158,19 +158,19 @@
 
 - (void)enqueueAudioFrames:(nonnull NSArray<SCFrame *> *)frames {
     [self.frameWakeup lock];
-    [self.audioFrameQueue enqueueFramesAndSort:frames];
+    [self.audioFrameQueue enqueue:frames];
     [self.frameWakeup unlock];
 }
 
 - (void)enqueueVideoFrames:(nonnull NSArray<SCFrame *> *)frames {
     [self.frameWakeup lock];
-    [self.videoFrameQueue enqueueFramesAndSort:frames];
+    [self.videoFrameQueue enqueue:frames];
     [self.frameWakeup unlock];
 }
 
 - (SCFrame *)dequeueVideoFrame {
     [self.frameWakeup lock];
-    SCFrame *frame = [self.videoFrameQueue dequeueFrame];
+    SCFrame *frame = [self.videoFrameQueue dequeue];
     BOOL isFull = self.videoFrameQueue.count > 5;
     if (!isFull) {
         [self.frameWakeup signal];
@@ -181,7 +181,7 @@
 
 - (SCFrame *)dequeueAudioFrame {
     [self.frameWakeup lock];
-    SCFrame *frame = [self.audioFrameQueue dequeueFrame];
+    SCFrame *frame = [self.audioFrameQueue dequeue];
     BOOL isFull = self.audioFrameQueue.count > 5;
     if (!isFull) {
         [self.frameWakeup signal];

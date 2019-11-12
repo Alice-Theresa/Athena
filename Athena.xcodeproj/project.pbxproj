@@ -25,7 +25,6 @@
 		5221366E1F7F737500182B12 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 5221366C1F7F737500182B12 /* LaunchScreen.storyboard */; };
 		522136711F7F737500182B12 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 522136701F7F737500182B12 /* main.m */; };
 		522136791F7F738F00182B12 /* AudioCaptureManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 522136781F7F738F00182B12 /* AudioCaptureManager.m */; };
-		52296C0F21E6D98D006585FE /* SCFrame.m in Sources */ = {isa = PBXBuildFile; fileRef = 52296C0E21E6D98D006585FE /* SCFrame.m */; };
 		52296C1621E742D0006585FE /* SCAudioManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 52296C1521E742D0006585FE /* SCAudioManager.m */; };
 		526F498921D213D10023E6C3 /* SCFormatContext.m in Sources */ = {isa = PBXBuildFile; fileRef = 526F498821D213D10023E6C3 /* SCFormatContext.m */; };
 		527D336221F559C000B9D959 /* Aimer.mkv in Resources */ = {isa = PBXBuildFile; fileRef = 527D336121F559C000B9D959 /* Aimer.mkv */; };
@@ -59,7 +58,6 @@
 		765ED7821F938781000CF16E /* libiconv.2.4.0.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = 765ED7811F938781000CF16E /* libiconv.2.4.0.tbd */; };
 		765ED7841F93878B000CF16E /* libbz2.1.0.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = 765ED7831F93878B000CF16E /* libbz2.1.0.tbd */; };
 		765ED7861F938795000CF16E /* libz.1.2.8.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = 765ED7851F938795000CF16E /* libz.1.2.8.tbd */; };
-		76C3E2DC21FD63ED00EDC6AB /* SCFrameQueue.m in Sources */ = {isa = PBXBuildFile; fileRef = 76C3E2DB21FD63ED00EDC6AB /* SCFrameQueue.m */; };
 		76C3E2DF21FD65E900EDC6AB /* SCFrameNode.m in Sources */ = {isa = PBXBuildFile; fileRef = 76C3E2DE21FD65E900EDC6AB /* SCFrameNode.m */; };
 		76F2D7D821F375DB0088445C /* libyuv.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 76F2D7D721F375DB0088445C /* libyuv.a */; };
 		94454F5E2377A9CD00832745 /* ALCFlowDataQueue.m in Sources */ = {isa = PBXBuildFile; fileRef = 94454F5D2377A9CD00832745 /* ALCFlowDataQueue.m */; };
@@ -113,7 +111,6 @@
 		522136771F7F738F00182B12 /* AudioCaptureManager.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AudioCaptureManager.h; sourceTree = "<group>"; };
 		522136781F7F738F00182B12 /* AudioCaptureManager.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = AudioCaptureManager.m; sourceTree = "<group>"; };
 		52296C0D21E6D98D006585FE /* SCFrame.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SCFrame.h; sourceTree = "<group>"; };
-		52296C0E21E6D98D006585FE /* SCFrame.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = SCFrame.m; sourceTree = "<group>"; };
 		52296C1421E742D0006585FE /* SCAudioManager.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SCAudioManager.h; sourceTree = "<group>"; };
 		52296C1521E742D0006585FE /* SCAudioManager.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = SCAudioManager.m; sourceTree = "<group>"; };
 		526F498721D213D10023E6C3 /* SCFormatContext.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SCFormatContext.h; sourceTree = "<group>"; };
@@ -283,8 +280,6 @@
 		765ED7811F938781000CF16E /* libiconv.2.4.0.tbd */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.text-based-dylib-definition"; name = libiconv.2.4.0.tbd; path = usr/lib/libiconv.2.4.0.tbd; sourceTree = SDKROOT; };
 		765ED7831F93878B000CF16E /* libbz2.1.0.tbd */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.text-based-dylib-definition"; name = libbz2.1.0.tbd; path = usr/lib/libbz2.1.0.tbd; sourceTree = SDKROOT; };
 		765ED7851F938795000CF16E /* libz.1.2.8.tbd */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.text-based-dylib-definition"; name = libz.1.2.8.tbd; path = usr/lib/libz.1.2.8.tbd; sourceTree = SDKROOT; };
-		76C3E2DA21FD63ED00EDC6AB /* SCFrameQueue.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SCFrameQueue.h; sourceTree = "<group>"; };
-		76C3E2DB21FD63ED00EDC6AB /* SCFrameQueue.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = SCFrameQueue.m; sourceTree = "<group>"; };
 		76C3E2DD21FD65E900EDC6AB /* SCFrameNode.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SCFrameNode.h; sourceTree = "<group>"; };
 		76C3E2DE21FD65E900EDC6AB /* SCFrameNode.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = SCFrameNode.m; sourceTree = "<group>"; };
 		76F2D7C021F375DB0088445C /* libyuv.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = libyuv.h; sourceTree = "<group>"; };
@@ -376,8 +371,6 @@
 				76C3E2DE21FD65E900EDC6AB /* SCFrameNode.m */,
 				520EB41F22002B9B002243DC /* SCPacketQueue.h */,
 				520EB42022002B9B002243DC /* SCPacketQueue.m */,
-				76C3E2DA21FD63ED00EDC6AB /* SCFrameQueue.h */,
-				76C3E2DB21FD63ED00EDC6AB /* SCFrameQueue.m */,
 				94541CF42377A8B000880E3C /* ALCFlowDataNode.h */,
 				94541CF52377A8B000880E3C /* ALCFlowDataNode.m */,
 				94454F5C2377A9CD00832745 /* ALCFlowDataQueue.h */,
@@ -930,10 +923,9 @@
 			isa = PBXGroup;
 			children = (
 				94F113E0236B2633000B3163 /* SCFlowData.h */,
+				52296C0D21E6D98D006585FE /* SCFrame.h */,
 				94BD54E823548727001B252C /* SCPacket.h */,
 				94BD54E923548727001B252C /* SCPacket.m */,
-				52296C0D21E6D98D006585FE /* SCFrame.h */,
-				52296C0E21E6D98D006585FE /* SCFrame.m */,
 				944C264F2375B3AD000FC866 /* SCMarkerFrame.h */,
 				944C26502375B3AD000FC866 /* SCMarkerFrame.m */,
 				944C26522375B3C2000FC866 /* SCVideoFrame.h */,
@@ -1063,7 +1055,6 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				52296C0F21E6D98D006585FE /* SCFrame.m in Sources */,
 				944C26572375B3CF000FC866 /* SCAudioFrame.m in Sources */,
 				5214035B21EDCE9E00CAF190 /* Mapping.metal in Sources */,
 				522136661F7F737500182B12 /* AudioEncodeViewController.m in Sources */,
@@ -1079,7 +1070,6 @@
 				520EB42122002B9B002243DC /* SCPacketQueue.m in Sources */,
 				520EB42A220137FF002243DC /* SCSynchronizer.m in Sources */,
 				94F113EA236E7E80000B3163 /* SCAudioDescriptor.m in Sources */,
-				76C3E2DC21FD63ED00EDC6AB /* SCFrameQueue.m in Sources */,
 				52AA25131F989C340084771B /* VideoEncodeViewController.m in Sources */,
 				522136711F7F737500182B12 /* main.m in Sources */,
 				944C26542375B3C2000FC866 /* SCVideoFrame.m in Sources */,

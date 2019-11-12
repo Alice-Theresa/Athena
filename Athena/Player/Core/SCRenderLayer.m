@@ -9,7 +9,7 @@
 #import <MetalKit/MetalKit.h>
 #import "SCRenderLayer.h"
 #import "SCFormatContext.h"
-#import "SCFrameQueue.h"
+
 #import "SCAudioFrame.h"
 #import "SCVideoFrame.h"
 #import "SCRender.h"

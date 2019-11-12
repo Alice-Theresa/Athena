@@ -29,7 +29,12 @@
 
 - (void)dealloc {
     if (self.core) {
+        av_frame_unref(self->_core);
         av_frame_free(&self->_core);
+        self->_core = nil;
+    }
+    for (int i = 0; i < 8; i++) {
+        self->_data[i] = nil;
     }
 }
 

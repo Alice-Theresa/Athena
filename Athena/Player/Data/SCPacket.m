@@ -12,6 +12,7 @@
 
 - (void)dealloc {
     av_packet_unref(_core);
+    av_packet_free(&_core);
     _core = nil;
 }
 

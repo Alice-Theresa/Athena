@@ -10,7 +10,10 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-@interface SCMarkerFrame : SCFrame
+@interface SCMarkerFrame : NSObject <SCFrame, SCFlowData>
+
+@property (nonatomic, strong) SCCodecDescriptor *codecDescriptor;
+@property (nonatomic, assign) SCFrameType type;
 
 @end
 

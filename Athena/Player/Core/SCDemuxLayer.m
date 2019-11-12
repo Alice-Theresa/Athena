@@ -41,12 +41,7 @@
 }
 
 - (void)start {
-    __weak id weakSelf = self;
-    __block NSBlockOperation *op = [NSBlockOperation blockOperationWithBlock:^{
-        if (!op.isCancelled) {
-            [weakSelf readPacket];
-        }
-    }];
+    NSOperation *op = [[NSInvocationOperation alloc] initWithTarget:self selector:@selector(readPacket) object:nil];
     [self.controlQueue addOperation:op];
     self.controlState = SCPlayerStatePlaying;
 }
