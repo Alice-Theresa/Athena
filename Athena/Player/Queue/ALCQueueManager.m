@@ -11,6 +11,7 @@
 #import "SCPacket.h"
 #import "SCTrack.h"
 #import "SCFormatContext.h"
+#import "ALCFlowDataRingQueue.h"
 
 #import "ALCFlowDataQueue.h"
 #import "SCCodecDescriptor.h"
@@ -23,8 +24,8 @@
 @property (nonatomic, copy  ) NSDictionary<NSString *, SCPacketQueue *> *packetsQueue;
 @property (nonatomic, strong) NSMutableDictionary<NSString *, NSNumber *> *timeStamps;
 
-@property (nonatomic, strong) ALCFlowDataQueue *videoFrameQueue;
-@property (nonatomic, strong) ALCFlowDataQueue *audioFrameQueue;
+@property (nonatomic, strong) ALCFlowDataRingQueue *videoFrameQueue;
+@property (nonatomic, strong) ALCFlowDataRingQueue *audioFrameQueue;
 
 @end
 
@@ -37,8 +38,8 @@
 
         _packetsQueue    = [NSMutableDictionary dictionary];
         _timeStamps      = [NSMutableDictionary dictionary];
-        _videoFrameQueue = [[ALCFlowDataQueue alloc] init];
-        _audioFrameQueue = [[ALCFlowDataQueue alloc] init];
+        _videoFrameQueue = [[ALCFlowDataRingQueue alloc] initWithLength:2];
+        _audioFrameQueue = [[ALCFlowDataRingQueue alloc] initWithLength:4];
         for (SCTrack *track in context.tracks) {
             SCPacketQueue *queue = [[SCPacketQueue alloc] init];
             queue.type = track.type;
