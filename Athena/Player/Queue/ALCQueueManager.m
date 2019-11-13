@@ -9,7 +9,6 @@
 #import "ALCQueueManager.h"
 #import "SCPacketQueue.h"
 #import "SCPacket.h"
-#import "SCFrame.h"
 #import "SCTrack.h"
 #import "SCFormatContext.h"
 
@@ -68,10 +67,11 @@
     [self.packetWakeup lock];
     for (NSString *key in self.packetsQueue) {
         [self.packetsQueue[key] flush];
-        SCPacket *packet = [[SCPacket alloc] init];
-        packet.core->flags = AV_PKT_FLAG_DISCARD;
+
         SCCodecDescriptor *cd = [[SCCodecDescriptor alloc] init];
         cd.track = [[SCTrack alloc] initWithIndex:-1 type:self.packetsQueue[key].type meta:NULL];
+        SCPacket *packet = [[SCPacket alloc] init];
+        packet.core->flags = AV_PKT_FLAG_DISCARD;
         packet.codecDescriptor = cd;
         [self.packetsQueue[key] enqueuePacket:packet];
     }

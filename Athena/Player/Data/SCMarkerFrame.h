@@ -6,7 +6,7 @@
 //  Copyright © 2019 Theresa. All rights reserved.
 //
 
-#import "SCFrame.h"
+#import "SCFlowData.h"
 
 NS_ASSUME_NONNULL_BEGIN
 

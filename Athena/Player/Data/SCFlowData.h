@@ -7,8 +7,17 @@
 //
 
 #import <Foundation/Foundation.h>
+#import <libavformat/avformat.h>
 
-NS_ASSUME_NONNULL_BEGIN
+typedef NS_ENUM(int, SCFrameType) {
+    SCFrameTypeUndefine,
+    SCFrameTypeDiscard = 1,
+    SCFrameTypeNV12,
+    SCFrameTypeI420,
+    SCFrameTypeAudio,
+};
+
+@class SCCodecDescriptor;
 
 @protocol SCFlowData <NSObject>
 
@@ -17,4 +26,10 @@ NS_ASSUME_NONNULL_BEGIN
 
 @end
 
-NS_ASSUME_NONNULL_END
+@protocol SCFrame <NSObject>
+
+@property (nonatomic, strong) SCCodecDescriptor *codecDescriptor;
+@property (nonatomic, assign) SCFrameType type;
+@property (nonatomic, assign) AVFrame *core;
+
+@end

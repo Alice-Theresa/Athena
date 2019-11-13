@@ -12,7 +12,6 @@
 #import "SCControl.h"
 
 #import "SCSynchronizer.h"
-#import "SCFrame.h"
 #import "SCAudioFrame.h"
 #import "ALCQueueManager.h"
 

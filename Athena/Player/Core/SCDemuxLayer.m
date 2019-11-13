@@ -87,13 +87,13 @@
             NSLog(@"read packet error");
             break;
         } else {
-            SCCodecDescriptor *cd = [[SCCodecDescriptor alloc] init];
             int index = packet.core->stream_index;
             AVStream *stream = self.context.formatContext->streams[index];
+            SCCodecDescriptor *cd = [[SCCodecDescriptor alloc] init];
             cd.timebase = stream->time_base;
             cd.codecpar = stream->codecpar;
             cd.track    = [[SCTrack alloc] initWithIndex:index
-                                                    type:stream->codecpar->codec_type
+                                                    type:(int)stream->codecpar->codec_type
                                                     meta:[SCMetaData metadataWithAVDictionary:stream->metadata]];
             packet.codecDescriptor = cd;
             packet.timeStamp = (double)packet.core->pts * stream->time_base.num / stream->time_base.den;

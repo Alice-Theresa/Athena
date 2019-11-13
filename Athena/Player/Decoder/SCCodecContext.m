@@ -9,7 +9,6 @@
 #import <libavformat/avformat.h>
 #import <libavutil/hwcontext.h>
 #import "SCCodecContext.h"
-#import "SCFrame.h"
 #import "SCPacket.h"
 #import "SCVideoFrame.h"
 #import "SCAudioFrame.h"

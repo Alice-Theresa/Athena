@@ -20,8 +20,6 @@ typedef NS_ENUM(int, SCTrackType) {
 
 @class SCMetaData;
 
-NS_ASSUME_NONNULL_BEGIN
-
 @interface SCTrack : NSObject
 
 @property (nonatomic, strong, readonly) SCMetaData *meta;
@@ -31,5 +29,3 @@ NS_ASSUME_NONNULL_BEGIN
 - (instancetype)initWithIndex:(int)index type:(SCTrackType)type meta:(SCMetaData *)meta;
 
 @end
-
-NS_ASSUME_NONNULL_END

@@ -8,8 +8,6 @@
 
 #import "SCDecoderLayer.h"
 #import "SCFormatContext.h"
-
-#import "SCFrame.h"
 #import "SCMarkerFrame.h"
 #import "SCVideoDecoder.h"
 #import "SCAudioDecoder.h"

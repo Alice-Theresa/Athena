@@ -58,7 +58,6 @@
 		765ED7821F938781000CF16E /* libiconv.2.4.0.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = 765ED7811F938781000CF16E /* libiconv.2.4.0.tbd */; };
 		765ED7841F93878B000CF16E /* libbz2.1.0.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = 765ED7831F93878B000CF16E /* libbz2.1.0.tbd */; };
 		765ED7861F938795000CF16E /* libz.1.2.8.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = 765ED7851F938795000CF16E /* libz.1.2.8.tbd */; };
-		76C3E2DF21FD65E900EDC6AB /* SCFrameNode.m in Sources */ = {isa = PBXBuildFile; fileRef = 76C3E2DE21FD65E900EDC6AB /* SCFrameNode.m */; };
 		76F2D7D821F375DB0088445C /* libyuv.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 76F2D7D721F375DB0088445C /* libyuv.a */; };
 		94454F5E2377A9CD00832745 /* ALCFlowDataQueue.m in Sources */ = {isa = PBXBuildFile; fileRef = 94454F5D2377A9CD00832745 /* ALCFlowDataQueue.m */; };
 		944C26512375B3AD000FC866 /* SCMarkerFrame.m in Sources */ = {isa = PBXBuildFile; fileRef = 944C26502375B3AD000FC866 /* SCMarkerFrame.m */; };
@@ -72,6 +71,7 @@
 		94BD54E423547B36001B252C /* SCRenderLayer.m in Sources */ = {isa = PBXBuildFile; fileRef = 94BD54E323547B36001B252C /* SCRenderLayer.m */; };
 		94BD54EA23548727001B252C /* SCPacket.m in Sources */ = {isa = PBXBuildFile; fileRef = 94BD54E923548727001B252C /* SCPacket.m */; };
 		94C44FC72363D2A400F6115A /* SCCodecContext.m in Sources */ = {isa = PBXBuildFile; fileRef = 94C44FC62363D2A400F6115A /* SCCodecContext.m */; };
+		94D17D39237B0CE300A2F32C /* ALCFlowDataRingQueue.m in Sources */ = {isa = PBXBuildFile; fileRef = 94D17D38237B0CE300A2F32C /* ALCFlowDataRingQueue.m */; };
 		94F113E3236E69AC000B3163 /* SCSWResample.m in Sources */ = {isa = PBXBuildFile; fileRef = 94F113E2236E69AC000B3163 /* SCSWResample.m */; };
 		94F113E7236E7E74000B3163 /* SCVideoDescriptor.m in Sources */ = {isa = PBXBuildFile; fileRef = 94F113E6236E7E74000B3163 /* SCVideoDescriptor.m */; };
 		94F113EA236E7E80000B3163 /* SCAudioDescriptor.m in Sources */ = {isa = PBXBuildFile; fileRef = 94F113E9236E7E80000B3163 /* SCAudioDescriptor.m */; };
@@ -110,7 +110,6 @@
 		522136701F7F737500182B12 /* main.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
 		522136771F7F738F00182B12 /* AudioCaptureManager.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AudioCaptureManager.h; sourceTree = "<group>"; };
 		522136781F7F738F00182B12 /* AudioCaptureManager.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = AudioCaptureManager.m; sourceTree = "<group>"; };
-		52296C0D21E6D98D006585FE /* SCFrame.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SCFrame.h; sourceTree = "<group>"; };
 		52296C1421E742D0006585FE /* SCAudioManager.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SCAudioManager.h; sourceTree = "<group>"; };
 		52296C1521E742D0006585FE /* SCAudioManager.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = SCAudioManager.m; sourceTree = "<group>"; };
 		526F498721D213D10023E6C3 /* SCFormatContext.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SCFormatContext.h; sourceTree = "<group>"; };
@@ -280,8 +279,6 @@
 		765ED7811F938781000CF16E /* libiconv.2.4.0.tbd */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.text-based-dylib-definition"; name = libiconv.2.4.0.tbd; path = usr/lib/libiconv.2.4.0.tbd; sourceTree = SDKROOT; };
 		765ED7831F93878B000CF16E /* libbz2.1.0.tbd */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.text-based-dylib-definition"; name = libbz2.1.0.tbd; path = usr/lib/libbz2.1.0.tbd; sourceTree = SDKROOT; };
 		765ED7851F938795000CF16E /* libz.1.2.8.tbd */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.text-based-dylib-definition"; name = libz.1.2.8.tbd; path = usr/lib/libz.1.2.8.tbd; sourceTree = SDKROOT; };
-		76C3E2DD21FD65E900EDC6AB /* SCFrameNode.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SCFrameNode.h; sourceTree = "<group>"; };
-		76C3E2DE21FD65E900EDC6AB /* SCFrameNode.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = SCFrameNode.m; sourceTree = "<group>"; };
 		76F2D7C021F375DB0088445C /* libyuv.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = libyuv.h; sourceTree = "<group>"; };
 		76F2D7C221F375DB0088445C /* scale_row.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = scale_row.h; sourceTree = "<group>"; };
 		76F2D7C321F375DB0088445C /* scale.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = scale.h; sourceTree = "<group>"; };
@@ -329,6 +326,8 @@
 		94BD54E923548727001B252C /* SCPacket.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = SCPacket.m; sourceTree = "<group>"; };
 		94C44FC52363D2A400F6115A /* SCCodecContext.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SCCodecContext.h; sourceTree = "<group>"; };
 		94C44FC62363D2A400F6115A /* SCCodecContext.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = SCCodecContext.m; sourceTree = "<group>"; };
+		94D17D37237B0CE300A2F32C /* ALCFlowDataRingQueue.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ALCFlowDataRingQueue.h; sourceTree = "<group>"; };
+		94D17D38237B0CE300A2F32C /* ALCFlowDataRingQueue.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = ALCFlowDataRingQueue.m; sourceTree = "<group>"; };
 		94F113E0236B2633000B3163 /* SCFlowData.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SCFlowData.h; sourceTree = "<group>"; };
 		94F113E1236E69AC000B3163 /* SCSWResample.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SCSWResample.h; sourceTree = "<group>"; };
 		94F113E2236E69AC000B3163 /* SCSWResample.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = SCSWResample.m; sourceTree = "<group>"; };
@@ -367,14 +366,14 @@
 		520EB41B22002A72002243DC /* Queue */ = {
 			isa = PBXGroup;
 			children = (
-				76C3E2DD21FD65E900EDC6AB /* SCFrameNode.h */,
-				76C3E2DE21FD65E900EDC6AB /* SCFrameNode.m */,
 				520EB41F22002B9B002243DC /* SCPacketQueue.h */,
 				520EB42022002B9B002243DC /* SCPacketQueue.m */,
 				94541CF42377A8B000880E3C /* ALCFlowDataNode.h */,
 				94541CF52377A8B000880E3C /* ALCFlowDataNode.m */,
 				94454F5C2377A9CD00832745 /* ALCFlowDataQueue.h */,
 				94454F5D2377A9CD00832745 /* ALCFlowDataQueue.m */,
+				94D17D37237B0CE300A2F32C /* ALCFlowDataRingQueue.h */,
+				94D17D38237B0CE300A2F32C /* ALCFlowDataRingQueue.m */,
 				94541CF12376AB8A00880E3C /* ALCQueueManager.h */,
 				94541CF22376AB8A00880E3C /* ALCQueueManager.m */,
 			);
@@ -923,7 +922,6 @@
 			isa = PBXGroup;
 			children = (
 				94F113E0236B2633000B3163 /* SCFlowData.h */,
-				52296C0D21E6D98D006585FE /* SCFrame.h */,
 				94BD54E823548727001B252C /* SCPacket.h */,
 				94BD54E923548727001B252C /* SCPacket.m */,
 				944C264F2375B3AD000FC866 /* SCMarkerFrame.h */,
@@ -1063,7 +1061,6 @@
 				94BD54E123547A0B001B252C /* SCDecoderLayer.m in Sources */,
 				5218B3A021E5CE3F00D9115D /* SCAudioDecoder.m in Sources */,
 				529067971F95A48A001A7BFA /* SharedQueue.m in Sources */,
-				76C3E2DF21FD65E900EDC6AB /* SCFrameNode.m in Sources */,
 				5202621C21606DB800F1033B /* AudioDecodeViewController.m in Sources */,
 				52E10330215E04DD007783E6 /* MainViewModel.m in Sources */,
 				520B5C242202CD6C00758299 /* SCMetaData.m in Sources */,
@@ -1094,6 +1091,7 @@
 				944C26512375B3AD000FC866 /* SCMarkerFrame.m in Sources */,
 				947B40222363E884008EE9BD /* SCCodecDescriptor.m in Sources */,
 				94BD54EA23548727001B252C /* SCPacket.m in Sources */,
+				94D17D39237B0CE300A2F32C /* ALCFlowDataRingQueue.m in Sources */,
 				526F498921D213D10023E6C3 /* SCFormatContext.m in Sources */,
 				52AA25191F998ECF0084771B /* H264HardwareEncoder.m in Sources */,
 				94C44FC72363D2A400F6115A /* SCCodecContext.m in Sources */,

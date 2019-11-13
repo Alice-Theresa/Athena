@@ -11,7 +11,6 @@
 #import "SCFormatContext.h"
 #import "SCVideoFrame.h"
 #import "SCPacket.h"
-#import "SCFrame.h"
 #import "SCCodecContext.h"
 #import "SCCodecDescriptor.h"
 
