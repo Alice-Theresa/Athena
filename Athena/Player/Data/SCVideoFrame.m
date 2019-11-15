@@ -17,12 +17,10 @@
 
 @implementation SCVideoFrame
 
-@synthesize core = _core;
-@synthesize type = _type;
-
 - (instancetype)init {
     if (self = [super init]) {
         _core = av_frame_alloc();
+        _type = SCFrameFormatTypeVideo;
     }
     return self;
 }
@@ -49,10 +47,10 @@
         _pixelBuffer = (CVPixelBufferRef)(frame->data[3]);
         _width = CVPixelBufferGetWidth(_pixelBuffer);
         _height = CVPixelBufferGetHeight(_pixelBuffer);
-        _type = SCFrameTypeNV12;
+        _videoFrameFormat = SCVideoFrameFormatNV12;
 //        self->_descriptor.cv_format = CVPixelBufferGetPixelFormatType(self->_pixelBuffer);
     } else {
-        _type = SCFrameTypeI420;
+        _videoFrameFormat = SCVideoFrameFormatI420;
         _width = frame->width;
         _height = frame->height;
     }

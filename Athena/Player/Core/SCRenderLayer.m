@@ -82,7 +82,7 @@
             return;
         }
     }
-    if (self.videoFrame.type == SCFrameTypeDiscard) {
+    if (self.videoFrame.flowDataType == SCFlowDataTypeDiscard) {
         self.videoFrame = nil;
         return;
     }
@@ -119,7 +119,7 @@
            }
            self.audioFrame = frame;
        }
-       if (!self.audioFrame || self.audioFrame.type == SCFrameTypeDiscard) {
+       if (!self.audioFrame || self.audioFrame.flowDataType == SCFlowDataTypeDiscard) {
            self.audioFrame = nil;
            break;
        }

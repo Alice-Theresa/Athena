@@ -22,9 +22,9 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, assign) int numberOfSamples;
 
 @property (nonatomic, assign) AVFrame *core;
-@property (nonatomic, assign) SCFrameType type;
+@property (nonatomic, assign) SCFlowDataType flowDataType;
+@property (nonatomic, assign) SCFrameFormatType type;
 
-+ (instancetype)audioFrameWithDescriptor:(SCAudioDescriptor *)descriptor numberOfSamples:(int)numberOfSamples;
 - (void)createBuffer:(SCAudioDescriptor *)descriptor numberOfSamples:(int)numberOfSamples;
 - (uint8_t **)data;
 - (void)fillData;

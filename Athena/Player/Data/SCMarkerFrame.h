@@ -17,7 +17,8 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, assign) NSUInteger size;
 @property (nonatomic, strong) SCCodecDescriptor *codecDescriptor;
 
-@property (nonatomic, assign) SCFrameType type;
+@property (nonatomic, assign) SCFlowDataType flowDataType;
+@property (nonatomic, assign) SCFrameFormatType type;
 @property (nonatomic, assign) AVFrame *core;
 
 @end

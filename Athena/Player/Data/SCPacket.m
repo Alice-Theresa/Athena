@@ -19,6 +19,7 @@
 - (instancetype)init {
     if (self = [super init]) {
         _core = av_packet_alloc();
+        
     }
     return self;
 }

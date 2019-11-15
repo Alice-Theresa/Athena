@@ -23,7 +23,10 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, assign, readonly) CVPixelBufferRef pixelBuffer;
 
 @property (nonatomic, assign) AVFrame *core;
-@property (nonatomic, assign) SCFrameType type;
+@property (nonatomic, assign) SCFlowDataType flowDataType;
+@property (nonatomic, assign) SCFrameFormatType type;
+
+@property (nonatomic, assign) SCVideoFrameFormat videoFrameFormat;
 
 - (uint8_t **)data;
 - (void)fillData;

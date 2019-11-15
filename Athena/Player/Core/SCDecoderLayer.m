@@ -84,8 +84,9 @@
                 continue;
             }
             [self.manager frameQueueIsFull:packet.codecDescriptor.track.type];
-            if (packet.core->flags == AV_PKT_FLAG_DISCARD) {
+            if (packet.flowDataType == SCFlowDataTypeDiscard) {
                 SCMarkerFrame *frame = [[SCMarkerFrame alloc] init];
+                frame.type = packet.codecDescriptor.track.type == SCTrackTypeVideo ? SCFrameFormatTypeVideo : SCFrameFormatTypeAudio;
                 [self.manager flushFrameQueue:packet.codecDescriptor.track.type];
                 [self.manager enqueueFrames:@[frame]];
                 if (packet.codecDescriptor.track.type == SCTrackTypeVideo) {
@@ -105,12 +106,11 @@
                     [self.manager enqueueFrames:frames];
                 } else if (packet.codecDescriptor.track.type == SCTrackTypeAudio) {
                     NSArray<SCFrame *> *frames = [self.audioDecoder decode:packet];
-                    NSMutableArray *temp = [NSMutableArray array];
                     for (SCAudioFrame *frame in frames) {
                         frame.codecDescriptor = packet.codecDescriptor;
-                        [temp addObject:[self innerDecode:frame]];
+                        [self innerDecode:frame];
                     }
-                    [self.manager enqueueFrames:temp];
+                    [self.manager enqueueFrames:frames];
                 }
 
             }
@@ -119,14 +119,13 @@
 }
 
 - (void)process:(SCVideoFrame *)videoFrame {
-//    videoFrame.
     videoFrame.timeStamp = av_frame_get_best_effort_timestamp(videoFrame.core) * self.context.videoTimebase;
     videoFrame.timeStamp += videoFrame.core->repeat_pict * self.context.videoTimebase * 0.5;
     videoFrame.duration = av_frame_get_pkt_duration(videoFrame.core) * self.context.videoTimebase;
     [videoFrame fillData];
 }
 
-- (SCAudioFrame *)innerDecode:(SCAudioFrame *)audioFrame {
+- (void)innerDecode:(SCAudioFrame *)audioFrame {
     if (!self.resample) {
         self.resample = [[SCSWResample alloc] init];
         self.resample.inputDescriptor = [[SCAudioDescriptor alloc] initWithFrame:audioFrame];
@@ -136,19 +135,17 @@
     audioFrame.numberOfSamples = audioFrame.core->nb_samples;
     int nb_samples = [self.resample write:audioFrame.core->data nb_samples:audioFrame.numberOfSamples];
     
-    SCAudioFrame *frame = [SCAudioFrame audioFrameWithDescriptor:self.resample.outputDescriptor numberOfSamples:nb_samples];
-    
+    [audioFrame createBuffer:self.resample.outputDescriptor numberOfSamples:nb_samples];
     int nb_planes = self.resample.outputDescriptor.numberOfPlanes;
     
     uint8_t *data[8] = { NULL };
     for (int i = 0; i < nb_planes; i++) {
-        data[i] = frame.core->data[i];
+        data[i] = audioFrame.core->data[i];
     }
     [self.resample read:data nb_samples:nb_samples];
-    [frame fillData];
-    frame.timeStamp = av_frame_get_best_effort_timestamp(audioFrame.core) * self.context.audioTimebase;
-    frame.duration = av_frame_get_pkt_duration(audioFrame.core) * self.context.audioTimebase;
-    return frame;
+    [audioFrame fillData];
+    audioFrame.timeStamp = av_frame_get_best_effort_timestamp(audioFrame.core) * self.context.audioTimebase;
+    audioFrame.duration = av_frame_get_pkt_duration(audioFrame.core) * self.context.audioTimebase;
 }
 
 @end

@@ -12,7 +12,6 @@
 
 @class SCPacket;
 @class SCFrame;
-@class SCPacketQueue;
 @class SCFormatContext;
 
 NS_ASSUME_NONNULL_BEGIN

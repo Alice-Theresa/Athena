@@ -19,6 +19,7 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, assign) NSTimeInterval timeStamp;
 @property (nonatomic, assign) NSTimeInterval duration;
 @property (nonatomic, assign) NSUInteger size;
+@property (nonatomic, assign) SCFlowDataType flowDataType;
 @property (nonatomic, strong) SCCodecDescriptor *codecDescriptor;
 
 @property (nonatomic, assign, nullable, readonly) AVPacket *core;

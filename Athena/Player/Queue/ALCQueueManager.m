@@ -71,7 +71,7 @@
         SCCodecDescriptor *cd = [[SCCodecDescriptor alloc] init];
         cd.track = [[SCTrack alloc] initWithIndex:-1 type:self.packetsQueue[key].type meta:NULL];
         SCPacket *packet = [[SCPacket alloc] init];
-        packet.core->flags = AV_PKT_FLAG_DISCARD;
+        packet.flowDataType = SCFlowDataTypeDiscard;
         packet.codecDescriptor = cd;
         [self.packetsQueue[key] enqueue:@[packet]];
     }
@@ -152,9 +152,9 @@
 
 - (void)enqueueFrames:(NSArray<id<SCFrame>> *)frames {
     [self.frameWakeup lock];
-    if (frames.firstObject.type == SCFrameTypeNV12 || frames.firstObject.type == SCFrameTypeI420 || frames.firstObject.type == SCFrameTypeDiscard) {
+    if (frames.firstObject.type == SCFrameFormatTypeVideo) {
         [self.videoFrameQueue enqueue:frames];
-    } else if (frames.firstObject.type == SCFrameTypeAudio || frames.firstObject.type == SCFrameTypeDiscard) {
+    } else if (frames.firstObject.type == SCFrameFormatTypeAudio) {
         [self.audioFrameQueue enqueue:frames];
     } else {
     
