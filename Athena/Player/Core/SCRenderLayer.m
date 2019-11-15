@@ -77,7 +77,7 @@
 
 - (void)rendering {
     if (!self.videoFrame) {
-        self.videoFrame = [self.manager dequeueVideoFrame];
+        self.videoFrame = [self.manager dequeueFrameByQueueIndex:SCTrackTypeVideo];
         if (!self.videoFrame) {
             return;
         }
@@ -113,7 +113,7 @@
            break;
        }
        if (!self.audioFrame) {
-           SCAudioFrame *frame = (SCAudioFrame *)[self.manager dequeueAudioFrame];
+           SCAudioFrame *frame = (SCAudioFrame *)[self.manager dequeueFrameByQueueIndex:SCTrackTypeAudio];
            if (!frame) {
                break;
            }

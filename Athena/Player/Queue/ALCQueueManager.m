@@ -127,63 +127,53 @@
 
 #pragma mark -
 
-- (void)videoFrameQueueFlush {
+- (void)flushFrameQueue:(SCTrackType)type {
     [self.frameWakeup lock];
-    [self.videoFrameQueue flush];
+    if (type == SCTrackTypeVideo) {
+        [self.videoFrameQueue flush];
+    } else if (type == SCTrackTypeAudio) {
+        [self.audioFrameQueue flush];
+    }
     [self.frameWakeup unlock];
 }
 
-- (void)audioFrameQueueFlush {
+- (void)frameQueueIsFull:(SCTrackType)type {
     [self.frameWakeup lock];
-    [self.audioFrameQueue flush];
-    [self.frameWakeup unlock];
-}
-
-- (void)videoFrameQueueIsFull {
-    [self.frameWakeup lock];
-    BOOL isFull = self.videoFrameQueue.count > 5;
+    BOOL isFull = NO;
+    if (type == SCTrackTypeVideo) {
+        isFull = self.videoFrameQueue.count > 5;
+    } else if (type == SCTrackTypeAudio) {
+        isFull = self.audioFrameQueue.count > 5;
+    }
     if (isFull) {
         [self.frameWakeup wait];
     }
     [self.frameWakeup unlock];
 }
 
-- (void)audioFrameQueueIsFull {
+- (void)enqueueFrames:(NSArray<id<SCFrame>> *)frames {
     [self.frameWakeup lock];
-    BOOL isFull = self.audioFrameQueue.count > 5;
-    if (isFull) {
-        [self.frameWakeup wait];
+    if (frames.firstObject.type == SCFrameTypeNV12 || frames.firstObject.type == SCFrameTypeI420 || frames.firstObject.type == SCFrameTypeDiscard) {
+        [self.videoFrameQueue enqueue:frames];
+    } else if (frames.firstObject.type == SCFrameTypeAudio || frames.firstObject.type == SCFrameTypeDiscard) {
+        [self.audioFrameQueue enqueue:frames];
+    } else {
+    
     }
     [self.frameWakeup unlock];
 }
 
-- (void)enqueueAudioFrames:(nonnull NSArray<SCFrame *> *)frames {
+- (id<SCFlowData>)dequeueFrameByQueueIndex:(SCTrackType)type {
     [self.frameWakeup lock];
-    [self.audioFrameQueue enqueue:frames];
-    [self.frameWakeup unlock];
-}
-
-- (void)enqueueVideoFrames:(nonnull NSArray<SCFrame *> *)frames {
-    [self.frameWakeup lock];
-    [self.videoFrameQueue enqueue:frames];
-    [self.frameWakeup unlock];
-}
-
-- (SCFrame *)dequeueVideoFrame {
-    [self.frameWakeup lock];
-    SCFrame *frame = [self.videoFrameQueue dequeue];
-    BOOL isFull = self.videoFrameQueue.count > 5;
-    if (!isFull) {
-        [self.frameWakeup signal];
+    id<SCFlowData> frame;
+    BOOL isFull = NO;
+    if (type == SCTrackTypeVideo) {
+        frame = [self.videoFrameQueue dequeue];
+        isFull = self.videoFrameQueue.count > 5;
+    } else if (type == SCTrackTypeAudio) {
+        frame = [self.audioFrameQueue dequeue];
+        isFull = self.audioFrameQueue.count > 5;
     }
-    [self.frameWakeup unlock];
-    return frame;
-}
-
-- (SCFrame *)dequeueAudioFrame {
-    [self.frameWakeup lock];
-    SCFrame *frame = [self.audioFrameQueue dequeue];
-    BOOL isFull = self.audioFrameQueue.count > 5;
     if (!isFull) {
         [self.frameWakeup signal];
     }

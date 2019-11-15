@@ -7,6 +7,8 @@
 //
 
 #import <Foundation/Foundation.h>
+#import "SCTrack.h"
+#import "SCFlowData.h"
 
 @class SCPacket;
 @class SCFrame;
@@ -24,19 +26,10 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)enqueuePacket:(SCPacket *)packet;
 - (SCPacket *)dequeuePacket;
 
-//- (void)flushFrameQueue;
-//- (BOOL)frameQueueIsFull:(NSUInteger)index;
-//- (void)enqueueFrames:(NSArray<SCFrame *> *)frames;
-//- (SCFrame *)dequeueFrameByQueueIndex:(NSNumber *)index;
-- (void)videoFrameQueueFlush;
-- (void)audioFrameQueueFlush;
-- (void)videoFrameQueueIsFull;
-- (void)audioFrameQueueIsFull;
-- (void)enqueueVideoFrames:(NSArray<SCFrame *> *)frames;
-- (void)enqueueAudioFrames:(NSArray<SCFrame *> *)frames;
-
-- (SCFrame *)dequeueVideoFrame;
-- (SCFrame *)dequeueAudioFrame;
+- (void)flushFrameQueue:(SCTrackType)type;
+- (void)frameQueueIsFull:(SCTrackType)type;
+- (void)enqueueFrames:(NSArray<SCFrame *> *)frames;
+- (id<SCFlowData>)dequeueFrameByQueueIndex:(SCTrackType)type;
 
 @end
 

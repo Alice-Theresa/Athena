@@ -83,23 +83,15 @@
             if (!packet) {
                 continue;
             }
-            if (packet.codecDescriptor.track.type == SCTrackTypeVideo) {
-                [self.manager videoFrameQueueIsFull];
-            } else if (packet.codecDescriptor.track.type == SCTrackTypeAudio) {
-                [self.manager audioFrameQueueIsFull];
-            }
+            [self.manager frameQueueIsFull:packet.codecDescriptor.track.type];
             if (packet.core->flags == AV_PKT_FLAG_DISCARD) {
                 SCMarkerFrame *frame = [[SCMarkerFrame alloc] init];
+                [self.manager flushFrameQueue:packet.codecDescriptor.track.type];
+                [self.manager enqueueFrames:@[frame]];
                 if (packet.codecDescriptor.track.type == SCTrackTypeVideo) {
-                    [self.manager videoFrameQueueIsFull];
                     [self.videoDecoder flush];
-                    [self.manager videoFrameQueueFlush];
-                    [self.manager enqueueVideoFrames:@[frame]];
                 } else if (packet.codecDescriptor.track.type == SCTrackTypeAudio) {
-                    [self.manager audioFrameQueueIsFull];
                     [self.audioDecoder flush];
-                    [self.manager audioFrameQueueFlush];
-                    [self.manager enqueueAudioFrames:@[frame]];
                 }
                 continue;
             }
@@ -110,16 +102,15 @@
                         frame.codecDescriptor = packet.codecDescriptor;
                         [self process:frame];
                     }
-                    [self.manager enqueueVideoFrames:frames];
+                    [self.manager enqueueFrames:frames];
                 } else if (packet.codecDescriptor.track.type == SCTrackTypeAudio) {
                     NSArray<SCFrame *> *frames = [self.audioDecoder decode:packet];
                     NSMutableArray *temp = [NSMutableArray array];
                     for (SCAudioFrame *frame in frames) {
                         frame.codecDescriptor = packet.codecDescriptor;
-//                        [self innerDecode:frame];
                         [temp addObject:[self innerDecode:frame]];
                     }
-                    [self.manager enqueueAudioFrames:temp];
+                    [self.manager enqueueFrames:temp];
                 }
 
             }
