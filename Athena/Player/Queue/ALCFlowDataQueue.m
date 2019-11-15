@@ -11,7 +11,7 @@
 
 @interface ALCFlowDataQueue ()
 
-@property (nonatomic, assign, readwrite) NSUInteger count;
+@property (nonatomic, assign, readwrite) NSUInteger length;
 @property (nonatomic, assign, readwrite) NSUInteger size;
 
 @property (nonatomic, strong) ALCFlowDataNode *header;
@@ -34,8 +34,8 @@
             self.tailer.next = node;
             self.tailer = node;
         }
-        
-        self.count++;
+        self.size += data.size;
+        self.length++;
     }
 }
 
@@ -48,12 +48,13 @@
     if (!self.header) {
         self.tailer = nil;
     }
-    self.count--;
+    self.length--;
+    self.size -= data.size;
     return data;
 }
 
 - (void)flush {
-    self.count = 0;
+    self.length = 0;
     self.size = 0;
     self.header = nil;
     self.tailer = nil;

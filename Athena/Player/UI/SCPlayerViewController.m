@@ -31,7 +31,7 @@
 - (void)viewDidLoad {
     [super viewDidLoad];
     [self setup];
-    NSString *path = [[[NSBundle mainBundle] resourcePath] stringByAppendingPathComponent:@"Aimer.mp4"];
+    NSString *path = [[[NSBundle mainBundle] resourcePath] stringByAppendingPathComponent:@"Aimer.mkv"];
     [self.controler openPath:path];
 }
 

@@ -7,7 +7,6 @@
 //
 
 #import "ALCQueueManager.h"
-#import "SCPacketQueue.h"
 #import "SCPacket.h"
 #import "SCTrack.h"
 #import "SCFormatContext.h"
@@ -21,11 +20,11 @@
 @property (nonatomic, strong) NSCondition *packetWakeup;
 @property (nonatomic, strong) NSCondition *frameWakeup;
 
-@property (nonatomic, copy  ) NSDictionary<NSString *, SCPacketQueue *> *packetsQueue;
+@property (nonatomic, copy  ) NSDictionary<NSString *, ALCFlowDataQueue *> *packetsQueue;
 @property (nonatomic, strong) NSMutableDictionary<NSString *, NSNumber *> *timeStamps;
 
-@property (nonatomic, strong) ALCFlowDataRingQueue *videoFrameQueue;
-@property (nonatomic, strong) ALCFlowDataRingQueue *audioFrameQueue;
+@property (nonatomic, strong) ALCFlowDataQueue *videoFrameQueue;
+@property (nonatomic, strong) ALCFlowDataQueue *audioFrameQueue;
 
 @end
 
@@ -38,10 +37,10 @@
 
         _packetsQueue    = [NSMutableDictionary dictionary];
         _timeStamps      = [NSMutableDictionary dictionary];
-        _videoFrameQueue = [[ALCFlowDataRingQueue alloc] initWithLength:2];
-        _audioFrameQueue = [[ALCFlowDataRingQueue alloc] initWithLength:4];
+        _videoFrameQueue = [[ALCFlowDataQueue alloc] init];
+        _audioFrameQueue = [[ALCFlowDataQueue alloc] init];
         for (SCTrack *track in context.tracks) {
-            SCPacketQueue *queue = [[SCPacketQueue alloc] init];
+            ALCFlowDataQueue *queue = [[ALCFlowDataQueue alloc] init];
             queue.type = track.type;
             [_packetsQueue setValue:queue forKey:[NSString stringWithFormat:@"%d", track.index]];
         }
@@ -55,7 +54,7 @@
     [self.packetWakeup lock];
     int total = 0;
     for (NSString *key in self.packetsQueue) {
-        total += self.packetsQueue[key].packetTotalSize;
+        total += self.packetsQueue[key].size;
     }
     BOOL isFull = total > 10 * 1024 * 1024;
     if (isFull) {
@@ -74,7 +73,7 @@
         SCPacket *packet = [[SCPacket alloc] init];
         packet.core->flags = AV_PKT_FLAG_DISCARD;
         packet.codecDescriptor = cd;
-        [self.packetsQueue[key] enqueuePacket:packet];
+        [self.packetsQueue[key] enqueue:@[packet]];
     }
     [self.timeStamps removeAllObjects];
     [self.packetWakeup unlock];
@@ -82,8 +81,8 @@
 
 - (void)enqueuePacket:(SCPacket *)packet {
     [self.packetWakeup lock];
-    SCPacketQueue *queue = [self.packetsQueue valueForKey:[NSString stringWithFormat:@"%d", packet.core->stream_index]];
-    [queue enqueuePacket:packet];
+    ALCFlowDataQueue *queue = [self.packetsQueue valueForKey:[NSString stringWithFormat:@"%d", packet.core->stream_index]];
+    [queue enqueue:@[packet]];
     [self.packetWakeup unlock];
 }
 
@@ -92,7 +91,7 @@
     int streamIndex = -1;
     double min = DBL_MAX;
     for (NSString *key in self.packetsQueue) {
-       if (self.packetsQueue[key].packetTotalSize == 0) {
+       if (self.packetsQueue[key].size == 0) {
            continue;
        }
        NSNumber *time = self.timeStamps[key];
@@ -111,11 +110,11 @@
         [self.packetWakeup unlock];
         return nil;
     }
-    SCPacket *packet = [self.packetsQueue[@(streamIndex).stringValue] dequeuePacket];
+    SCPacket *packet = [self.packetsQueue[@(streamIndex).stringValue] dequeue];
     [self.timeStamps setValue:@(packet.timeStamp) forKey:@(streamIndex).stringValue];
     int total = 0;
     for (NSString *key in self.packetsQueue) {
-        total += self.packetsQueue[key].packetTotalSize;
+        total += self.packetsQueue[key].size;
     }
     BOOL isFull = total > 10 * 1024 * 1024;
     if (!isFull) {
@@ -141,9 +140,9 @@
     [self.frameWakeup lock];
     BOOL isFull = NO;
     if (type == SCTrackTypeVideo) {
-        isFull = self.videoFrameQueue.count > 5;
+        isFull = self.videoFrameQueue.length > 5;
     } else if (type == SCTrackTypeAudio) {
-        isFull = self.audioFrameQueue.count > 5;
+        isFull = self.audioFrameQueue.length > 5;
     }
     if (isFull) {
         [self.frameWakeup wait];
@@ -169,10 +168,10 @@
     BOOL isFull = NO;
     if (type == SCTrackTypeVideo) {
         frame = [self.videoFrameQueue dequeue];
-        isFull = self.videoFrameQueue.count > 5;
+        isFull = self.videoFrameQueue.length > 5;
     } else if (type == SCTrackTypeAudio) {
         frame = [self.audioFrameQueue dequeue];
-        isFull = self.audioFrameQueue.count > 5;
+        isFull = self.audioFrameQueue.length > 5;
     }
     if (!isFull) {
         [self.frameWakeup signal];

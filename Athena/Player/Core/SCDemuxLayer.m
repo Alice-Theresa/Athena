@@ -97,6 +97,7 @@
                                                     meta:[SCMetaData metadataWithAVDictionary:stream->metadata]];
             packet.codecDescriptor = cd;
             packet.timeStamp = (double)packet.core->pts * stream->time_base.num / stream->time_base.den;
+            packet.size = packet.core->size;
             [self.queueManager enqueuePacket:packet];
         }
     }

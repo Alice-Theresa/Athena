@@ -13,7 +13,7 @@ NS_ASSUME_NONNULL_BEGIN
 @interface ALCFlowDataRingQueue : NSObject
 
 @property (nonatomic, assign, readonly) NSUInteger count;
-@property (nonatomic, assign, readonly) NSUInteger size;
+//@property (nonatomic, assign, readonly) NSUInteger size;
 
 - (instancetype)initWithLength:(NSUInteger)length;
 

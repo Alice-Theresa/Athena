@@ -23,12 +23,13 @@ typedef NS_ENUM(int, SCFrameType) {
 
 @property (nonatomic, assign) NSTimeInterval timeStamp;
 @property (nonatomic, assign) NSTimeInterval duration;
+@property (nonatomic, assign) NSUInteger size;
+@property (nonatomic, strong) SCCodecDescriptor *codecDescriptor;
 
 @end
 
 @protocol SCFrame <NSObject>
 
-@property (nonatomic, strong) SCCodecDescriptor *codecDescriptor;
 @property (nonatomic, assign) SCFrameType type;
 @property (nonatomic, assign) AVFrame *core;
 

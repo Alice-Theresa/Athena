@@ -8,12 +8,14 @@
 
 #import <Foundation/Foundation.h>
 #import "SCFlowData.h"
+#import "SCTrack.h"
 
 NS_ASSUME_NONNULL_BEGIN
 
 @interface ALCFlowDataQueue : NSObject
 
-@property (nonatomic, assign, readonly) NSUInteger count;
+@property (nonatomic, assign) SCTrackType type;
+@property (nonatomic, assign, readonly) NSUInteger length;
 @property (nonatomic, assign, readonly) NSUInteger size;
 
 - (void)enqueue:(NSArray<id<SCFlowData>> *)frames;

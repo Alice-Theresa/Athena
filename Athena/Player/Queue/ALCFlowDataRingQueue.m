@@ -46,7 +46,7 @@
 }
 
 - (BOOL)isFull {
-    return ((self.rear + 1) & self.queue.count) == self.front;
+    return ((self.rear + 1) & self.count) == self.front;
 }
 
 - (void)enqueue:(NSArray<id<SCFlowData>> *)frames {
@@ -65,6 +65,7 @@
         return nil;
     }
     id<SCFlowData> data = self.queue[self.front];
+    self.queue[self.front] = [NSNull null];
     self.front = (self.front + 1) & self.computedSize;
     self.count--;
     return data;
@@ -74,7 +75,7 @@
     [self.queue removeAllObjects];
     self.front = 0;
     self.rear = 0;
-    self.computedSize = 0;
+//    self.size = 0;
 }
 
 @end

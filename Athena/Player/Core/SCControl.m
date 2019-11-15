@@ -17,8 +17,6 @@
 
 #import "SCAudioDecoder.h"
 #import "SCVideoDecoder.h"
-
-#import "SCPacketQueue.h"
 #import "SCRender.h"
 
 #import "SCDemuxLayer.h"
