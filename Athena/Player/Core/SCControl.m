@@ -19,7 +19,7 @@
 #import "SCVideoDecoder.h"
 #import "SCRender.h"
 
-#import "SCDemuxLayer.h"
+#import "SCDemuxLoop.h"
 #import "SCRenderLayer.h"
 #import "SCDecoderLayer.h"
 
@@ -31,7 +31,7 @@
 @property (nonatomic, assign, readwrite) SCPlayerState controlState;
 @property (nonatomic, strong) ALCQueueManager *queueManager;
 
-@property (nonatomic, strong) SCDemuxLayer *demuxLayer;
+@property (nonatomic, strong) SCDemuxLoop *demuxLayer;
 @property (nonatomic, strong) SCRenderLayer *renderLayer;
 @property (nonatomic, strong) SCDecoderLayer *decoderLayer;
 
@@ -59,7 +59,7 @@
     _context = [[SCFormatContext alloc] init];
     [_context openPath:filename];
     self.queueManager = [[ALCQueueManager alloc] initWithContext:self.context];
-    self.demuxLayer   = [[SCDemuxLayer alloc] initWithContext:self.context queueManager:self.queueManager];
+    self.demuxLayer   = [[SCDemuxLoop alloc] initWithContext:self.context queueManager:self.queueManager];
     self.decoderLayer = [[SCDecoderLayer alloc] initWithContext:self.context queueManager:self.queueManager];
     self.renderLayer  = [[SCRenderLayer alloc] initWithContext:self.context queueManager:self.queueManager renderView:(MTKView *)self.view];
     [self start];

@@ -13,7 +13,7 @@ NS_ASSUME_NONNULL_BEGIN
 @class ALCQueueManager;
 @class SCFormatContext;
 
-@interface SCDemuxLayer : NSObject
+@interface SCDemuxLoop : NSObject
 
 - (instancetype)initWithContext:(SCFormatContext *)context queueManager:(ALCQueueManager *)manager;
 

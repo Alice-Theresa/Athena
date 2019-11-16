@@ -39,6 +39,10 @@
 
 @implementation SCRenderLayer
 
+- (void)dealloc {
+    NSLog(@"render dealloc");
+}
+
 - (instancetype)initWithContext:(SCFormatContext *)context queueManager:(ALCQueueManager *)manager renderView:(MTKView *)view {
     if (self = [super init]) {
         _context = context;

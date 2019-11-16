@@ -65,7 +65,7 @@
 		94541CF62377A8B000880E3C /* ALCFlowDataNode.m in Sources */ = {isa = PBXBuildFile; fileRef = 94541CF52377A8B000880E3C /* ALCFlowDataNode.m */; };
 		9459A151237FDE790059FAA3 /* SCFlowData.m in Sources */ = {isa = PBXBuildFile; fileRef = 9459A150237FDE790059FAA3 /* SCFlowData.m */; };
 		947B40222363E884008EE9BD /* SCCodecDescriptor.m in Sources */ = {isa = PBXBuildFile; fileRef = 947B40212363E884008EE9BD /* SCCodecDescriptor.m */; };
-		94BD54DE2354741E001B252C /* SCDemuxLayer.m in Sources */ = {isa = PBXBuildFile; fileRef = 94BD54DD2354741E001B252C /* SCDemuxLayer.m */; };
+		94BD54DE2354741E001B252C /* SCDemuxLoop.m in Sources */ = {isa = PBXBuildFile; fileRef = 94BD54DD2354741E001B252C /* SCDemuxLoop.m */; };
 		94BD54E123547A0B001B252C /* SCDecoderLayer.m in Sources */ = {isa = PBXBuildFile; fileRef = 94BD54E023547A0B001B252C /* SCDecoderLayer.m */; };
 		94BD54E423547B36001B252C /* SCRenderLayer.m in Sources */ = {isa = PBXBuildFile; fileRef = 94BD54E323547B36001B252C /* SCRenderLayer.m */; };
 		94BD54EA23548727001B252C /* SCPacket.m in Sources */ = {isa = PBXBuildFile; fileRef = 94BD54E923548727001B252C /* SCPacket.m */; };
@@ -314,8 +314,8 @@
 		9459A150237FDE790059FAA3 /* SCFlowData.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = SCFlowData.m; sourceTree = "<group>"; };
 		947B40202363E884008EE9BD /* SCCodecDescriptor.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SCCodecDescriptor.h; sourceTree = "<group>"; };
 		947B40212363E884008EE9BD /* SCCodecDescriptor.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = SCCodecDescriptor.m; sourceTree = "<group>"; };
-		94BD54DC2354741E001B252C /* SCDemuxLayer.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SCDemuxLayer.h; sourceTree = "<group>"; };
-		94BD54DD2354741E001B252C /* SCDemuxLayer.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = SCDemuxLayer.m; sourceTree = "<group>"; };
+		94BD54DC2354741E001B252C /* SCDemuxLoop.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SCDemuxLoop.h; sourceTree = "<group>"; };
+		94BD54DD2354741E001B252C /* SCDemuxLoop.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = SCDemuxLoop.m; sourceTree = "<group>"; };
 		94BD54DF23547A0B001B252C /* SCDecoderLayer.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SCDecoderLayer.h; sourceTree = "<group>"; };
 		94BD54E023547A0B001B252C /* SCDecoderLayer.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = SCDecoderLayer.m; sourceTree = "<group>"; };
 		94BD54E223547B36001B252C /* SCRenderLayer.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SCRenderLayer.h; sourceTree = "<group>"; };
@@ -935,8 +935,8 @@
 				94523E9623645AA500054E63 /* SCPlayerState.h */,
 				521B7E7B21D7602800F5B689 /* SCControl.h */,
 				521B7E7A21D7602800F5B689 /* SCControl.m */,
-				94BD54DC2354741E001B252C /* SCDemuxLayer.h */,
-				94BD54DD2354741E001B252C /* SCDemuxLayer.m */,
+				94BD54DC2354741E001B252C /* SCDemuxLoop.h */,
+				94BD54DD2354741E001B252C /* SCDemuxLoop.m */,
 				94BD54DF23547A0B001B252C /* SCDecoderLayer.h */,
 				94BD54E023547A0B001B252C /* SCDecoderLayer.m */,
 				94BD54E223547B36001B252C /* SCRenderLayer.h */,
@@ -1092,7 +1092,7 @@
 				94BD54E423547B36001B252C /* SCRenderLayer.m in Sources */,
 				52DAD7C01FA07EA000D355CE /* H264SoftwareEncoder.m in Sources */,
 				94541CF32376AB8A00880E3C /* ALCQueueManager.m in Sources */,
-				94BD54DE2354741E001B252C /* SCDemuxLayer.m in Sources */,
+				94BD54DE2354741E001B252C /* SCDemuxLoop.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

@@ -37,9 +37,15 @@
 
 @property (nonatomic, strong) SCSWResample *resample;
 
+@property (nonatomic, strong) NSCondition *wakeup;
+
 @end
 
 @implementation SCDecoderLayer
+
+- (void)dealloc {
+    NSLog(@"decoder dealloc");
+}
 
 - (instancetype)initWithContext:(SCFormatContext *)context queueManager:(ALCQueueManager *)manager {
     if (self = [super init]) {
@@ -48,6 +54,7 @@
         _videoDecoder = [[SCVideoDecoder alloc] init];
         _audioDecoder = [[SCAudioDecoder alloc] init];
         _controlQueue = [[NSOperationQueue alloc] init];
+        _wakeup = [[NSCondition alloc] init];
     }
     return self;
 }
@@ -60,6 +67,7 @@
 
 - (void)resume {
     self.controlState = SCPlayerStatePlaying;
+    [self.wakeup signal];
 }
 
 - (void)pause {
@@ -75,11 +83,11 @@
 - (void)decodeFrame {
     while (self.controlState != SCPlayerStateClosed) {
         if (self.controlState == SCPlayerStatePaused) {
-            [NSThread sleepForTimeInterval:0.03];
+            [self.wakeup wait];
             continue;
         }
         @autoreleasepool {
-            SCPacket *packet = [self.manager dequeuePacket];
+            SCPacket *packet = (SCPacket *)[self.manager dequeuePacket];
             if (!packet) {
                 continue;
             }
@@ -107,9 +115,9 @@
 
 - (void)process:(SCFlowData *)frame {
     if (frame.mediaType == SCMediaTypeVideo) {
-        [self processVideo:frame];
+        [self processVideo:(SCVideoFrame *)frame];
     } else if (frame.mediaType == SCMediaTypeAudio) {
-        [self processAudio:frame];
+        [self processAudio:(SCAudioFrame *)frame];
     }
 }
 

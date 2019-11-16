@@ -7,7 +7,7 @@
 //
 
 #import <libavformat/avformat.h>
-#import "SCDemuxLayer.h"
+#import "SCDemuxLoop.h"
 #import "SCFormatContext.h"
 #import "SCControl.h"
 #import "SCPacket.h"
@@ -17,7 +17,7 @@
 #import "SCTrack.h"
 #import "SCMetaData.h"
 
-@interface SCDemuxLayer ()
+@interface SCDemuxLoop ()
 
 @property (nonatomic, strong) SCFormatContext  *context;
 @property (nonatomic, strong) NSOperationQueue *controlQueue;
@@ -27,15 +27,22 @@
 @property (nonatomic, assign) SCPlayerState   controlState;
 @property (nonatomic, strong) ALCQueueManager *queueManager;
 
+@property (nonatomic, strong) NSCondition *wakeup;
+
 @end
 
-@implementation SCDemuxLayer
+@implementation SCDemuxLoop
+
+- (void)dealloc {
+    NSLog(@"demux dealloc");
+}
 
 - (instancetype)initWithContext:(SCFormatContext *)context queueManager:(ALCQueueManager *)manager {
     if (self = [super init]) {
         _context = context;
         _queueManager = manager;
         _controlQueue = [[NSOperationQueue alloc] init];
+        _wakeup = [[NSCondition alloc] init];
     }
     return self;
 }
@@ -48,6 +55,7 @@
 
 - (void)resume {
     self.controlState = SCPlayerStatePlaying;
+    [self.wakeup signal];
 }
 
 - (void)pause {
@@ -63,6 +71,7 @@
 - (void)seekingTime:(NSTimeInterval)time {
     self.isSeeking = true;
     self.videoSeekingTime = time;
+    [self.wakeup signal];
 }
 
 - (void)readPacket {
@@ -72,7 +81,7 @@
         }
         [self.queueManager packetQueueIsFull];
         if (self.controlState == SCPlayerStatePaused) {
-            [NSThread sleepForTimeInterval:0.03];
+            [self.wakeup wait];
             continue;
         }
         if (self.isSeeking) {
@@ -85,7 +94,7 @@
         int result = [self.context readFrame:packet.core];
         if (result < 0) {
             NSLog(@"read packet error");
-            break;
+            [self.wakeup wait];
         } else {
             int index = packet.core->stream_index;
             AVStream *stream = self.context.formatContext->streams[index];
