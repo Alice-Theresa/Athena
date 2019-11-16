@@ -7,16 +7,16 @@
 //
 
 #import <Foundation/Foundation.h>
+#import "SCDecoder.h"
 
-@class SCFrame;
 @class SCPacket;
 @class SCFormatContext;
 
 NS_ASSUME_NONNULL_BEGIN
 
-@interface SCAudioDecoder : NSObject 
+@interface SCAudioDecoder : NSObject <SCDecoder>
 
-- (NSArray<SCFrame *> *)decode:(SCPacket *)packet;
+- (NSArray<id<SCFrame>> *)decode:(SCPacket *)packet;
 - (void)flush;
 
 @end

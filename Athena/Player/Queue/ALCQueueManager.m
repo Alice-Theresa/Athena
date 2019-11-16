@@ -15,6 +15,10 @@
 #import "ALCFlowDataQueue.h"
 #import "SCCodecDescriptor.h"
 
+#define PacketTotalMaxsize 10 * 1024 * 1024
+#define VideoFrameQueueMaxSize 3
+#define AudioFrameQueueMaxSize 5
+
 @interface ALCQueueManager ()
 
 @property (nonatomic, strong) NSCondition *packetWakeup;
@@ -56,7 +60,7 @@
     for (NSString *key in self.packetsQueue) {
         total += self.packetsQueue[key].size;
     }
-    BOOL isFull = total > 10 * 1024 * 1024;
+    BOOL isFull = total > PacketTotalMaxsize;
     if (isFull) {
         [self.packetWakeup wait];
     }
@@ -79,14 +83,14 @@
     [self.packetWakeup unlock];
 }
 
-- (void)enqueuePacket:(SCPacket *)packet {
+- (void)enqueuePacket:(id<SCFlowData>)packet {
     [self.packetWakeup lock];
-    ALCFlowDataQueue *queue = [self.packetsQueue valueForKey:[NSString stringWithFormat:@"%d", packet.core->stream_index]];
+    ALCFlowDataQueue *queue = [self.packetsQueue valueForKey:[NSString stringWithFormat:@"%d", packet.codecDescriptor.track.type]];
     [queue enqueue:@[packet]];
     [self.packetWakeup unlock];
 }
 
-- (SCPacket *)dequeuePacket {
+- (id<SCFlowData>)dequeuePacket {
     [self.packetWakeup lock];
     int streamIndex = -1;
     double min = DBL_MAX;
@@ -110,7 +114,7 @@
         [self.packetWakeup unlock];
         return nil;
     }
-    SCPacket *packet = [self.packetsQueue[@(streamIndex).stringValue] dequeue];
+    id<SCFlowData> packet = [self.packetsQueue[@(streamIndex).stringValue] dequeue];
     [self.timeStamps setValue:@(packet.timeStamp) forKey:@(streamIndex).stringValue];
     int total = 0;
     for (NSString *key in self.packetsQueue) {
@@ -124,7 +128,7 @@
     return packet;
 }
 
-#pragma mark -
+#pragma mark - frame queue
 
 - (void)flushFrameQueue:(SCTrackType)type {
     [self.frameWakeup lock];
@@ -140,9 +144,9 @@
     [self.frameWakeup lock];
     BOOL isFull = NO;
     if (type == SCTrackTypeVideo) {
-        isFull = self.videoFrameQueue.length > 5;
+        isFull = self.videoFrameQueue.length > VideoFrameQueueMaxSize;
     } else if (type == SCTrackTypeAudio) {
-        isFull = self.audioFrameQueue.length > 5;
+        isFull = self.audioFrameQueue.length > AudioFrameQueueMaxSize;
     }
     if (isFull) {
         [self.frameWakeup wait];
@@ -150,14 +154,12 @@
     [self.frameWakeup unlock];
 }
 
-- (void)enqueueFrames:(NSArray<id<SCFrame>> *)frames {
+- (void)enqueueFrames:(NSArray<id<SCFlowData>> *)frames {
     [self.frameWakeup lock];
-    if (frames.firstObject.type == SCFrameFormatTypeVideo) {
+    if (frames.firstObject.type == SCMediaTypeVideo) {
         [self.videoFrameQueue enqueue:frames];
-    } else if (frames.firstObject.type == SCFrameFormatTypeAudio) {
+    } else if (frames.firstObject.type == SCMediaTypeAudio) {
         [self.audioFrameQueue enqueue:frames];
-    } else {
-    
     }
     [self.frameWakeup unlock];
 }
@@ -168,10 +170,10 @@
     BOOL isFull = NO;
     if (type == SCTrackTypeVideo) {
         frame = [self.videoFrameQueue dequeue];
-        isFull = self.videoFrameQueue.length > 5;
+        isFull = self.videoFrameQueue.length > VideoFrameQueueMaxSize;
     } else if (type == SCTrackTypeAudio) {
         frame = [self.audioFrameQueue dequeue];
-        isFull = self.audioFrameQueue.length > 5;
+        isFull = self.audioFrameQueue.length > AudioFrameQueueMaxSize;
     }
     if (!isFull) {
         [self.frameWakeup signal];

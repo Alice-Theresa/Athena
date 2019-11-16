@@ -10,8 +10,6 @@
 #import "SCTrack.h"
 #import "SCFlowData.h"
 
-@class SCPacket;
-@class SCFrame;
 @class SCFormatContext;
 
 NS_ASSUME_NONNULL_BEGIN
@@ -22,12 +20,12 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)packetQueueIsFull;
 - (void)flushPacketQueue;
-- (void)enqueuePacket:(SCPacket *)packet;
-- (SCPacket *)dequeuePacket;
+- (void)enqueuePacket:(id<SCFlowData>)packet;
+- (id<SCFlowData>)dequeuePacket;
 
 - (void)flushFrameQueue:(SCTrackType)type;
 - (void)frameQueueIsFull:(SCTrackType)type;
-- (void)enqueueFrames:(NSArray<SCFrame *> *)frames;
+- (void)enqueueFrames:(NSArray<id<SCFlowData>> *)frames;
 - (id<SCFlowData>)dequeueFrameByQueueIndex:(SCTrackType)type;
 
 @end

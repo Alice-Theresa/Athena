@@ -16,10 +16,10 @@ typedef NS_ENUM(int, SCFlowDataType) {
     SCFlowDataTypeDiscard,
 };
 
-typedef NS_ENUM(int, SCFrameFormatType) {
-    SCFrameFormatTypeUndefine = 0,
-    SCFrameFormatTypeVideo,
-    SCFrameFormatTypeAudio,
+typedef NS_ENUM(int, SCMediaType) {
+    SCMediaTypeUndefine = 0,
+    SCMediaTypeVideo,
+    SCMediaTypeAudio,
 };
 
 typedef NS_ENUM(int, SCVideoFrameFormat) {
@@ -36,13 +36,16 @@ typedef NS_ENUM(int, SCVideoFrameFormat) {
 @property (nonatomic, assign) NSTimeInterval duration;
 @property (nonatomic, assign) NSUInteger size;
 @property (nonatomic, assign) SCFlowDataType flowDataType;
+@property (nonatomic, assign) SCMediaType type;
 @property (nonatomic, strong) SCCodecDescriptor *codecDescriptor;
 
 @end
 
-@protocol SCFrame <NSObject>
+@protocol SCFrame <SCFlowData>
 
-@property (nonatomic, assign) SCFrameFormatType type;
 @property (nonatomic, assign) AVFrame *core;
+
+- (uint8_t **)data;
+- (void)fillData;
 
 @end

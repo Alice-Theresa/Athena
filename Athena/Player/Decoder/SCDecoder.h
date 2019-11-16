@@ -1,19 +1,19 @@
 //
-//  SCVideoDecoder.h
+//  SCDecoder.h
 //  Athena
 //
-//  Created by Theresa on 2019/01/07.
+//  Created by Skylar on 2019/11/16.
 //  Copyright © 2019 Theresa. All rights reserved.
 //
 
 #import <Foundation/Foundation.h>
-#import "SCDecoder.h"
-
-@class SCFormatContext;
+#import "SCFlowData.h"
 
 NS_ASSUME_NONNULL_BEGIN
 
-@interface SCVideoDecoder : NSObject <SCDecoder>
+@class SCPacket;
+
+@protocol SCDecoder <NSObject>
 
 - (NSArray<id<SCFrame>> *)decode:(SCPacket *)packet;
 - (void)flush;

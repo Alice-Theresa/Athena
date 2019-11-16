@@ -20,6 +20,7 @@
 #import "SCTrack.h"
 #import "ALCQueueManager.h"
 #import "SCCodecDescriptor.h"
+#import "SCDecoder.h"
 
 @interface SCDecoderLayer ()
 
@@ -52,8 +53,7 @@
 }
 
 - (void)start {
-    
-    NSOperation *op = [[NSInvocationOperation alloc] initWithTarget:self selector:@selector(decodeVideoFrame) object:nil];
+    NSOperation *op = [[NSInvocationOperation alloc] initWithTarget:self selector:@selector(decodeFrame) object:nil];
     [self.controlQueue addOperation:op];
     self.controlState = SCPlayerStatePlaying;
 }
@@ -72,7 +72,7 @@
     [self.controlQueue waitUntilAllOperationsAreFinished];
 }
 
-- (void)decodeVideoFrame {
+- (void)decodeFrame {
     while (self.controlState != SCPlayerStateClosed) {
         if (self.controlState == SCPlayerStatePaused) {
             [NSThread sleepForTimeInterval:0.03];
@@ -84,48 +84,43 @@
                 continue;
             }
             [self.manager frameQueueIsFull:packet.codecDescriptor.track.type];
+            id<SCDecoder> decoder = packet.codecDescriptor.track.type == SCTrackTypeVideo ? self.videoDecoder : self.audioDecoder;
             if (packet.flowDataType == SCFlowDataTypeDiscard) {
                 SCMarkerFrame *frame = [[SCMarkerFrame alloc] init];
-                frame.type = packet.codecDescriptor.track.type == SCTrackTypeVideo ? SCFrameFormatTypeVideo : SCFrameFormatTypeAudio;
+                frame.type = packet.codecDescriptor.track.type == SCTrackTypeVideo ? SCMediaTypeVideo : SCMediaTypeAudio;
                 [self.manager flushFrameQueue:packet.codecDescriptor.track.type];
                 [self.manager enqueueFrames:@[frame]];
-                if (packet.codecDescriptor.track.type == SCTrackTypeVideo) {
-                    [self.videoDecoder flush];
-                } else if (packet.codecDescriptor.track.type == SCTrackTypeAudio) {
-                    [self.audioDecoder flush];
-                }
+                [decoder flush];
                 continue;
             }
             if (packet.core->data != NULL && packet.core->stream_index >= 0) {
-                if (packet.codecDescriptor.track.type == SCTrackTypeVideo) {
-                    NSArray<SCFrame *> *frames = [self.videoDecoder decode:packet];
-                    for (SCVideoFrame *frame in frames) {
-                        frame.codecDescriptor = packet.codecDescriptor;
-                        [self process:frame];
-                    }
-                    [self.manager enqueueFrames:frames];
-                } else if (packet.codecDescriptor.track.type == SCTrackTypeAudio) {
-                    NSArray<SCFrame *> *frames = [self.audioDecoder decode:packet];
-                    for (SCAudioFrame *frame in frames) {
-                        frame.codecDescriptor = packet.codecDescriptor;
-                        [self innerDecode:frame];
-                    }
-                    [self.manager enqueueFrames:frames];
+                NSArray *frames = [decoder decode:packet];
+                for (id<SCFrame> frame in frames) {
+                    frame.codecDescriptor = packet.codecDescriptor;
+                    [self process:frame];
                 }
-
+                [self.manager enqueueFrames:frames];
             }
         }
     }
 }
 
-- (void)process:(SCVideoFrame *)videoFrame {
+- (void)process:(id<SCFrame>)frame {
+    if (frame.type == SCMediaTypeVideo) {
+        [self processVideo:frame];
+    } else if (frame.type == SCMediaTypeAudio) {
+        [self processAudio:frame];
+    }
+}
+
+- (void)processVideo:(SCVideoFrame *)videoFrame {
     videoFrame.timeStamp = av_frame_get_best_effort_timestamp(videoFrame.core) * self.context.videoTimebase;
     videoFrame.timeStamp += videoFrame.core->repeat_pict * self.context.videoTimebase * 0.5;
     videoFrame.duration = av_frame_get_pkt_duration(videoFrame.core) * self.context.videoTimebase;
     [videoFrame fillData];
 }
 
-- (void)innerDecode:(SCAudioFrame *)audioFrame {
+- (void)processAudio:(SCAudioFrame *)audioFrame {
     if (!self.resample) {
         self.resample = [[SCSWResample alloc] init];
         self.resample.inputDescriptor = [[SCAudioDescriptor alloc] initWithFrame:audioFrame];

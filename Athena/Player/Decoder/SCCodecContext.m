@@ -37,7 +37,7 @@
     return self;
 }
 
-- (NSArray<SCFrame *> *)decode:(SCPacket *)packet {
+- (NSArray<id<SCFrame>> *)decode:(SCPacket *)packet {
     NSArray *defaultArray = @[];
     NSMutableArray *array = [NSMutableArray array];
     int result = avcodec_send_packet(self.core, packet.core);

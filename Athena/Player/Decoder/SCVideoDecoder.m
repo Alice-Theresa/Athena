@@ -38,7 +38,7 @@
     }
 }
 
-- (NSArray<SCFrame *> *)decode:(SCPacket *)packet {
+- (NSArray<id<SCFrame>> *)decode:(SCPacket *)packet {
     [self checkCodec:packet];
     return [self.codecContext decode:packet];
 }

@@ -20,7 +20,7 @@
 - (instancetype)init {
     if (self = [super init]) {
         _core = av_frame_alloc();
-        _type = SCFrameFormatTypeVideo;
+        _type = SCMediaTypeVideo;
     }
     return self;
 }

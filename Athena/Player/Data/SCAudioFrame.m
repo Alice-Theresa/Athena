@@ -32,7 +32,7 @@
 - (instancetype)init {
     if (self = [super init]) {
         _core = av_frame_alloc();
-        _type = SCFrameFormatTypeAudio;
+        _type = SCMediaTypeAudio;
     }
     return self;
 }
