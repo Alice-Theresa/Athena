@@ -18,9 +18,9 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, assign, readonly) NSUInteger length;
 @property (nonatomic, assign, readonly) NSUInteger size;
 
-- (void)enqueue:(NSArray<id<SCFlowData>> *)frames;
+- (void)enqueue:(NSArray<SCFlowData *> *)frames;
 
-- (id<SCFlowData>)dequeue;
+- (SCFlowData *)dequeue;
 
 - (void)flush;
 

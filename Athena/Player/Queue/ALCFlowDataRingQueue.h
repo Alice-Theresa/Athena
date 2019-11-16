@@ -19,9 +19,9 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (BOOL)isFull;
 
-- (void)enqueue:(NSArray<id<SCFlowData>> *)frames;
+- (void)enqueue:(NSArray<SCFlowData *> *)frames;
 
-- (id<SCFlowData>)dequeue;
+- (SCFlowData *)dequeue;
 
 - (void)flush;
 

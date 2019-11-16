@@ -20,13 +20,13 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)packetQueueIsFull;
 - (void)flushPacketQueue;
-- (void)enqueuePacket:(id<SCFlowData>)packet;
-- (id<SCFlowData>)dequeuePacket;
+- (void)enqueuePacket:(SCFlowData *)packet;
+- (SCFlowData *)dequeuePacket;
 
 - (void)flushFrameQueue:(SCTrackType)type;
 - (void)frameQueueIsFull:(SCTrackType)type;
-- (void)enqueueFrames:(NSArray<id<SCFlowData>> *)frames;
-- (id<SCFlowData>)dequeueFrameByQueueIndex:(SCTrackType)type;
+- (void)enqueueFrames:(NSArray<SCFlowData *> *)frames;
+- (SCFlowData *)dequeueFrameByQueueIndex:(SCTrackType)type;
 
 @end
 

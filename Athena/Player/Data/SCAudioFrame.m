@@ -13,6 +13,8 @@
     uint8_t *_data[8];
 }
 
+@synthesize mediaType = _mediaType;
+
 - (void)createBuffer:(SCAudioDescriptor *)descriptor numberOfSamples:(int)numberOfSamples {
     _core->format         = descriptor.format;
     _core->sample_rate    = descriptor.sampleRate;
@@ -32,7 +34,7 @@
 - (instancetype)init {
     if (self = [super init]) {
         _core = av_frame_alloc();
-        _type = SCMediaTypeAudio;
+        _mediaType = SCMediaTypeAudio;
     }
     return self;
 }

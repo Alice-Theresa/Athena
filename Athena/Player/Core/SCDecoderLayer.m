@@ -8,7 +8,7 @@
 
 #import "SCDecoderLayer.h"
 #import "SCFormatContext.h"
-#import "SCMarkerFrame.h"
+#import "SCMarker.h"
 #import "SCVideoDecoder.h"
 #import "SCAudioDecoder.h"
 #import "SCPacket.h"
@@ -86,8 +86,8 @@
             [self.manager frameQueueIsFull:packet.codecDescriptor.track.type];
             id<SCDecoder> decoder = packet.codecDescriptor.track.type == SCTrackTypeVideo ? self.videoDecoder : self.audioDecoder;
             if (packet.flowDataType == SCFlowDataTypeDiscard) {
-                SCMarkerFrame *frame = [[SCMarkerFrame alloc] init];
-                frame.type = packet.codecDescriptor.track.type == SCTrackTypeVideo ? SCMediaTypeVideo : SCMediaTypeAudio;
+                SCMarker *frame = [[SCMarker alloc] init];
+                frame.mediaType = packet.codecDescriptor.track.type == SCTrackTypeVideo ? SCMediaTypeVideo : SCMediaTypeAudio;
                 [self.manager flushFrameQueue:packet.codecDescriptor.track.type];
                 [self.manager enqueueFrames:@[frame]];
                 [decoder flush];
@@ -95,7 +95,7 @@
             }
             if (packet.core->data != NULL && packet.core->stream_index >= 0) {
                 NSArray *frames = [decoder decode:packet];
-                for (id<SCFrame> frame in frames) {
+                for (SCFlowData *frame in frames) {
                     frame.codecDescriptor = packet.codecDescriptor;
                     [self process:frame];
                 }
@@ -105,10 +105,10 @@
     }
 }
 
-- (void)process:(id<SCFrame>)frame {
-    if (frame.type == SCMediaTypeVideo) {
+- (void)process:(SCFlowData *)frame {
+    if (frame.mediaType == SCMediaTypeVideo) {
         [self processVideo:frame];
-    } else if (frame.type == SCMediaTypeAudio) {
+    } else if (frame.mediaType == SCMediaTypeAudio) {
         [self processAudio:frame];
     }
 }

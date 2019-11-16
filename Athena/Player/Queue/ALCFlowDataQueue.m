@@ -21,11 +21,11 @@
 
 @implementation ALCFlowDataQueue
 
-- (void)enqueue:(NSArray<id<SCFlowData>> *)frames {
+- (void)enqueue:(NSArray<SCFlowData *> *)frames {
     if (frames.count == 0) {
         return;
     }
-    for (id<SCFlowData> data in frames) {
+    for (SCFlowData *data in frames) {
         ALCFlowDataNode *node = [[ALCFlowDataNode alloc] initWithData:data];
         if (!self.header) {
             self.header = node;
@@ -39,11 +39,11 @@
     }
 }
 
-- (id<SCFlowData>)dequeue {
+- (SCFlowData *)dequeue {
     if (!self.header) {
         return nil;
     }
-    id<SCFlowData> data = self.header.data;
+    SCFlowData *data = self.header.data;
     self.header = self.header.next;
     if (!self.header) {
         self.tailer = nil;

@@ -28,24 +28,24 @@ typedef NS_ENUM(int, SCVideoFrameFormat) {
     SCVideoFrameFormatI420,
 };
 
-@class SCCodecDescriptor;
-
-@protocol SCFlowData <NSObject>
-
-@property (nonatomic, assign) NSTimeInterval timeStamp;
-@property (nonatomic, assign) NSTimeInterval duration;
-@property (nonatomic, assign) NSUInteger size;
-@property (nonatomic, assign) SCFlowDataType flowDataType;
-@property (nonatomic, assign) SCMediaType type;
-@property (nonatomic, strong) SCCodecDescriptor *codecDescriptor;
-
-@end
-
-@protocol SCFrame <SCFlowData>
+@protocol SCFrame <NSObject>
 
 @property (nonatomic, assign) AVFrame *core;
 
 - (uint8_t **)data;
 - (void)fillData;
+
+@end
+
+@class SCCodecDescriptor;
+
+@interface SCFlowData : NSObject
+
+@property (nonatomic, assign) NSTimeInterval    timeStamp;
+@property (nonatomic, assign) NSTimeInterval    duration;
+@property (nonatomic, assign) NSUInteger        size;
+@property (nonatomic, assign) SCFlowDataType    flowDataType;
+@property (nonatomic, assign) SCMediaType       mediaType;
+@property (nonatomic, strong) SCCodecDescriptor *codecDescriptor;
 
 @end

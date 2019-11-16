@@ -11,14 +11,7 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-@interface SCVideoFrame : NSObject <SCFrame>
-
-@property (nonatomic, assign) NSTimeInterval timeStamp;
-@property (nonatomic, assign) NSTimeInterval duration;
-@property (nonatomic, assign) NSUInteger size;
-@property (nonatomic, assign) SCFlowDataType flowDataType;
-@property (nonatomic, assign) SCMediaType type;
-@property (nonatomic, strong) SCCodecDescriptor *codecDescriptor;
+@interface SCVideoFrame : SCFlowData <SCFrame>
 
 @property (nonatomic, assign, readonly) NSUInteger width;
 @property (nonatomic, assign, readonly) NSUInteger height;

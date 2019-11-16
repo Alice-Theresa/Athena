@@ -83,14 +83,14 @@
     [self.packetWakeup unlock];
 }
 
-- (void)enqueuePacket:(id<SCFlowData>)packet {
+- (void)enqueuePacket:(SCFlowData *)packet {
     [self.packetWakeup lock];
     ALCFlowDataQueue *queue = [self.packetsQueue valueForKey:[NSString stringWithFormat:@"%d", packet.codecDescriptor.track.type]];
     [queue enqueue:@[packet]];
     [self.packetWakeup unlock];
 }
 
-- (id<SCFlowData>)dequeuePacket {
+- (SCFlowData *)dequeuePacket {
     [self.packetWakeup lock];
     int streamIndex = -1;
     double min = DBL_MAX;
@@ -114,7 +114,7 @@
         [self.packetWakeup unlock];
         return nil;
     }
-    id<SCFlowData> packet = [self.packetsQueue[@(streamIndex).stringValue] dequeue];
+    SCFlowData * packet = [self.packetsQueue[@(streamIndex).stringValue] dequeue];
     [self.timeStamps setValue:@(packet.timeStamp) forKey:@(streamIndex).stringValue];
     int total = 0;
     for (NSString *key in self.packetsQueue) {
@@ -154,19 +154,19 @@
     [self.frameWakeup unlock];
 }
 
-- (void)enqueueFrames:(NSArray<id<SCFlowData>> *)frames {
+- (void)enqueueFrames:(NSArray<SCFlowData *> *)frames {
     [self.frameWakeup lock];
-    if (frames.firstObject.type == SCMediaTypeVideo) {
+    if (frames.firstObject.mediaType == SCMediaTypeVideo) {
         [self.videoFrameQueue enqueue:frames];
-    } else if (frames.firstObject.type == SCMediaTypeAudio) {
+    } else if (frames.firstObject.mediaType == SCMediaTypeAudio) {
         [self.audioFrameQueue enqueue:frames];
     }
     [self.frameWakeup unlock];
 }
 
-- (id<SCFlowData>)dequeueFrameByQueueIndex:(SCTrackType)type {
+- (SCFlowData *)dequeueFrameByQueueIndex:(SCTrackType)type {
     [self.frameWakeup lock];
-    id<SCFlowData> frame;
+    SCFlowData * frame;
     BOOL isFull = NO;
     if (type == SCTrackTypeVideo) {
         frame = [self.videoFrameQueue dequeue];

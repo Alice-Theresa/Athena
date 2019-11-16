@@ -14,14 +14,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 @class SCCodecDescriptor;
 
-@interface SCPacket : NSObject <SCFlowData>
-
-@property (nonatomic, assign) NSTimeInterval timeStamp;
-@property (nonatomic, assign) NSTimeInterval duration;
-@property (nonatomic, assign) NSUInteger size;
-@property (nonatomic, assign) SCFlowDataType flowDataType;
-@property (nonatomic, assign) SCMediaType type;
-@property (nonatomic, strong) SCCodecDescriptor *codecDescriptor;
+@interface SCPacket : SCFlowData
 
 @property (nonatomic, assign, nullable, readonly) AVPacket *core;
 

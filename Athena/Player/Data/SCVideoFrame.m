@@ -17,10 +17,12 @@
 
 @implementation SCVideoFrame
 
+@synthesize mediaType = _mediaType;
+
 - (instancetype)init {
     if (self = [super init]) {
         _core = av_frame_alloc();
-        _type = SCMediaTypeVideo;
+        _mediaType = SCMediaTypeVideo;
     }
     return self;
 }
