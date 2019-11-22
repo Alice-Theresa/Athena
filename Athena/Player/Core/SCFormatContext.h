@@ -17,10 +17,6 @@ NS_ASSUME_NONNULL_BEGIN
 
 @property (nonatomic, assign, readonly) AVFormatContext *formatContext;
 
-//@property (nonatomic, assign, readonly) int videoIndex;
-//@property (nonatomic, assign, readonly) int audioIndex;
-//@property (nonatomic, assign, readonly) int subtitleIndex;
-
 @property (nonatomic, assign, readonly) NSTimeInterval videoTimebase;
 @property (nonatomic, assign, readonly) NSTimeInterval audioTimebase;
 

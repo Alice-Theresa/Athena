@@ -106,7 +106,10 @@
                                                     meta:[SCMetaData metadataWithAVDictionary:stream->metadata]];
             packet.codecDescriptor = cd;
             packet.timeStamp = (double)packet.core->pts * stream->time_base.num / stream->time_base.den;
+//            packet.duration
             packet.size = packet.core->size;
+            packet.flowDataType = SCFlowDataTypePacket;
+//            packet.mediaType =
             [self.queueManager enqueuePacket:packet];
         }
     }

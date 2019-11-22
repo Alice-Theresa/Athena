@@ -9,8 +9,6 @@
 #import "SCFlowData.h"
 #import <AVFoundation/AVFoundation.h>
 
-NS_ASSUME_NONNULL_BEGIN
-
 @interface SCVideoFrame : SCFlowData <SCFrame>
 
 @property (nonatomic, assign, readonly) NSUInteger width;
@@ -24,5 +22,3 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)fillData;
 
 @end
-
-NS_ASSUME_NONNULL_END

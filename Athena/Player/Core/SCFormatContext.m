@@ -57,7 +57,7 @@
     NSMutableArray *allTracks = [NSMutableArray array];
     for (int i = 0; i < self.formatContext->nb_streams; i++) {
         [allTracks addObject:[[SCTrack alloc] initWithIndex:i
-                                                       type:self.formatContext->streams[i]->codecpar->codec_type
+                                                       type:(int)self.formatContext->streams[i]->codecpar->codec_type
                                                        meta:[SCMetaData metadataWithAVDictionary:self.formatContext->streams[i]->metadata]]];
     }
     self.tracks = allTracks;

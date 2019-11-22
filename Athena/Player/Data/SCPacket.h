@@ -12,8 +12,6 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-@class SCCodecDescriptor;
-
 @interface SCPacket : SCFlowData
 
 @property (nonatomic, assign, nullable, readonly) AVPacket *core;

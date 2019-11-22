@@ -8,8 +8,6 @@
 
 #import "SCFlowData.h"
 
-NS_ASSUME_NONNULL_BEGIN
-
 @class SCAudioDescriptor;
 
 @interface SCAudioFrame : SCFlowData <SCFrame>
@@ -18,10 +16,8 @@ NS_ASSUME_NONNULL_BEGIN
 
 @property (nonatomic, assign) AVFrame *core;
 
-- (void)createBuffer:(SCAudioDescriptor *)descriptor numberOfSamples:(int)numberOfSamples;
++ (instancetype)audioFrameWithDescriptor:(SCAudioDescriptor *)descriptor numberOfSamples:(int)numberOfSamples;
 - (uint8_t **)data;
 - (void)fillData;
 
 @end
-
-NS_ASSUME_NONNULL_END
