@@ -6,6 +6,7 @@
 //  Copyright © 2017年 Theresa. All rights reserved.
 //
 
+#import <Masonry/Masonry.h>
 #import "MainViewController.h"
 #import "MainViewModel.h"
 #import "MainModel.h"
@@ -31,6 +32,9 @@ static NSString *cellIdentifier = @"cellIdentifier";
 - (void)viewDidLoad {
     [super viewDidLoad];
     [self.view addSubview:self.tableView];
+    [self.tableView mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.size.equalTo(self.view);
+    }];
 }
 
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
@@ -53,7 +57,7 @@ static NSString *cellIdentifier = @"cellIdentifier";
 
 - (UITableView *)tableView {
     if (!_tableView) {
-        _tableView = [[UITableView alloc] initWithFrame:self.view.bounds style:UITableViewStylePlain];
+        _tableView = [[UITableView alloc] initWithFrame:CGRectZero style:UITableViewStylePlain];
         _tableView.delegate = self;
         _tableView.dataSource = self;
         [_tableView registerClass:[UITableViewCell class] forCellReuseIdentifier:cellIdentifier];

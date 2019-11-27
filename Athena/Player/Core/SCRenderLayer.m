@@ -52,7 +52,35 @@
         
         self.mtkView.frame = view.bounds;
         [view insertSubview:self.mtkView atIndex:0];
-        
+        NSLayoutConstraint *c1 = [NSLayoutConstraint constraintWithItem:self.mtkView
+                                                              attribute:NSLayoutAttributeTop
+                                                              relatedBy:NSLayoutRelationEqual
+                                                                 toItem:view
+                                                              attribute:NSLayoutAttributeTop
+                                                             multiplier:1.0
+                                                               constant:0.0];
+        NSLayoutConstraint *c2 = [NSLayoutConstraint constraintWithItem:self.mtkView
+                                                              attribute:NSLayoutAttributeLeft
+                                                              relatedBy:NSLayoutRelationEqual
+                                                                 toItem:view
+                                                              attribute:NSLayoutAttributeLeft
+                                                             multiplier:1.0
+                                                               constant:0.0];
+        NSLayoutConstraint *c3 = [NSLayoutConstraint constraintWithItem:self.mtkView
+                                                              attribute:NSLayoutAttributeBottom
+                                                              relatedBy:NSLayoutRelationEqual
+                                                                 toItem:view
+                                                              attribute:NSLayoutAttributeBottom
+                                                             multiplier:1.0
+                                                               constant:0.0];
+        NSLayoutConstraint *c4 = [NSLayoutConstraint constraintWithItem:self.mtkView
+                                                              attribute:NSLayoutAttributeRight
+                                                              relatedBy:NSLayoutRelationEqual
+                                                                 toItem:view
+                                                              attribute:NSLayoutAttributeRight
+                                                             multiplier:1.0
+                                                               constant:0.0];
+        [view addConstraints:@[c1, c2, c3, c4]];
         [SCAudioManager shared].delegate = self;
     }
     return self;
@@ -164,7 +192,8 @@
         _mtkView.depthStencilPixelFormat = MTLPixelFormatInvalid;
         _mtkView.framebufferOnly         = false;
         _mtkView.colorPixelFormat        = MTLPixelFormatBGRA8Unorm;
-        _mtkView.delegate = self;
+        _mtkView.delegate                = self;
+        _mtkView.translatesAutoresizingMaskIntoConstraints = NO;
     }
     return _mtkView;
 }

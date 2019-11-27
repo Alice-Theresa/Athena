@@ -57,10 +57,12 @@
 - (void)packetQueueIsFull {
     [self.packetWakeup lock];
     int total = 0;
+    int length = 0;
     for (NSString *key in self.packetsQueue) {
         total += self.packetsQueue[key].size;
+        length += self.packetsQueue[key].length;
     }
-    BOOL isFull = total > PacketTotalMaxsize;
+    BOOL isFull = total > PacketTotalMaxsize || length > 1000;
     if (isFull) {
         [self.packetWakeup wait];
     }

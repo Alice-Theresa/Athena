@@ -43,6 +43,7 @@
 		52E10330215E04DD007783E6 /* MainViewModel.m in Sources */ = {isa = PBXBuildFile; fileRef = 52E1032F215E04DD007783E6 /* MainViewModel.m */; };
 		52E10333215E072D007783E6 /* MainModel.m in Sources */ = {isa = PBXBuildFile; fileRef = 52E10332215E072D007783E6 /* MainModel.m */; };
 		52E1033A215E095F007783E6 /* AudioEncodeViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 52E10339215E095F007783E6 /* AudioEncodeViewController.xib */; };
+		5D3F53253817D82B348541C5 /* libPods-Athena.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 48ABE58A8E1A5C697958A109 /* libPods-Athena.a */; };
 		765ED76B1F935ACA000CF16E /* libavutil.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 765ED6F21F935ACA000CF16E /* libavutil.a */; };
 		765ED76C1F935ACA000CF16E /* libavfilter.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 765ED6F31F935ACA000CF16E /* libavfilter.a */; };
 		765ED76D1F935ACA000CF16E /* libavcodec.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 765ED6F41F935ACA000CF16E /* libavcodec.a */; };
@@ -70,13 +71,15 @@
 		94BD54E423547B36001B252C /* SCRenderLayer.m in Sources */ = {isa = PBXBuildFile; fileRef = 94BD54E323547B36001B252C /* SCRenderLayer.m */; };
 		94BD54EA23548727001B252C /* SCPacket.m in Sources */ = {isa = PBXBuildFile; fileRef = 94BD54E923548727001B252C /* SCPacket.m */; };
 		94C44FC72363D2A400F6115A /* SCCodecContext.m in Sources */ = {isa = PBXBuildFile; fileRef = 94C44FC62363D2A400F6115A /* SCCodecContext.m */; };
-		94E66A9F237ED8210014CB6C /* Aimer.mkv in Resources */ = {isa = PBXBuildFile; fileRef = 94E66A9E237ED8210014CB6C /* Aimer.mkv */; };
+		94E66A9F237ED8210014CB6C /* Aimer.mp4 in Resources */ = {isa = PBXBuildFile; fileRef = 94E66A9E237ED8210014CB6C /* Aimer.mp4 */; };
 		94F113E3236E69AC000B3163 /* SCSWResample.m in Sources */ = {isa = PBXBuildFile; fileRef = 94F113E2236E69AC000B3163 /* SCSWResample.m */; };
 		94F113E7236E7E74000B3163 /* SCVideoDescriptor.m in Sources */ = {isa = PBXBuildFile; fileRef = 94F113E6236E7E74000B3163 /* SCVideoDescriptor.m */; };
 		94F113EA236E7E80000B3163 /* SCAudioDescriptor.m in Sources */ = {isa = PBXBuildFile; fileRef = 94F113E9236E7E80000B3163 /* SCAudioDescriptor.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		274360BA1D46326696BA10FA /* Pods-Athena.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Athena.release.xcconfig"; path = "Target Support Files/Pods-Athena/Pods-Athena.release.xcconfig"; sourceTree = "<group>"; };
+		48ABE58A8E1A5C697958A109 /* libPods-Athena.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-Athena.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 		5202621921606DB800F1033B /* AudioDecodeViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AudioDecodeViewController.h; sourceTree = "<group>"; };
 		5202621A21606DB800F1033B /* AudioDecodeViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = AudioDecodeViewController.m; sourceTree = "<group>"; };
 		5202621B21606DB800F1033B /* AudioDecodeViewController.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = AudioDecodeViewController.xib; sourceTree = "<group>"; };
@@ -324,7 +327,7 @@
 		94BD54E923548727001B252C /* SCPacket.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = SCPacket.m; sourceTree = "<group>"; };
 		94C44FC52363D2A400F6115A /* SCCodecContext.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SCCodecContext.h; sourceTree = "<group>"; };
 		94C44FC62363D2A400F6115A /* SCCodecContext.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = SCCodecContext.m; sourceTree = "<group>"; };
-		94E66A9E237ED8210014CB6C /* Aimer.mkv */ = {isa = PBXFileReference; lastKnownFileType = file; path = Aimer.mkv; sourceTree = "<group>"; };
+		94E66A9E237ED8210014CB6C /* Aimer.mp4 */ = {isa = PBXFileReference; lastKnownFileType = file; path = Aimer.mp4; sourceTree = "<group>"; };
 		94F113E0236B2633000B3163 /* SCFlowData.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SCFlowData.h; sourceTree = "<group>"; };
 		94F113E1236E69AC000B3163 /* SCSWResample.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SCSWResample.h; sourceTree = "<group>"; };
 		94F113E2236E69AC000B3163 /* SCSWResample.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = SCSWResample.m; sourceTree = "<group>"; };
@@ -332,6 +335,7 @@
 		94F113E6236E7E74000B3163 /* SCVideoDescriptor.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = SCVideoDescriptor.m; sourceTree = "<group>"; };
 		94F113E8236E7E80000B3163 /* SCAudioDescriptor.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SCAudioDescriptor.h; sourceTree = "<group>"; };
 		94F113E9236E7E80000B3163 /* SCAudioDescriptor.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = SCAudioDescriptor.m; sourceTree = "<group>"; };
+		C52A6408655B7DF6F07E160C /* Pods-Athena.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Athena.debug.xcconfig"; path = "Target Support Files/Pods-Athena/Pods-Athena.debug.xcconfig"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -354,6 +358,7 @@
 				76F2D7D821F375DB0088445C /* libyuv.a in Frameworks */,
 				765ED7701F935ACA000CF16E /* libswresample.a in Frameworks */,
 				765ED76E1F935ACA000CF16E /* libavformat.a in Frameworks */,
+				5D3F53253817D82B348541C5 /* libPods-Athena.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -390,6 +395,7 @@
 				522136601F7F737500182B12 /* Athena */,
 				5221365F1F7F737500182B12 /* Products */,
 				765ED7781F938729000CF16E /* Frameworks */,
+				C5168D762E3D3E86A9EC698C /* Pods */,
 			);
 			sourceTree = "<group>";
 		};
@@ -412,7 +418,7 @@
 				529067961F95A48A001A7BFA /* SharedQueue.m */,
 				522136611F7F737500182B12 /* AppDelegate.h */,
 				522136621F7F737500182B12 /* AppDelegate.m */,
-				94E66A9E237ED8210014CB6C /* Aimer.mkv */,
+				94E66A9E237ED8210014CB6C /* Aimer.mp4 */,
 				5214035C21EDE3F000CAF190 /* test.jpg */,
 				522136671F7F737500182B12 /* Main.storyboard */,
 				5221366A1F7F737500182B12 /* Assets.xcassets */,
@@ -855,6 +861,7 @@
 				765ED77D1F938761000CF16E /* MediaToolbox.framework */,
 				765ED77B1F938739000CF16E /* CoreMedia.framework */,
 				765ED7791F93872A000CF16E /* AVFoundation.framework */,
+				48ABE58A8E1A5C697958A109 /* libPods-Athena.a */,
 			);
 			name = Frameworks;
 			sourceTree = "<group>";
@@ -973,6 +980,15 @@
 			path = Descriptor;
 			sourceTree = "<group>";
 		};
+		C5168D762E3D3E86A9EC698C /* Pods */ = {
+			isa = PBXGroup;
+			children = (
+				C52A6408655B7DF6F07E160C /* Pods-Athena.debug.xcconfig */,
+				274360BA1D46326696BA10FA /* Pods-Athena.release.xcconfig */,
+			);
+			path = Pods;
+			sourceTree = "<group>";
+		};
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
@@ -980,6 +996,7 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = 522136741F7F737500182B12 /* Build configuration list for PBXNativeTarget "Athena" */;
 			buildPhases = (
+				E2A000F647BFE64A2CBA6476 /* [CP] Check Pods Manifest.lock */,
 				5221365A1F7F737500182B12 /* Sources */,
 				5221365B1F7F737500182B12 /* Frameworks */,
 				5221365C1F7F737500182B12 /* Resources */,
@@ -1031,7 +1048,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				94E66A9F237ED8210014CB6C /* Aimer.mkv in Resources */,
+				94E66A9F237ED8210014CB6C /* Aimer.mp4 in Resources */,
 				5221366E1F7F737500182B12 /* LaunchScreen.storyboard in Resources */,
 				5202621D21606DB800F1033B /* AudioDecodeViewController.xib in Resources */,
 				52E1033A215E095F007783E6 /* AudioEncodeViewController.xib in Resources */,
@@ -1042,6 +1059,31 @@
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXResourcesBuildPhase section */
+
+/* Begin PBXShellScriptBuildPhase section */
+		E2A000F647BFE64A2CBA6476 /* [CP] Check Pods Manifest.lock */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+			);
+			inputPaths = (
+				"${PODS_PODFILE_DIR_PATH}/Podfile.lock",
+				"${PODS_ROOT}/Manifest.lock",
+			);
+			name = "[CP] Check Pods Manifest.lock";
+			outputFileListPaths = (
+			);
+			outputPaths = (
+				"$(DERIVED_FILE_DIR)/Pods-Athena-checkManifestLockResult.txt",
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
+			showEnvVarsInLog = 0;
+		};
+/* End PBXShellScriptBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
 		5221365A1F7F737500182B12 /* Sources */ = {
@@ -1224,12 +1266,17 @@
 		};
 		522136751F7F737500182B12 /* Debug */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = C52A6408655B7DF6F07E160C /* Pods-Athena.debug.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_TEAM = F72NM3PQH6;
 				ENABLE_BITCODE = NO;
-				HEADER_SEARCH_PATHS = "$(SRCROOT)/3rd/FFmpeg-iOS/include";
+				FRAMEWORK_SEARCH_PATHS = "$(inherited)";
+				HEADER_SEARCH_PATHS = (
+					"$(SRCROOT)/3rd/FFmpeg-iOS/include",
+					"$(SRCROOT)/Pods/**",
+				);
 				INFOPLIST_FILE = Athena/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 9.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
@@ -1243,17 +1290,23 @@
 				PRODUCT_BUNDLE_IDENTIFIER = com.Theresa.Athena;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				TARGETED_DEVICE_FAMILY = "1,2";
+				USER_HEADER_SEARCH_PATHS = "";
 			};
 			name = Debug;
 		};
 		522136761F7F737500182B12 /* Release */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = 274360BA1D46326696BA10FA /* Pods-Athena.release.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_TEAM = F72NM3PQH6;
 				ENABLE_BITCODE = NO;
-				HEADER_SEARCH_PATHS = "$(SRCROOT)/3rd/FFmpeg-iOS/include";
+				FRAMEWORK_SEARCH_PATHS = "$(inherited)";
+				HEADER_SEARCH_PATHS = (
+					"$(SRCROOT)/3rd/FFmpeg-iOS/include",
+					"$(SRCROOT)/Pods/**",
+				);
 				INFOPLIST_FILE = Athena/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 9.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
@@ -1267,6 +1320,7 @@
 				PRODUCT_BUNDLE_IDENTIFIER = com.Theresa.Athena;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				TARGETED_DEVICE_FAMILY = "1,2";
+				USER_HEADER_SEARCH_PATHS = "";
 			};
 			name = Release;
 		};

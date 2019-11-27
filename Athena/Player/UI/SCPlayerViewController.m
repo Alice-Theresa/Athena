@@ -6,6 +6,7 @@
 //  Copyright © 2019 Theresa. All rights reserved.
 //
 
+#import <Masonry/Masonry.h>
 #import <MetalKit/MetalKit.h>
 #import <CoreVideo/CoreVideo.h>
 #import "SCPlayerViewController.h"
@@ -31,7 +32,7 @@
 - (void)viewDidLoad {
     [super viewDidLoad];
     [self setup];
-    NSString *path = [[[NSBundle mainBundle] resourcePath] stringByAppendingPathComponent:@"Aimer.mkv"];
+    NSString *path = [[[NSBundle mainBundle] resourcePath] stringByAppendingPathComponent:@"Aimer.mp4"];
     [self.controler openPath:path];
 }
 
@@ -53,10 +54,15 @@
 - (void)setup {
     self.view.backgroundColor = [UIColor blackColor];
     self.bg                   = [[UIView alloc] initWithFrame:self.view.bounds];
-    self.controlView          = [[SCPlayerControlView alloc] initWithFrame:self.view.bounds];
+    self.controlView          = [[SCPlayerControlView alloc] init];
     [self.view addSubview:self.bg];
     [self.bg addSubview:self.controlView];
-    
+    [self.bg mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.size.equalTo(self.view);
+    }];
+    [self.controlView mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.size.equalTo(self.bg);
+    }];
     self.controler = [[SCControl alloc] initWithRenderView:self.bg];
 //    self.controler.delegate = self;
     
