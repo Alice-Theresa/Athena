@@ -7,7 +7,7 @@
 //
 
 #import "SCDecoderLayer.h"
-#import "SCFormatContext.h"
+#import "ALCFormatContext.h"
 #import "SCMarker.h"
 #import "SCVideoDecoder.h"
 #import "SCAudioDecoder.h"
@@ -27,7 +27,7 @@
 @property (nonatomic, strong) ALCQueueManager *manager;
 
 @property (nonatomic, assign) BOOL isSeeking;
-@property (nonatomic, strong) SCFormatContext *context;
+@property (nonatomic, strong) ALCFormatContext *context;
 @property (nonatomic, assign) SCPlayerState controlState;
 
 @property (nonatomic, strong) NSOperationQueue *controlQueue;
@@ -47,7 +47,7 @@
     NSLog(@"decoder dealloc");
 }
 
-- (instancetype)initWithContext:(SCFormatContext *)context queueManager:(ALCQueueManager *)manager {
+- (instancetype)initWithContext:(ALCFormatContext *)context queueManager:(ALCQueueManager *)manager {
     if (self = [super init]) {
         _context      = context;
         _manager      = manager;

@@ -7,7 +7,7 @@
 //
 
 #import "SCAudioDecoder.h"
-#import "SCFormatContext.h"
+#import "ALCFormatContext.h"
 #import "SCAudioFrame.h"
 #import "SCPacket.h"
 #import "SCCodecContext.h"

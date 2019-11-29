@@ -8,7 +8,7 @@
 
 #import <libavformat/avformat.h>
 #import "SCDemuxLoop.h"
-#import "SCFormatContext.h"
+#import "ALCFormatContext.h"
 #import "SCControl.h"
 #import "SCPacket.h"
 #import "SCCodecDescriptor.h"
@@ -19,7 +19,7 @@
 
 @interface SCDemuxLoop ()
 
-@property (nonatomic, strong) SCFormatContext  *context;
+@property (nonatomic, strong) ALCFormatContext  *context;
 @property (nonatomic, strong) NSOperationQueue *controlQueue;
 
 @property (nonatomic, assign) BOOL             isSeeking;
@@ -37,7 +37,7 @@
     NSLog(@"demux dealloc");
 }
 
-- (instancetype)initWithContext:(SCFormatContext *)context queueManager:(ALCQueueManager *)manager {
+- (instancetype)initWithContext:(ALCFormatContext *)context queueManager:(ALCQueueManager *)manager {
     if (self = [super init]) {
         _context = context;
         _queueManager = manager;
@@ -97,7 +97,7 @@
             [self.wakeup wait];
         } else {
             int index = packet.core->stream_index;
-            AVStream *stream = self.context.formatContext->streams[index];
+            AVStream *stream = self.context.core->streams[index];
             SCCodecDescriptor *cd = [[SCCodecDescriptor alloc] init];
             cd.timebase = stream->time_base;
             cd.codecpar = stream->codecpar;

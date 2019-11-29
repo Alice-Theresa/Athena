@@ -9,7 +9,7 @@
 #import "ALCQueueManager.h"
 #import "SCPacket.h"
 #import "SCTrack.h"
-#import "SCFormatContext.h"
+#import "ALCFormatContext.h"
 #import "ALCFlowDataRingQueue.h"
 
 #import "ALCFlowDataQueue.h"
@@ -34,7 +34,7 @@
 
 @implementation ALCQueueManager
 
-- (instancetype)initWithContext:(SCFormatContext *)context {
+- (instancetype)initWithContext:(ALCFormatContext *)context {
     if (self = [super init]) {
         _packetWakeup = [[NSCondition alloc] init];
         _frameWakeup  = [[NSCondition alloc] init];

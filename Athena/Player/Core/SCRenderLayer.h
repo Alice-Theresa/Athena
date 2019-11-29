@@ -11,11 +11,11 @@
 NS_ASSUME_NONNULL_BEGIN
 
 @class ALCQueueManager;
-@class SCFormatContext;
+@class ALCFormatContext;
 
 @interface SCRenderLayer : NSObject
 
-- (instancetype)initWithContext:(SCFormatContext *)context queueManager:(ALCQueueManager *)manager renderView:(MTKView *)view;
+- (instancetype)initWithContext:(ALCFormatContext *)context queueManager:(ALCQueueManager *)manager renderView:(MTKView *)view;
 - (void)start;
 - (void)resume;
 - (void)pause;

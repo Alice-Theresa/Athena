@@ -9,7 +9,7 @@
 #import <Foundation/Foundation.h>
 #import "SCDecoder.h"
 
-@class SCFormatContext;
+@class ALCFormatContext;
 
 NS_ASSUME_NONNULL_BEGIN
 

@@ -10,7 +10,7 @@
 #import "SCDecoder.h"
 
 @class SCPacket;
-@class SCFormatContext;
+@class ALCFormatContext;
 
 NS_ASSUME_NONNULL_BEGIN
 

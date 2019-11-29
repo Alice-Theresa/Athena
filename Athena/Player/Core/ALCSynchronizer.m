@@ -6,17 +6,17 @@
 //  Copyright © 2019 Theresa. All rights reserved.
 //
 
-#import "SCSynchronizer.h"
+#import "ALCSynchronizer.h"
 #import "SCAudioFrame.h"
 
-@interface SCSynchronizer ()
+@interface ALCSynchronizer ()
 
 @property (nonatomic, assign) NSTimeInterval audioFramePlayTime;
 @property (nonatomic, assign) NSTimeInterval audioFramePosition;
 
 @end
 
-@implementation SCSynchronizer
+@implementation ALCSynchronizer
 
 - (void)updateAudioClock:(NSTimeInterval)position {
     @synchronized (self) {

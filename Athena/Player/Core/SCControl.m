@@ -7,11 +7,11 @@
 //
 
 #import <libavformat/avformat.h>
-#import "SCFormatContext.h"
+#import "ALCFormatContext.h"
 #import "SCAudioManager.h"
 #import "SCControl.h"
 
-#import "SCSynchronizer.h"
+#import "ALCSynchronizer.h"
 #import "SCAudioFrame.h"
 #import "ALCQueueManager.h"
 
@@ -25,7 +25,7 @@
 
 @interface SCControl () 
 
-@property (nonatomic, strong) SCFormatContext *context;
+@property (nonatomic, strong) ALCFormatContext *context;
 @property (nonatomic, strong) UIView *view;
 
 @property (nonatomic, assign, readwrite) SCPlayerState controlState;
@@ -56,8 +56,11 @@
 }
 
 - (void)openPath:(NSString *)filename {
-    _context = [[SCFormatContext alloc] init];
-    [_context openPath:filename];
+    _context = [[ALCFormatContext alloc] init];
+    BOOL success = [_context openPath:filename];
+    if (!success) {
+        return;
+    }
     self.queueManager = [[ALCQueueManager alloc] initWithContext:self.context];
     self.demuxLayer   = [[SCDemuxLoop alloc] initWithContext:self.context queueManager:self.queueManager];
     self.decoderLayer = [[SCDecoderLayer alloc] initWithContext:self.context queueManager:self.queueManager];

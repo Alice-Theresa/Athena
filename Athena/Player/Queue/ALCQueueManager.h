@@ -10,13 +10,13 @@
 #import "SCTrack.h"
 #import "SCFlowData.h"
 
-@class SCFormatContext;
+@class ALCFormatContext;
 
 NS_ASSUME_NONNULL_BEGIN
 
 @interface ALCQueueManager : NSObject
 
-- (instancetype)initWithContext:(SCFormatContext *)context;
+- (instancetype)initWithContext:(ALCFormatContext *)context;
 
 - (void)packetQueueIsFull;
 - (void)flushPacketQueue;

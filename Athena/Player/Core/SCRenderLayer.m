@@ -8,12 +8,12 @@
 
 #import <MetalKit/MetalKit.h>
 #import "SCRenderLayer.h"
-#import "SCFormatContext.h"
+#import "ALCFormatContext.h"
 
 #import "SCAudioFrame.h"
 #import "SCVideoFrame.h"
 #import "SCRender.h"
-#import "SCSynchronizer.h"
+#import "ALCSynchronizer.h"
 #import "SCAudioManager.h"
 #import "SCPlayerState.h"
 #import "SCDecoderLayer.h"
@@ -26,14 +26,14 @@
 
 @property (nonatomic, strong) ALCQueueManager *manager;
 
-@property (nonatomic, strong) SCFormatContext *context;
+@property (nonatomic, strong) ALCFormatContext *context;
 @property (nonatomic, assign) SCPlayerState   controlState;
 @property (nonatomic, strong) SCRender        *render;
 @property (nonatomic, strong) MTKView         *mtkView;
 
 @property (nonatomic, strong) SCVideoFrame *videoFrame;
 @property (nonatomic, strong) SCAudioFrame *audioFrame;
-@property (nonatomic, strong) SCSynchronizer *syncor;
+@property (nonatomic, strong) ALCSynchronizer *syncor;
 
 @end
 
@@ -43,11 +43,11 @@
     NSLog(@"render dealloc");
 }
 
-- (instancetype)initWithContext:(SCFormatContext *)context queueManager:(ALCQueueManager *)manager renderView:(MTKView *)view {
+- (instancetype)initWithContext:(ALCFormatContext *)context queueManager:(ALCQueueManager *)manager renderView:(MTKView *)view {
     if (self = [super init]) {
         _context = context;
         _manager = manager;
-        _syncor = [[SCSynchronizer alloc] init];
+        _syncor = [[ALCSynchronizer alloc] init];
         _render = [[SCRender alloc] init];
         
         self.mtkView.frame = view.bounds;

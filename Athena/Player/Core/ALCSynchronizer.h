@@ -10,7 +10,7 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-@interface SCSynchronizer : NSObject
+@interface ALCSynchronizer : NSObject
 
 - (void)updateAudioClock:(NSTimeInterval)position;
 - (BOOL)shouldRenderVideoFrame:(NSTimeInterval)position duration:(NSTimeInterval)duration;

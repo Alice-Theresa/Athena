@@ -8,7 +8,7 @@
 
 #import "SCVideoDecoder.h"
 #import "SharedQueue.h"
-#import "SCFormatContext.h"
+#import "ALCFormatContext.h"
 #import "SCVideoFrame.h"
 #import "SCPacket.h"
 #import "SCCodecContext.h"
