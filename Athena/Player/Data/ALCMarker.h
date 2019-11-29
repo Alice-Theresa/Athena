@@ -6,11 +6,11 @@
 //  Copyright © 2019 Theresa. All rights reserved.
 //
 
-#import "SCFlowData.h"
+#import "ALCFlowData.h"
 
 NS_ASSUME_NONNULL_BEGIN
 
-@interface SCMarker : SCFlowData
+@interface ALCMarker : ALCFlowData
 
 @end
 

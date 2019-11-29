@@ -10,7 +10,7 @@
 
 @class ALCAudioDescriptor;
 
-@interface SCSWResample : NSObject
+@interface ALCSWResample : NSObject
 
 @property (nonatomic, strong) ALCAudioDescriptor *inputDescriptor;
 @property (nonatomic, strong) ALCAudioDescriptor *outputDescriptor;

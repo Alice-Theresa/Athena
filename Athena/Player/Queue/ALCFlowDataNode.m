@@ -10,7 +10,7 @@
 
 @implementation ALCFlowDataNode
 
-- (instancetype)initWithData:(SCFlowData *)data {
+- (instancetype)initWithData:(ALCFlowData *)data {
     if (self = [super init]) {
         _data = data;
     }

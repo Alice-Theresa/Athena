@@ -10,18 +10,18 @@
 #import <MetalKit/MetalKit.h>
 #import <CoreVideo/CoreVideo.h>
 #import "SCPlayerViewController.h"
-#import "SCControl.h"
+#import "ALCControl.h"
 
-#import "SCRenderDataInterface.h"
+#import "ALCRenderDataInterface.h"
 #import "SCPlayerControlView.h"
-#import "SCPlayerState.h"
+#import "ALCPlayerState.h"
 
 @interface SCPlayerViewController () <ControlCenterProtocol>
 
 @property (nonatomic, strong) UIView *bg;
 @property (nonatomic, strong) SCPlayerControlView *controlView;
 
-@property (nonatomic, strong) SCControl *controler;
+@property (nonatomic, strong) ALCControl *controler;
 @property (nonatomic, assign) BOOL isHideContainer;
 @property (nonatomic, assign) BOOL isTouchSlider;
 
@@ -63,7 +63,7 @@
     [self.controlView mas_makeConstraints:^(MASConstraintMaker *make) {
         make.size.equalTo(self.bg);
     }];
-    self.controler = [[SCControl alloc] initWithRenderView:self.bg];
+    self.controler = [[ALCControl alloc] initWithRenderView:self.bg];
 //    self.controler.delegate = self;
     
     [self.controlView.actionButton addTarget:self action:@selector(resumeOrPause) forControlEvents:UIControlEventTouchUpInside];
@@ -80,10 +80,10 @@
 }
 
 - (void)resumeOrPause {
-    if (self.controler.controlState == SCPlayerStatePlaying) {
+    if (self.controler.controlState == ALCPlayerStatePlaying) {
         [self.controler pause];
         [self.controlView settingPause];
-    } else if (self.controler.controlState == SCPlayerStatePaused) {
+    } else if (self.controler.controlState == ALCPlayerStatePaused) {
         [self.controler resume];
         [self.controlView settingPlay];
     }
@@ -103,7 +103,7 @@
     self.isTouchSlider = NO;
 }
 
-- (void)controlCenter:(SCControl *)control didRender:(NSUInteger)position duration:(NSUInteger)duration {
+- (void)controlCenter:(ALCControl *)control didRender:(NSUInteger)position duration:(NSUInteger)duration {
     NSString *total = [NSString stringWithFormat:@"%02lu:%02lu:%02lu", duration / 3600, duration % 3600 / 60, duration % 3600 % 60];
     if (!self.isTouchSlider) {
         NSString *current = [NSString stringWithFormat:@"%02lu:%02lu:%02lu", position / 3600, position % 3600 / 60, position % 3600 % 60];

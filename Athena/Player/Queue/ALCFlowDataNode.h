@@ -7,17 +7,17 @@
 //
 
 #import <Foundation/Foundation.h>
-#import "SCFlowData.h"
+#import "ALCFlowData.h"
 
 NS_ASSUME_NONNULL_BEGIN
 
 @interface ALCFlowDataNode : NSObject
 
-@property (nonatomic, strong) SCFlowData *data;
+@property (nonatomic, strong) ALCFlowData *data;
 @property (nonatomic, strong) ALCFlowDataNode *next;
 
 - (instancetype)init NS_UNAVAILABLE;
-- (instancetype)initWithData:(SCFlowData *)data;
+- (instancetype)initWithData:(ALCFlowData *)data;
 
 @end
 

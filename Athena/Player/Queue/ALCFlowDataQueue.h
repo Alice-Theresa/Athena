@@ -7,7 +7,7 @@
 //
 
 #import <Foundation/Foundation.h>
-#import "SCFlowData.h"
+#import "ALCFlowData.h"
 #import "ALCTrack.h"
 
 NS_ASSUME_NONNULL_BEGIN
@@ -18,9 +18,9 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, assign, readonly) NSUInteger length;
 @property (nonatomic, assign, readonly) NSUInteger size;
 
-- (void)enqueue:(NSArray<SCFlowData *> *)frames;
+- (void)enqueue:(NSArray<ALCFlowData *> *)frames;
 
-- (SCFlowData *)dequeue;
+- (ALCFlowData *)dequeue;
 
 - (void)flush;
 

@@ -6,15 +6,15 @@
 //  Copyright © 2019 Theresa. All rights reserved.
 //
 
-#import "SCMarker.h"
+#import "ALCMarker.h"
 
-@implementation SCMarker
+@implementation ALCMarker
 
 @synthesize flowDataType = _flowDataType;
 
 - (instancetype)init {
     if (self = [super init]) {
-        _flowDataType = SCFlowDataTypeDiscard;
+        _flowDataType = ALCFlowDataTypeDiscard;
     }
     return self;
 }

@@ -8,17 +8,17 @@
 
 #import <Metal/Metal.h>
 #import <MetalKit/MetalKit.h>
-#import "SCRenderDataInterface.h"
+#import "ALCRenderDataInterface.h"
 
 NS_ASSUME_NONNULL_BEGIN
 
-@class SCVideoFrame;
+@class ALCVideoFrame;
 
-@interface SCRender : NSObject
+@interface ALCRender : NSObject
 
 @property (nonatomic, strong) id<MTLDevice> device;
 
-- (void)render:(SCVideoFrame *)frame drawIn:(MTKView *)mtkView;
+- (void)render:(ALCVideoFrame *)frame drawIn:(MTKView *)mtkView;
 
 @end
 

@@ -10,12 +10,12 @@
 #import "ALCRenderLoop.h"
 #import "ALCFormatContext.h"
 
-#import "SCAudioFrame.h"
-#import "SCVideoFrame.h"
-#import "SCRender.h"
+#import "ALCAudioFrame.h"
+#import "ALCVideoFrame.h"
+#import "ALCRender.h"
 #import "ALCSynchronizer.h"
 #import "ALCAudioManager.h"
-#import "SCPlayerState.h"
+#import "ALCPlayerState.h"
 #import "ALCDecoderLoop.h"
 #import "ALCFrameQueue.h"
 
@@ -27,12 +27,12 @@
 @property (nonatomic, strong) ALCFrameQueue *manager;
 
 @property (nonatomic, strong) ALCFormatContext *context;
-@property (nonatomic, assign) SCPlayerState   controlState;
-@property (nonatomic, strong) SCRender        *render;
+@property (nonatomic, assign) ALCPlayerState   controlState;
+@property (nonatomic, strong) ALCRender        *render;
 @property (nonatomic, strong) MTKView         *mtkView;
 
-@property (nonatomic, strong) SCVideoFrame *videoFrame;
-@property (nonatomic, strong) SCAudioFrame *audioFrame;
+@property (nonatomic, strong) ALCVideoFrame *videoFrame;
+@property (nonatomic, strong) ALCAudioFrame *audioFrame;
 @property (nonatomic, strong) ALCSynchronizer *syncor;
 
 @end
@@ -48,7 +48,7 @@
         _context = context;
         _manager = frameQueue;
         _syncor = [[ALCSynchronizer alloc] init];
-        _render = [[SCRender alloc] init];
+        _render = [[ALCRender alloc] init];
         
         self.mtkView.frame = view.bounds;
         [view insertSubview:self.mtkView atIndex:0];
@@ -92,19 +92,19 @@
 
 - (void)resume {
     [[ALCAudioManager shared] play];
-    self.controlState = SCPlayerStatePlaying;
+    self.controlState = ALCPlayerStatePlaying;
     self.mtkView.paused = NO;
 }
 
 - (void)pause {
     [[ALCAudioManager shared] stop];
-    self.controlState = SCPlayerStatePaused;
+    self.controlState = ALCPlayerStatePaused;
     self.mtkView.paused = YES;
 }
 
 - (void)close {
     [[ALCAudioManager shared] stop];
-    self.controlState = SCPlayerStateClosed;
+    self.controlState = ALCPlayerStateClosed;
 }
 
 - (void)rendering {
@@ -114,7 +114,7 @@
             return;
         }
     }
-    if (self.videoFrame.flowDataType == SCFlowDataTypeDiscard) {
+    if (self.videoFrame.flowDataType == ALCFlowDataTypeDiscard) {
         self.videoFrame = nil;
         return;
     }
@@ -145,13 +145,13 @@
            break;
        }
        if (!self.audioFrame) {
-           SCAudioFrame *frame = (SCAudioFrame *)[self.manager dequeueFrameByQueueIndex:SCTrackTypeAudio];
+           ALCAudioFrame *frame = (ALCAudioFrame *)[self.manager dequeueFrameByQueueIndex:SCTrackTypeAudio];
            if (!frame) {
                break;
            }
            self.audioFrame = frame;
        }
-       if (!self.audioFrame || self.audioFrame.flowDataType == SCFlowDataTypeDiscard) {
+       if (!self.audioFrame || self.audioFrame.flowDataType == ALCFlowDataTypeDiscard) {
            self.audioFrame = nil;
            break;
        }

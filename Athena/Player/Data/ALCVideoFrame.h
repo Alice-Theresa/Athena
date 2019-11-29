@@ -6,17 +6,17 @@
 //  Copyright © 2019 Theresa. All rights reserved.
 //
 
-#import "SCFlowData.h"
+#import "ALCFlowData.h"
 #import <AVFoundation/AVFoundation.h>
 
-@interface SCVideoFrame : SCFlowData <SCFrame>
+@interface ALCVideoFrame : ALCFlowData <ALCFrame>
 
 @property (nonatomic, assign, readonly) NSUInteger width;
 @property (nonatomic, assign, readonly) NSUInteger height;
 @property (nonatomic, assign, readonly) CVPixelBufferRef pixelBuffer;
 
 @property (nonatomic, assign) AVFrame *core;
-@property (nonatomic, assign) SCVideoFrameFormat videoFrameFormat;
+@property (nonatomic, assign) ALCVideoFrameFormat videoFrameFormat;
 
 - (uint8_t **)data;
 - (void)fillData;

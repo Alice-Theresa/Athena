@@ -7,10 +7,10 @@
 //
 
 #include <libswresample/swresample.h>
-#import "SCSWResample.h"
+#import "ALCSWResample.h"
 #import "ALCAudioDescriptor.h"
 
-@interface SCSWResample ()
+@interface ALCSWResample ()
 
 {
     AVBufferRef *_buffer[8];
@@ -20,7 +20,7 @@
 
 @end
 
-@implementation SCSWResample
+@implementation ALCSWResample
 
 - (void)dealloc {
     if (self.context) {

@@ -6,16 +6,11 @@
 //  Copyright © 2019 Theresa. All rights reserved.
 //
 
-#import <AVFoundation/AVFoundation.h>
-#import <libavformat/avformat.h>
+#import <Foundation/Foundation.h>
 
-NS_ASSUME_NONNULL_BEGIN
-
-@protocol SCRenderDataInterface <NSObject>
+@protocol ALCRenderDataInterface <NSObject>
 
 @property (nonatomic, assign, readonly) NSUInteger width;
 @property (nonatomic, assign, readonly) NSUInteger height;
 
 @end
-
-NS_ASSUME_NONNULL_END

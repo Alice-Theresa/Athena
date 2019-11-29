@@ -8,7 +8,7 @@
 
 #import <Foundation/Foundation.h>
 #import "ALCTrack.h"
-#import "SCFlowData.h"
+#import "ALCFlowData.h"
 
 @class ALCFormatContext;
 
@@ -20,8 +20,8 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)packetQueueIsFull;
 - (void)flushPacketQueue;
-- (void)enqueuePacket:(SCFlowData *)packet;
-- (SCFlowData *)dequeuePacket;
+- (void)enqueuePacket:(ALCFlowData *)packet;
+- (ALCFlowData *)dequeuePacket;
 - (void)destory;
 
 @end

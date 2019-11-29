@@ -61,19 +61,19 @@
     [self.frameWakeup unlock];
 }
 
-- (void)enqueueFrames:(NSArray<SCFlowData *> *)frames {
+- (void)enqueueFrames:(NSArray<ALCFlowData *> *)frames {
     [self.frameWakeup lock];
-    if (frames.firstObject.mediaType == SCMediaTypeVideo) {
+    if (frames.firstObject.mediaType == ALCMediaTypeVideo) {
         [self.videoFrameQueue enqueue:frames];
-    } else if (frames.firstObject.mediaType == SCMediaTypeAudio) {
+    } else if (frames.firstObject.mediaType == ALCMediaTypeAudio) {
         [self.audioFrameQueue enqueue:frames];
     }
     [self.frameWakeup unlock];
 }
 
-- (SCFlowData *)dequeueFrameByQueueIndex:(SCTrackType)type {
+- (ALCFlowData *)dequeueFrameByQueueIndex:(SCTrackType)type {
     [self.frameWakeup lock];
-    SCFlowData * frame;
+    ALCFlowData * frame;
     BOOL isFull = NO;
     if (type == SCTrackTypeVideo) {
         frame = [self.videoFrameQueue dequeue];

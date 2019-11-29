@@ -7,11 +7,11 @@
 //
 
 #import <AVFoundation/AVUtilities.h>
-#import "SCRender.h"
-#import "SCShaderType.h"
-#import "SCVideoFrame.h"
+#import "ALCRender.h"
+#import "ALCShaderType.h"
+#import "ALCVideoFrame.h"
 
-@interface SCRender ()
+@interface ALCRender ()
 
 @property (nonatomic, strong) id<MTLCommandQueue> commandQueue;
 @property (nonatomic, strong) id<MTLLibrary> library;
@@ -23,7 +23,7 @@
 
 @end
 
-@implementation SCRender
+@implementation ALCRender
 
 - (instancetype)init {
     if (self = [super init]) {
@@ -34,17 +34,17 @@
     return self;
 }
 
-- (void)render:(SCVideoFrame *)frame drawIn:(MTKView *)mtkView {
-    if (frame.videoFrameFormat == SCVideoFrameFormatNV12) {
+- (void)render:(ALCVideoFrame *)frame drawIn:(MTKView *)mtkView {
+    if (frame.videoFrameFormat == ALCVideoFrameFormatNV12) {
         [self renderNV12:frame drawIn:mtkView];
-    } else if (frame.videoFrameFormat == SCVideoFrameFormatI420) {
+    } else if (frame.videoFrameFormat == ALCVideoFrameFormatI420) {
         [self renderI420:frame drawIn:mtkView];
     } else {
         NSLog(@"error: no corresponding method");
     }
 }
 
-- (void)renderNV12:(SCVideoFrame *)frame drawIn:(MTKView *)mtkView {
+- (void)renderNV12:(ALCVideoFrame *)frame drawIn:(MTKView *)mtkView {
     CVMetalTextureCacheRef textureCache;
     CVMetalTextureCacheCreate(0, nil, self.device, nil, &textureCache);
     
@@ -85,8 +85,8 @@
     
     [encoder setRenderPipelineState:[self.device newRenderPipelineStateWithDescriptor:self.nv12PipelineDescriptor error:nil]];
     [encoder setVertexBuffer:[self createBuffer:CGSizeMake(width, height) viewBounds:mtkView.bounds] offset:0 atIndex:0];
-    [encoder setFragmentTexture:yTexture atIndex:SCTextureIndexY];
-    [encoder setFragmentTexture:uvTexture atIndex:SCTextureIndexUV];
+    [encoder setFragmentTexture:yTexture atIndex:ALCTextureIndexY];
+    [encoder setFragmentTexture:uvTexture atIndex:ALCTextureIndexUV];
     [encoder drawPrimitives:MTLPrimitiveTypeTriangleStrip vertexStart:0 vertexCount:4 instanceCount:1];
     [encoder endEncoding];
     [commandBuffer presentDrawable:currentDrawable];
@@ -100,7 +100,7 @@
     }
 }
 
-- (void)renderI420:(SCVideoFrame *)frame drawIn:(MTKView *)mtkView {
+- (void)renderI420:(ALCVideoFrame *)frame drawIn:(MTKView *)mtkView {
     size_t width = frame.width;
     size_t height = frame.height;
     
@@ -124,9 +124,9 @@
     
     [encoder setRenderPipelineState:[self.device newRenderPipelineStateWithDescriptor:self.yuvPipelineDescriptor error:nil]];
     [encoder setVertexBuffer:[self createBuffer:CGSizeMake(width, height) viewBounds:mtkView.bounds] offset:0 atIndex:0];
-    [encoder setFragmentTexture:yTexture atIndex:SCTextureIndexY];
-    [encoder setFragmentTexture:uTexture atIndex:SCTextureIndexU];
-    [encoder setFragmentTexture:vTexture atIndex:SCTextureIndexV];
+    [encoder setFragmentTexture:yTexture atIndex:ALCTextureIndexY];
+    [encoder setFragmentTexture:uTexture atIndex:ALCTextureIndexU];
+    [encoder setFragmentTexture:vTexture atIndex:ALCTextureIndexV];
     [encoder drawPrimitives:MTLPrimitiveTypeTriangleStrip vertexStart:0 vertexCount:4 instanceCount:1];
     [encoder endEncoding];
     [commandBuffer presentDrawable:currentDrawable];
@@ -145,7 +145,7 @@
         normalizedSamplingSize.width = cropScaleAmount.width / cropScaleAmount.height;
         normalizedSamplingSize.height = 1.0;;
     }
-    SCVertex quadVertices[] =
+    ALCVertex quadVertices[] =
     {
         { { -1 * normalizedSamplingSize.width, -1 * normalizedSamplingSize.height } },
         { {  1 * normalizedSamplingSize.width, -1 * normalizedSamplingSize.height } },

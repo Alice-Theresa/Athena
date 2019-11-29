@@ -8,20 +8,20 @@
 
 #import "ALCDecoderLoop.h"
 #import "ALCFormatContext.h"
-#import "SCMarker.h"
-#import "SCVideoDecoder.h"
-#import "SCAudioDecoder.h"
-#import "SCPacket.h"
-#import "SCVideoFrame.h"
-#import "SCPlayerState.h"
-#import "SCAudioFrame.h"
-#import "SCSWResample.h"
+#import "ALCMarker.h"
+#import "ALCVideoDecoder.h"
+#import "ALCAudioDecoder.h"
+#import "ALCPacket.h"
+#import "ALCVideoFrame.h"
+#import "ALCPlayerState.h"
+#import "ALCAudioFrame.h"
+#import "ALCSWResample.h"
 #import "ALCAudioDescriptor.h"
 #import "ALCTrack.h"
 #import "ALCFrameQueue.h"
 #import "ALCPacketQueue.h"
 #import "ALCCodecDescriptor.h"
-#import "SCDecoder.h"
+#import "ALCDecoder.h"
 
 @interface ALCDecoderLoop ()
 
@@ -30,14 +30,14 @@
 
 @property (nonatomic, assign) BOOL isSeeking;
 @property (nonatomic, strong) ALCFormatContext *context;
-@property (nonatomic, assign) SCPlayerState controlState;
+@property (nonatomic, assign) ALCPlayerState controlState;
 
 @property (nonatomic, strong) NSOperationQueue *controlQueue;
 
-@property (nonatomic, strong) SCVideoDecoder *videoDecoder;
-@property (nonatomic, strong) SCAudioDecoder *audioDecoder;
+@property (nonatomic, strong) ALCVideoDecoder *videoDecoder;
+@property (nonatomic, strong) ALCAudioDecoder *audioDecoder;
 
-@property (nonatomic, strong) SCSWResample *resample;
+@property (nonatomic, strong) ALCSWResample *resample;
 
 @property (nonatomic, strong) NSCondition *wakeup;
 
@@ -54,8 +54,8 @@
         _context      = context;
         _packetQueue  = packetQueue;
         _frameQueue   = frameQueue;
-        _videoDecoder = [[SCVideoDecoder alloc] init];
-        _audioDecoder = [[SCAudioDecoder alloc] init];
+        _videoDecoder = [[ALCVideoDecoder alloc] init];
+        _audioDecoder = [[ALCAudioDecoder alloc] init];
         _controlQueue = [[NSOperationQueue alloc] init];
         _wakeup       = [[NSCondition alloc] init];
     }
@@ -65,43 +65,44 @@
 - (void)start {
     NSOperation *op = [[NSInvocationOperation alloc] initWithTarget:self selector:@selector(decodeFrame) object:nil];
     [self.controlQueue addOperation:op];
-    self.controlState = SCPlayerStatePlaying;
+    self.controlState = ALCPlayerStatePlaying;
 }
 
 - (void)resume {
-    self.controlState = SCPlayerStatePlaying;
+    self.controlState = ALCPlayerStatePlaying;
     [self.wakeup lock];
     [self.wakeup broadcast];
     [self.wakeup unlock];
 }
 
 - (void)pause {
-    self.controlState = SCPlayerStatePaused;
+    self.controlState = ALCPlayerStatePaused;
 }
 
 - (void)close {
-    self.controlState = SCPlayerStateClosed;
+    self.controlState = ALCPlayerStateClosed;
     [self.controlQueue cancelAllOperations];
+    [self.controlQueue waitUntilAllOperationsAreFinished];
 }
 
 - (void)decodeFrame {
-    while (self.controlState != SCPlayerStateClosed) {
-        if (self.controlState == SCPlayerStatePaused) {
+    while (self.controlState != ALCPlayerStateClosed) {
+        if (self.controlState == ALCPlayerStatePaused) {
             [self.wakeup lock];
             [self.wakeup wait];
             [self.wakeup unlock];
             continue;
         }
         @autoreleasepool {
-            SCPacket *packet = (SCPacket *)[self.packetQueue dequeuePacket];
+            ALCPacket *packet = (ALCPacket *)[self.packetQueue dequeuePacket];
             if (!packet) {
                 continue;
             }
             [self.frameQueue frameQueueIsFull:packet.codecDescriptor.track.type];
-            id<SCDecoder> decoder = packet.codecDescriptor.track.type == SCTrackTypeVideo ? self.videoDecoder : self.audioDecoder;
-            if (packet.flowDataType == SCFlowDataTypeDiscard) {
-                SCMarker *frame = [[SCMarker alloc] init];
-                frame.mediaType = packet.codecDescriptor.track.type == SCTrackTypeVideo ? SCMediaTypeVideo : SCMediaTypeAudio;
+            id<ALCDecoder> decoder = packet.codecDescriptor.track.type == SCTrackTypeVideo ? self.videoDecoder : self.audioDecoder;
+            if (packet.flowDataType == ALCFlowDataTypeDiscard) {
+                ALCMarker *frame = [[ALCMarker alloc] init];
+                frame.mediaType = packet.codecDescriptor.track.type == SCTrackTypeVideo ? ALCMediaTypeVideo : ALCMediaTypeAudio;
                 [self.frameQueue flushFrameQueue:packet.codecDescriptor.track.type];
                 [self.frameQueue enqueueFrames:@[frame]];
                 [decoder flush];
@@ -110,7 +111,7 @@
             if (packet.core->data != NULL && packet.core->stream_index >= 0) {
                 NSArray *frames = [decoder decode:packet];
                 NSMutableArray *temp = [NSMutableArray array];
-                for (SCFlowData *frame in frames) {
+                for (ALCFlowData *frame in frames) {
                     frame.codecDescriptor = packet.codecDescriptor;
                     [temp addObject:[self process:frame]];
                 }
@@ -120,26 +121,26 @@
     }
 }
 
-- (SCFlowData *)process:(SCFlowData *)frame {
-    if (frame.mediaType == SCMediaTypeVideo) {
-        return [self processVideo:(SCVideoFrame *)frame];
-    } else if (frame.mediaType == SCMediaTypeAudio) {
-        return [self processAudio:(SCAudioFrame *)frame];
+- (ALCFlowData *)process:(ALCFlowData *)frame {
+    if (frame.mediaType == ALCMediaTypeVideo) {
+        return [self processVideo:(ALCVideoFrame *)frame];
+    } else if (frame.mediaType == ALCMediaTypeAudio) {
+        return [self processAudio:(ALCAudioFrame *)frame];
     } else {
         return nil;
     }
 }
 
-- (SCVideoFrame *)processVideo:(SCVideoFrame *)videoFrame {
+- (ALCVideoFrame *)processVideo:(ALCVideoFrame *)videoFrame {
     videoFrame.timeStamp = videoFrame.core->best_effort_timestamp * av_q2d(videoFrame.codecDescriptor.timebase);
     videoFrame.duration = videoFrame.core->pkt_duration * av_q2d(videoFrame.codecDescriptor.timebase);
     [videoFrame fillData];
     return videoFrame;
 }
 
-- (SCAudioFrame *)processAudio:(SCAudioFrame *)audioFrame {
+- (ALCAudioFrame *)processAudio:(ALCAudioFrame *)audioFrame {
     if (!self.resample) {
-        self.resample = [[SCSWResample alloc] init];
+        self.resample = [[ALCSWResample alloc] init];
         self.resample.inputDescriptor = [[ALCAudioDescriptor alloc] initWithFrame:audioFrame];
         self.resample.outputDescriptor = [[ALCAudioDescriptor alloc] init];
         [self.resample open];
@@ -147,7 +148,7 @@
     audioFrame.numberOfSamples = audioFrame.core->nb_samples;
     int nb_samples = [self.resample write:audioFrame.core->data nb_samples:audioFrame.numberOfSamples];
     
-    SCAudioFrame *frame = [SCAudioFrame audioFrameWithDescriptor:self.resample.outputDescriptor numberOfSamples:nb_samples];
+    ALCAudioFrame *frame = [ALCAudioFrame audioFrameWithDescriptor:self.resample.outputDescriptor numberOfSamples:nb_samples];
     int nb_planes = self.resample.outputDescriptor.numberOfPlanes;
     
     uint8_t *data[8] = { NULL };

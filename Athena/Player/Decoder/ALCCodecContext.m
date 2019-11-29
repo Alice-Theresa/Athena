@@ -8,12 +8,12 @@
 
 #import <libavformat/avformat.h>
 #import <libavutil/hwcontext.h>
-#import "SCCodecContext.h"
-#import "SCPacket.h"
-#import "SCVideoFrame.h"
-#import "SCAudioFrame.h"
+#import "ALCCodecContext.h"
+#import "ALCPacket.h"
+#import "ALCVideoFrame.h"
+#import "ALCAudioFrame.h"
 
-@interface SCCodecContext ()
+@interface ALCCodecContext ()
 
 @property (nonatomic, copy  ) Class frameClass;
 @property (nonatomic, assign) AVRational timebase;
@@ -21,7 +21,7 @@
 
 @end
 
-@implementation SCCodecContext
+@implementation ALCCodecContext
 
 - (void)dealloc {
     [self close];
@@ -37,7 +37,7 @@
     return self;
 }
 
-- (NSArray<id<SCFrame>> *)decode:(SCPacket *)packet {
+- (NSArray<id<ALCFrame>> *)decode:(ALCPacket *)packet {
     NSArray *defaultArray = @[];
     NSMutableArray *array = [NSMutableArray array];
     int result = avcodec_send_packet(self.core, packet.core);
@@ -45,7 +45,7 @@
         return defaultArray;
     }
     while (result >= 0) {
-        id<SCFrame> frame = [[self.frameClass alloc] init]; 
+        id<ALCFrame> frame = [[self.frameClass alloc] init]; 
         result = avcodec_receive_frame(self.core, frame.core);
         if (result < 0) {
             if (result != AVERROR(EAGAIN) && result != AVERROR_EOF) {

@@ -7,22 +7,22 @@
 //
 
 #import <MetalKit/MetalKit.h>
-#import "SCPlayerState.h"
+#import "ALCPlayerState.h"
 
-@class SCControl;
+@class ALCControl;
 
 @protocol ControlCenterProtocol <NSObject>
 
-- (void)controlCenter:(SCControl *_Nullable)control didRender:(NSUInteger)position duration:(NSUInteger)duration;
+- (void)controlCenter:(ALCControl *_Nullable)control didRender:(NSUInteger)position duration:(NSUInteger)duration;
 
 @end
 
 NS_ASSUME_NONNULL_BEGIN
 
-@interface SCControl : NSObject
+@interface ALCControl : NSObject
 
 @property (nonatomic, assign, readonly) NSTimeInterval currentPosition;
-@property (nonatomic, assign, readonly) SCPlayerState controlState;
+@property (nonatomic, assign, readonly) ALCPlayerState controlState;
 
 - (instancetype)init NS_UNAVAILABLE;
 - (instancetype)initWithRenderView:(UIView *)view;

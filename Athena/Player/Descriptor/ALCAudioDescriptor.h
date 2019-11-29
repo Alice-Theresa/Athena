@@ -10,7 +10,7 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-@class SCAudioFrame;
+@class ALCAudioFrame;
 
 @interface ALCAudioDescriptor : NSObject
 
@@ -19,7 +19,7 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, assign) int sampleRate;
 @property (nonatomic, assign) int64_t channelLayout;
 
-- (instancetype)initWithFrame:(SCAudioFrame *)frame;
+- (instancetype)initWithFrame:(ALCAudioFrame *)frame;
 - (int)linesize:(int)numberOfSamples;
 - (int)numberOfPlanes;
 

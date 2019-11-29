@@ -7,18 +7,18 @@
 //
 
 #import <Foundation/Foundation.h>
-#import "SCFlowData.h"
+#import "ALCFlowData.h"
 
 NS_ASSUME_NONNULL_BEGIN
 
-@class SCPacket;
+@class ALCPacket;
 
-@interface SCCodecContext : NSObject
+@interface ALCCodecContext : NSObject
 
 @property (nonatomic, assign, readonly) AVCodecContext *core;
 
 - (instancetype)initWithTimebase:(AVRational)timebase codecpar:(AVCodecParameters *)codecpar frameClass:(Class)frameClass;
-- (NSArray<id<SCFrame>> *)decode:(SCPacket *)packet;
+- (NSArray<id<ALCFrame>> *)decode:(ALCPacket *)packet;
 - (void)flush;
 
 @end

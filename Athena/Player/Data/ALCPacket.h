@@ -8,11 +8,11 @@
 
 #import <Foundation/Foundation.h>
 #import <libavformat/avformat.h>
-#import "SCFlowData.h"
+#import "ALCFlowData.h"
 
 NS_ASSUME_NONNULL_BEGIN
 
-@interface SCPacket : SCFlowData
+@interface ALCPacket : ALCFlowData
 
 @property (nonatomic, assign, nullable, readonly) AVPacket *core;
 

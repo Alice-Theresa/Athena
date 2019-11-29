@@ -9,28 +9,28 @@
 #import <libavformat/avformat.h>
 #import "ALCFormatContext.h"
 #import "ALCAudioManager.h"
-#import "SCControl.h"
+#import "ALCControl.h"
 
 #import "ALCSynchronizer.h"
-#import "SCAudioFrame.h"
+#import "ALCAudioFrame.h"
 #import "ALCPacketQueue.h"
 #import "ALCFrameQueue.h"
 
-#import "SCAudioDecoder.h"
-#import "SCVideoDecoder.h"
-#import "SCRender.h"
+#import "ALCAudioDecoder.h"
+#import "ALCVideoDecoder.h"
+#import "ALCRender.h"
 
 #import "ALCDemuxLoop.h"
 #import "ALCRenderLoop.h"
 #import "ALCDecoderLoop.h"
 
-@interface SCControl () 
+@interface ALCControl () 
 
 @property (nonatomic, strong) ALCFormatContext *context;
 @property (nonatomic, strong) UIView *view;
 
 @property (nonatomic, assign, readwrite) NSTimeInterval currentPosition;
-@property (nonatomic, assign, readwrite) SCPlayerState controlState;
+@property (nonatomic, assign, readwrite) ALCPlayerState controlState;
 @property (nonatomic, strong) ALCPacketQueue *packetQueue;
 @property (nonatomic, strong) ALCFrameQueue *frameQueue;
 
@@ -40,7 +40,7 @@
 
 @end
 
-@implementation SCControl
+@implementation ALCControl
 
 - (void)dealloc {
     [[NSNotificationCenter defaultCenter] removeObserver:self];
@@ -76,21 +76,21 @@
     [self.demuxLayer start];
     [self.renderLayer start];
     [self.decoderLayer start];
-    self.controlState = SCPlayerStatePlaying;
+    self.controlState = ALCPlayerStatePlaying;
 }
 
 - (void)pause {
     [self.demuxLayer pause];
     [self.decoderLayer pause];
     [self.renderLayer pause];
-    self.controlState = SCPlayerStatePaused;
+    self.controlState = ALCPlayerStatePaused;
 }
 
 - (void)resume {
     [self.demuxLayer resume];
     [self.decoderLayer resume];
     [self.renderLayer resume];
-    self.controlState = SCPlayerStatePlaying;
+    self.controlState = ALCPlayerStatePlaying;
 }
 
 - (void)close {
@@ -99,7 +99,7 @@
     [self.renderLayer close];
     [self.packetQueue destory];
     [self.frameQueue destory];
-    self.controlState = SCPlayerStateClosed;
+    self.controlState = ALCPlayerStateClosed;
     [self.context closeFile];
 }
 

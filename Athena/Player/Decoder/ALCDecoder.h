@@ -7,15 +7,15 @@
 //
 
 #import <Foundation/Foundation.h>
-#import "SCFlowData.h"
+#import "ALCFlowData.h"
 
 NS_ASSUME_NONNULL_BEGIN
 
-@class SCPacket;
+@class ALCPacket;
 
-@protocol SCDecoder <NSObject>
+@protocol ALCDecoder <NSObject>
 
-- (NSArray<id<SCFrame>> *)decode:(SCPacket *)packet;
+- (NSArray<id<ALCFrame>> *)decode:(ALCPacket *)packet;
 - (void)flush;
 
 @end

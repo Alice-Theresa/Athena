@@ -7,7 +7,7 @@
 //
 
 #import "ALCAudioDescriptor.h"
-#import "SCAudioFrame.h"
+#import "ALCAudioFrame.h"
 
 @implementation ALCAudioDescriptor
 
@@ -20,7 +20,7 @@
     }
     return self;
 }
-- (instancetype)initWithFrame:(SCAudioFrame *)frame {
+- (instancetype)initWithFrame:(ALCAudioFrame *)frame {
     if (self = [super init]) {
         _format           = frame.core->format;
         _sampleRate       = frame.core->sample_rate;

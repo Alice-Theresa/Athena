@@ -6,8 +6,8 @@
 //  Copyright © 2019 Theresa. All rights reserved.
 //
 
-#import "SCFlowData.h"
+#import "ALCFlowData.h"
 
-@implementation SCFlowData
+@implementation ALCFlowData
 
 @end

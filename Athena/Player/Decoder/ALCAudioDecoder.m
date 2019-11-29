@@ -6,20 +6,20 @@
 //  Copyright © 2019 Theresa. All rights reserved.
 //
 
-#import "SCAudioDecoder.h"
+#import "ALCAudioDecoder.h"
 #import "ALCFormatContext.h"
-#import "SCAudioFrame.h"
-#import "SCPacket.h"
-#import "SCCodecContext.h"
+#import "ALCAudioFrame.h"
+#import "ALCPacket.h"
+#import "ALCCodecContext.h"
 #import "ALCCodecDescriptor.h"
 
-@interface SCAudioDecoder ()
+@interface ALCAudioDecoder ()
 
-@property (nonatomic, strong) SCCodecContext *codecContext;
+@property (nonatomic, strong) ALCCodecContext *codecContext;
 
 @end
 
-@implementation SCAudioDecoder
+@implementation ALCAudioDecoder
 
 - (void)dealloc {
     NSLog(@"Audio Decoder dealloc");    
@@ -29,15 +29,15 @@
     [self.codecContext flush];
 }
 
-- (void)checkCodec:(SCPacket *)packet {
+- (void)checkCodec:(ALCPacket *)packet {
     if (!self.codecContext) {
-        self.codecContext = [[SCCodecContext alloc] initWithTimebase:packet.codecDescriptor.timebase
+        self.codecContext = [[ALCCodecContext alloc] initWithTimebase:packet.codecDescriptor.timebase
                                                             codecpar:packet.codecDescriptor.codecpar
-                                                          frameClass:[SCAudioFrame class]];
+                                                          frameClass:[ALCAudioFrame class]];
     }
 }
 
-- (NSArray<id<SCFrame>> *)decode:(SCPacket *)packet {
+- (NSArray<id<ALCFrame>> *)decode:(ALCPacket *)packet {
     [self checkCodec:packet];
     return [self.codecContext decode:packet];
 }

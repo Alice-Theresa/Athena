@@ -7,7 +7,7 @@
 //
 
 #import "ALCSynchronizer.h"
-#import "SCAudioFrame.h"
+#import "ALCAudioFrame.h"
 
 @interface ALCSynchronizer ()
 

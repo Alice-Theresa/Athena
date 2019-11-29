@@ -6,9 +6,9 @@
 //  Copyright © 2019 Theresa. All rights reserved.
 //
 
-#import "SCPacket.h"
+#import "ALCPacket.h"
 
-@implementation SCPacket
+@implementation ALCPacket
 
 - (void)dealloc {
     av_packet_unref(_core);

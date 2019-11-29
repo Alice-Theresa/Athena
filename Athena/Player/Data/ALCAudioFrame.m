@@ -6,17 +6,17 @@
 //  Copyright © 2019 Theresa. All rights reserved.
 //
 
-#import "SCAudioFrame.h"
+#import "ALCAudioFrame.h"
 #import "ALCAudioDescriptor.h"
 
-@implementation SCAudioFrame {
+@implementation ALCAudioFrame {
     uint8_t *_data[8];
 }
 
 @synthesize mediaType = _mediaType;
 
 + (instancetype)audioFrameWithDescriptor:(ALCAudioDescriptor *)descriptor numberOfSamples:(int)numberOfSamples {
-    SCAudioFrame *frame = [[SCAudioFrame alloc] init];
+    ALCAudioFrame *frame = [[ALCAudioFrame alloc] init];
     frame.core->format = descriptor.format;
     frame.core->sample_rate = descriptor.sampleRate;
     frame.core->channels = descriptor.numberOfChannels;
@@ -38,7 +38,7 @@
 - (instancetype)init {
     if (self = [super init]) {
         _core = av_frame_alloc();
-        _mediaType = SCMediaTypeAudio;
+        _mediaType = ALCMediaTypeAudio;
     }
     return self;
 }

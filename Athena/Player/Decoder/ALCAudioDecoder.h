@@ -7,16 +7,16 @@
 //
 
 #import <Foundation/Foundation.h>
-#import "SCDecoder.h"
+#import "ALCDecoder.h"
 
-@class SCPacket;
+@class ALCPacket;
 @class ALCFormatContext;
 
 NS_ASSUME_NONNULL_BEGIN
 
-@interface SCAudioDecoder : NSObject <SCDecoder>
+@interface ALCAudioDecoder : NSObject <ALCDecoder>
 
-- (NSArray<id<SCFrame>> *)decode:(SCPacket *)packet;
+- (NSArray<id<ALCFrame>> *)decode:(ALCPacket *)packet;
 - (void)flush;
 
 @end

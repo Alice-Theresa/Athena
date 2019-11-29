@@ -6,11 +6,11 @@
 //  Copyright © 2019 Theresa. All rights reserved.
 //
 
-#import "SCFlowData.h"
+#import "ALCFlowData.h"
 
 @class ALCAudioDescriptor;
 
-@interface SCAudioFrame : SCFlowData <SCFrame>
+@interface ALCAudioFrame : ALCFlowData <ALCFrame>
 
 @property (nonatomic, assign) int numberOfSamples;
 

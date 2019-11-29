@@ -6,7 +6,7 @@
 //  Copyright © 2019 Theresa. All rights reserved.
 //
 
-#import "SCShaderType.h"
+#import "ALCShaderType.h"
 #include <metal_stdlib>
 using namespace metal;
 
@@ -16,7 +16,7 @@ typedef struct {
 } TextureMappingVertex;
 
 vertex TextureMappingVertex mappingVertex(unsigned int vertex_id [[ vertex_id ]],
-                                          constant SCVertex *vertices [[ buffer(SCInputIndexVertices) ]]) {
+                                          constant ALCVertex *vertices [[ buffer(ALCInputIndexVertices) ]]) {
     float4x2 textureCoordinates = float4x2(float2( 0.0, 1.0 ),
                                            float2( 1.0, 1.0 ),
                                            float2( 0.0, 0.0 ),
@@ -30,8 +30,8 @@ vertex TextureMappingVertex mappingVertex(unsigned int vertex_id [[ vertex_id ]]
 }
 
 fragment half4 nv12Fragment(TextureMappingVertex mappingVertex [[ stage_in ]],
-                               texture2d<float, access::sample> ytexture [[ texture(SCTextureIndexY) ]],
-                               texture2d<float, access::sample> uvtexture [[ texture(SCTextureIndexUV) ]]) {
+                               texture2d<float, access::sample> ytexture [[ texture(ALCTextureIndexY) ]],
+                               texture2d<float, access::sample> uvtexture [[ texture(ALCTextureIndexUV) ]]) {
     constexpr sampler s(address::clamp_to_edge, filter::linear);
     
     half3 yuv;
@@ -46,9 +46,9 @@ fragment half4 nv12Fragment(TextureMappingVertex mappingVertex [[ stage_in ]],
 }
 
 fragment half4 i420Fragment(TextureMappingVertex mappingVertex [[ stage_in ]],
-                           texture2d<float, access::sample> ytexture [[ texture(SCTextureIndexY) ]],
-                           texture2d<float, access::sample> utexture [[ texture(SCTextureIndexU) ]],
-                           texture2d<float, access::sample> vtexture [[ texture(SCTextureIndexV) ]]) {
+                           texture2d<float, access::sample> ytexture [[ texture(ALCTextureIndexY) ]],
+                           texture2d<float, access::sample> utexture [[ texture(ALCTextureIndexU) ]],
+                           texture2d<float, access::sample> vtexture [[ texture(ALCTextureIndexV) ]]) {
     constexpr sampler s(address::clamp_to_edge, filter::linear);
     
     half y, u, v;

@@ -6,23 +6,23 @@
 //  Copyright © 2019 Theresa. All rights reserved.
 //
 
-#import "SCVideoFrame.h"
+#import "ALCVideoFrame.h"
 
-@interface SCVideoFrame ()
+@interface ALCVideoFrame ()
 {
     uint8_t *_data[8];
 }
 
 @end
 
-@implementation SCVideoFrame
+@implementation ALCVideoFrame
 
 @synthesize mediaType = _mediaType;
 
 - (instancetype)init {
     if (self = [super init]) {
         _core = av_frame_alloc();
-        _mediaType = SCMediaTypeVideo;
+        _mediaType = ALCMediaTypeVideo;
     }
     return self;
 }
@@ -49,10 +49,10 @@
         _pixelBuffer = (CVPixelBufferRef)(frame->data[3]);
         _width = CVPixelBufferGetWidth(_pixelBuffer);
         _height = CVPixelBufferGetHeight(_pixelBuffer);
-        _videoFrameFormat = SCVideoFrameFormatNV12;
+        _videoFrameFormat = ALCVideoFrameFormatNV12;
 //        self->_descriptor.cv_format = CVPixelBufferGetPixelFormatType(self->_pixelBuffer);
     } else {
-        _videoFrameFormat = SCVideoFrameFormatI420;
+        _videoFrameFormat = ALCVideoFrameFormatI420;
         _width = frame->width;
         _height = frame->height;
     }

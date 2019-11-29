@@ -7,7 +7,7 @@
 //
 
 #import "ALCPacketQueue.h"
-#import "SCPacket.h"
+#import "ALCPacket.h"
 #import "ALCTrack.h"
 #import "ALCFormatContext.h"
 
@@ -68,8 +68,8 @@
 
         ALCCodecDescriptor *cd = [[ALCCodecDescriptor alloc] init];
         cd.track = [[ALCTrack alloc] initWithIndex:-1 type:self.packetsQueue[key].type meta:NULL];
-        SCPacket *packet = [[SCPacket alloc] init];
-        packet.flowDataType = SCFlowDataTypeDiscard;
+        ALCPacket *packet = [[ALCPacket alloc] init];
+        packet.flowDataType = ALCFlowDataTypeDiscard;
         packet.codecDescriptor = cd;
         [self.packetsQueue[key] enqueue:@[packet]];
     }
@@ -77,14 +77,14 @@
     [self.packetWakeup unlock];
 }
 
-- (void)enqueuePacket:(SCFlowData *)packet {
+- (void)enqueuePacket:(ALCFlowData *)packet {
     [self.packetWakeup lock];
     ALCFlowDataQueue *queue = [self.packetsQueue valueForKey:[NSString stringWithFormat:@"%d", packet.codecDescriptor.track.type]];
     [queue enqueue:@[packet]];
     [self.packetWakeup unlock];
 }
 
-- (SCFlowData *)dequeuePacket {
+- (ALCFlowData *)dequeuePacket {
     [self.packetWakeup lock];
     int streamIndex = -1;
     double min = DBL_MAX;
@@ -108,7 +108,7 @@
         [self.packetWakeup unlock];
         return nil;
     }
-    SCFlowData * packet = [self.packetsQueue[@(streamIndex).stringValue] dequeue];
+    ALCFlowData * packet = [self.packetsQueue[@(streamIndex).stringValue] dequeue];
     [self.timeStamps setValue:@(packet.timeStamp) forKey:@(streamIndex).stringValue];
     int total = 0;
     for (NSString *key in self.packetsQueue) {
