@@ -64,6 +64,7 @@
 		944C26572375B3CF000FC866 /* SCAudioFrame.m in Sources */ = {isa = PBXBuildFile; fileRef = 944C26562375B3CF000FC866 /* SCAudioFrame.m */; };
 		94541CF32376AB8A00880E3C /* ALCQueueManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 94541CF22376AB8A00880E3C /* ALCQueueManager.m */; };
 		94541CF62377A8B000880E3C /* ALCFlowDataNode.m in Sources */ = {isa = PBXBuildFile; fileRef = 94541CF52377A8B000880E3C /* ALCFlowDataNode.m */; };
+		94592CCF2390C09400DA05C7 /* Fate.mp4 in Resources */ = {isa = PBXBuildFile; fileRef = 94592CCE2390C09400DA05C7 /* Fate.mp4 */; };
 		9459A151237FDE790059FAA3 /* SCFlowData.m in Sources */ = {isa = PBXBuildFile; fileRef = 9459A150237FDE790059FAA3 /* SCFlowData.m */; };
 		947B40222363E884008EE9BD /* SCCodecDescriptor.m in Sources */ = {isa = PBXBuildFile; fileRef = 947B40212363E884008EE9BD /* SCCodecDescriptor.m */; };
 		94BD54DE2354741E001B252C /* SCDemuxLoop.m in Sources */ = {isa = PBXBuildFile; fileRef = 94BD54DD2354741E001B252C /* SCDemuxLoop.m */; };
@@ -313,6 +314,7 @@
 		94541CF22376AB8A00880E3C /* ALCQueueManager.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = ALCQueueManager.m; sourceTree = "<group>"; };
 		94541CF42377A8B000880E3C /* ALCFlowDataNode.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ALCFlowDataNode.h; sourceTree = "<group>"; };
 		94541CF52377A8B000880E3C /* ALCFlowDataNode.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = ALCFlowDataNode.m; sourceTree = "<group>"; };
+		94592CCE2390C09400DA05C7 /* Fate.mp4 */ = {isa = PBXFileReference; lastKnownFileType = file; path = Fate.mp4; sourceTree = "<group>"; };
 		9459A14F237F86210059FAA3 /* SCDecoder.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SCDecoder.h; sourceTree = "<group>"; };
 		9459A150237FDE790059FAA3 /* SCFlowData.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = SCFlowData.m; sourceTree = "<group>"; };
 		947B40202363E884008EE9BD /* SCCodecDescriptor.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SCCodecDescriptor.h; sourceTree = "<group>"; };
@@ -418,6 +420,7 @@
 				529067961F95A48A001A7BFA /* SharedQueue.m */,
 				522136611F7F737500182B12 /* AppDelegate.h */,
 				522136621F7F737500182B12 /* AppDelegate.m */,
+				94592CCE2390C09400DA05C7 /* Fate.mp4 */,
 				94E66A9E237ED8210014CB6C /* Aimer.mp4 */,
 				5214035C21EDE3F000CAF190 /* test.jpg */,
 				522136671F7F737500182B12 /* Main.storyboard */,
@@ -1055,6 +1058,7 @@
 				5221366B1F7F737500182B12 /* Assets.xcassets in Resources */,
 				522136691F7F737500182B12 /* Main.storyboard in Resources */,
 				5214035D21EDE3F000CAF190 /* test.jpg in Resources */,
+				94592CCF2390C09400DA05C7 /* Fate.mp4 in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
