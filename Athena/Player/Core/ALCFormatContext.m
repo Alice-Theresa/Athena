@@ -7,8 +7,8 @@
 //
 
 #import "ALCFormatContext.h"
-#import "SCTrack.h"
-#import "SCMetaData.h"
+#import "ALCTrack.h"
+#import "ALCMetaData.h"
 
 @interface ALCFormatContext ()
 
@@ -19,7 +19,7 @@
 
 @property (nonatomic, assign, readwrite) NSTimeInterval duration;
 
-@property (nonatomic, copy, readwrite) NSArray<SCTrack *> *tracks;
+@property (nonatomic, copy, readwrite) NSArray<ALCTrack *> *tracks;
 
 @end
 
@@ -53,13 +53,13 @@
     
     NSMutableArray *allTracks = [NSMutableArray array];
     for (int i = 0; i < self.core->nb_streams; i++) {
-        [allTracks addObject:[[SCTrack alloc] initWithIndex:i
+        [allTracks addObject:[[ALCTrack alloc] initWithIndex:i
                                                        type:(int)self.core->streams[i]->codecpar->codec_type
-                                                       meta:[SCMetaData metadataWithAVDictionary:self.core->streams[i]->metadata]]];
+                                                       meta:[ALCMetaData metadataWithAVDictionary:self.core->streams[i]->metadata]]];
     }
     __block BOOL videoFound = NO;
     __block BOOL audioFound = NO;
-    for (SCTrack *track in self.tracks) {
+    for (ALCTrack *track in self.tracks) {
         if (!videoFound && track.type == SCTrackTypeVideo) {
             self.videoIndex = track.index;
             videoFound = YES;

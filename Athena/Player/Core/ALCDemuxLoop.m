@@ -11,11 +11,11 @@
 #import "ALCFormatContext.h"
 #import "SCControl.h"
 #import "SCPacket.h"
-#import "SCCodecDescriptor.h"
+#import "ALCCodecDescriptor.h"
 #import "SCPlayerState.h"
 #import "ALCPacketQueue.h"
-#import "SCTrack.h"
-#import "SCMetaData.h"
+#import "ALCTrack.h"
+#import "ALCMetaData.h"
 
 @interface ALCDemuxLoop ()
 
@@ -99,12 +99,12 @@
         } else {
             int index = packet.core->stream_index;
             AVStream *stream = self.context.core->streams[index];
-            SCCodecDescriptor *cd = [[SCCodecDescriptor alloc] init];
+            ALCCodecDescriptor *cd = [[ALCCodecDescriptor alloc] init];
             cd.timebase = stream->time_base;
             cd.codecpar = stream->codecpar;
-            cd.track    = [[SCTrack alloc] initWithIndex:index
+            cd.track    = [[ALCTrack alloc] initWithIndex:index
                                                     type:(int)stream->codecpar->codec_type
-                                                    meta:[SCMetaData metadataWithAVDictionary:stream->metadata]];
+                                                    meta:[ALCMetaData metadataWithAVDictionary:stream->metadata]];
             packet.codecDescriptor = cd;
             packet.timeStamp = (double)packet.core->pts * stream->time_base.num / stream->time_base.den;
 //            packet.duration

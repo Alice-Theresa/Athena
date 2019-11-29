@@ -16,11 +16,11 @@
 #import "SCPlayerState.h"
 #import "SCAudioFrame.h"
 #import "SCSWResample.h"
-#import "SCAudioDescriptor.h"
-#import "SCTrack.h"
+#import "ALCAudioDescriptor.h"
+#import "ALCTrack.h"
 #import "ALCFrameQueue.h"
 #import "ALCPacketQueue.h"
-#import "SCCodecDescriptor.h"
+#import "ALCCodecDescriptor.h"
 #import "SCDecoder.h"
 
 @interface ALCDecoderLoop ()
@@ -140,8 +140,8 @@
 - (SCAudioFrame *)processAudio:(SCAudioFrame *)audioFrame {
     if (!self.resample) {
         self.resample = [[SCSWResample alloc] init];
-        self.resample.inputDescriptor = [[SCAudioDescriptor alloc] initWithFrame:audioFrame];
-        self.resample.outputDescriptor = [[SCAudioDescriptor alloc] init];
+        self.resample.inputDescriptor = [[ALCAudioDescriptor alloc] initWithFrame:audioFrame];
+        self.resample.outputDescriptor = [[ALCAudioDescriptor alloc] init];
         [self.resample open];
     }
     audioFrame.numberOfSamples = audioFrame.core->nb_samples;

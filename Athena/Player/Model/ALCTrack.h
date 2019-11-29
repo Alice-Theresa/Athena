@@ -18,14 +18,14 @@ typedef NS_ENUM(int, SCTrackType) {
     SCTrackTypeNB,
 };
 
-@class SCMetaData;
+@class ALCMetaData;
 
-@interface SCTrack : NSObject
+@interface ALCTrack : NSObject
 
-@property (nonatomic, strong, readonly) SCMetaData *meta;
+@property (nonatomic, strong, readonly) ALCMetaData *meta;
 @property (nonatomic, assign, readonly) int index;
 @property (nonatomic, assign, readonly) SCTrackType type;
 
-- (instancetype)initWithIndex:(int)index type:(SCTrackType)type meta:(SCMetaData *)meta;
+- (instancetype)initWithIndex:(int)index type:(SCTrackType)type meta:(ALCMetaData *)meta;
 
 @end

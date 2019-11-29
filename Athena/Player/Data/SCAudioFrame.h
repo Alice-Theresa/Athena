@@ -8,7 +8,7 @@
 
 #import "SCFlowData.h"
 
-@class SCAudioDescriptor;
+@class ALCAudioDescriptor;
 
 @interface SCAudioFrame : SCFlowData <SCFrame>
 
@@ -16,7 +16,7 @@
 
 @property (nonatomic, assign) AVFrame *core;
 
-+ (instancetype)audioFrameWithDescriptor:(SCAudioDescriptor *)descriptor numberOfSamples:(int)numberOfSamples;
++ (instancetype)audioFrameWithDescriptor:(ALCAudioDescriptor *)descriptor numberOfSamples:(int)numberOfSamples;
 - (uint8_t **)data;
 - (void)fillData;
 

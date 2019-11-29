@@ -21,6 +21,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface SCControl : NSObject
 
+@property (nonatomic, assign, readonly) NSTimeInterval currentPosition;
 @property (nonatomic, assign, readonly) SCPlayerState controlState;
 
 - (instancetype)init NS_UNAVAILABLE;

@@ -17,7 +17,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 @end
 
-@interface SCAudioManager : NSObject
+@interface ALCAudioManager : NSObject
 
 + (instancetype)shared;
 

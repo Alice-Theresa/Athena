@@ -6,10 +6,10 @@
 //  Copyright © 2019 Theresa. All rights reserved.
 //
 
-#import "SCMetaData.h"
+#import "ALCMetaData.h"
 
 
-@implementation SCMetaData
+@implementation ALCMetaData
 
 + (instancetype)metadataWithAVDictionary:(AVDictionary *)avDictionary {
     return [[self alloc] initWithAVDictionary:avDictionary];

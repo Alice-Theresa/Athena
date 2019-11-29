@@ -8,7 +8,7 @@
 
 #import <Foundation/Foundation.h>
 #import "SCFlowData.h"
-#import "SCTrack.h"
+#import "ALCTrack.h"
 
 NS_ASSUME_NONNULL_BEGIN
 

@@ -6,8 +6,8 @@
 //  Copyright © 2019 Theresa. All rights reserved.
 //
 
-#import "SCVideoDescriptor.h"
+#import "ALCVideoDescriptor.h"
 
-@implementation SCVideoDescriptor
+@implementation ALCVideoDescriptor
 
 @end

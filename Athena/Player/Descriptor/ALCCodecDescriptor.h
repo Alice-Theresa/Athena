@@ -11,13 +11,13 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-@class SCTrack;
+@class ALCTrack;
 
-@interface SCCodecDescriptor : NSObject
+@interface ALCCodecDescriptor : NSObject
 
 @property (nonatomic, assign) AVRational timebase;
 @property (nonatomic, assign) AVCodecParameters *codecpar;
-@property (nonatomic, strong) SCTrack *track;
+@property (nonatomic, strong) ALCTrack *track;
 
 @end
 

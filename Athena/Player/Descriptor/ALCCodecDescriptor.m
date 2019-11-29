@@ -6,8 +6,8 @@
 //  Copyright © 2019 Theresa. All rights reserved.
 //
 
-#import "SCCodecDescriptor.h"
+#import "ALCCodecDescriptor.h"
 
-@implementation SCCodecDescriptor
+@implementation ALCCodecDescriptor
 
 @end

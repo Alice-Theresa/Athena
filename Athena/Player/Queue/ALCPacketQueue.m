@@ -8,11 +8,11 @@
 
 #import "ALCPacketQueue.h"
 #import "SCPacket.h"
-#import "SCTrack.h"
+#import "ALCTrack.h"
 #import "ALCFormatContext.h"
 
 #import "ALCFlowDataQueue.h"
-#import "SCCodecDescriptor.h"
+#import "ALCCodecDescriptor.h"
 
 #define PacketTotalMaxsize 10 * 1024 * 1024
 
@@ -37,7 +37,7 @@
         _packetWakeup = [[NSCondition alloc] init];
         _packetsQueue    = [NSMutableDictionary dictionary];
         _timeStamps      = [NSMutableDictionary dictionary];
-        for (SCTrack *track in context.tracks) {
+        for (ALCTrack *track in context.tracks) {
             ALCFlowDataQueue *queue = [[ALCFlowDataQueue alloc] init];
             queue.type = track.type;
             [_packetsQueue setValue:queue forKey:[NSString stringWithFormat:@"%d", track.index]];
@@ -66,8 +66,8 @@
     for (NSString *key in self.packetsQueue) {
         [self.packetsQueue[key] flush];
 
-        SCCodecDescriptor *cd = [[SCCodecDescriptor alloc] init];
-        cd.track = [[SCTrack alloc] initWithIndex:-1 type:self.packetsQueue[key].type meta:NULL];
+        ALCCodecDescriptor *cd = [[ALCCodecDescriptor alloc] init];
+        cd.track = [[ALCTrack alloc] initWithIndex:-1 type:self.packetsQueue[key].type meta:NULL];
         SCPacket *packet = [[SCPacket alloc] init];
         packet.flowDataType = SCFlowDataTypeDiscard;
         packet.codecDescriptor = cd;

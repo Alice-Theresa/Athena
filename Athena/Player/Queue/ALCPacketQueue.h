@@ -7,7 +7,7 @@
 //
 
 #import <Foundation/Foundation.h>
-#import "SCTrack.h"
+#import "ALCTrack.h"
 #import "SCFlowData.h"
 
 @class ALCFormatContext;

@@ -7,7 +7,7 @@
 //
 
 #import "SCAudioFrame.h"
-#import "SCAudioDescriptor.h"
+#import "ALCAudioDescriptor.h"
 
 @implementation SCAudioFrame {
     uint8_t *_data[8];
@@ -15,7 +15,7 @@
 
 @synthesize mediaType = _mediaType;
 
-+ (instancetype)audioFrameWithDescriptor:(SCAudioDescriptor *)descriptor numberOfSamples:(int)numberOfSamples {
++ (instancetype)audioFrameWithDescriptor:(ALCAudioDescriptor *)descriptor numberOfSamples:(int)numberOfSamples {
     SCAudioFrame *frame = [[SCAudioFrame alloc] init];
     frame.core->format = descriptor.format;
     frame.core->sample_rate = descriptor.sampleRate;

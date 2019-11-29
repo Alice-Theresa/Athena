@@ -8,7 +8,7 @@
 
 #include <libswresample/swresample.h>
 #import "SCSWResample.h"
-#import "SCAudioDescriptor.h"
+#import "ALCAudioDescriptor.h"
 
 @interface SCSWResample ()
 

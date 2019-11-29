@@ -6,11 +6,11 @@
 //  Copyright © 2019 Theresa. All rights reserved.
 //
 
-#import "SCTrack.h"
+#import "ALCTrack.h"
 
-@implementation SCTrack
+@implementation ALCTrack
 
-- (instancetype)initWithIndex:(int)index type:(SCTrackType)type meta:(SCMetaData *)meta {
+- (instancetype)initWithIndex:(int)index type:(SCTrackType)type meta:(ALCMetaData *)meta {
     if (self = [super init]) {
         _index = index;
         _type = type;

@@ -6,10 +6,10 @@
 //  Copyright © 2019 Theresa. All rights reserved.
 //
 
-#import "SCAudioDescriptor.h"
+#import "ALCAudioDescriptor.h"
 #import "SCAudioFrame.h"
 
-@implementation SCAudioDescriptor
+@implementation ALCAudioDescriptor
 
 - (instancetype)init {
     if (self = [super init]) {

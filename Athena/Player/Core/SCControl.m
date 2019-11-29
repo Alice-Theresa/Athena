@@ -8,7 +8,7 @@
 
 #import <libavformat/avformat.h>
 #import "ALCFormatContext.h"
-#import "SCAudioManager.h"
+#import "ALCAudioManager.h"
 #import "SCControl.h"
 
 #import "ALCSynchronizer.h"
@@ -29,6 +29,7 @@
 @property (nonatomic, strong) ALCFormatContext *context;
 @property (nonatomic, strong) UIView *view;
 
+@property (nonatomic, assign, readwrite) NSTimeInterval currentPosition;
 @property (nonatomic, assign, readwrite) SCPlayerState controlState;
 @property (nonatomic, strong) ALCPacketQueue *packetQueue;
 @property (nonatomic, strong) ALCFrameQueue *frameQueue;

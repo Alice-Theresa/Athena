@@ -9,7 +9,7 @@
 #import <Foundation/Foundation.h>
 #import <libavformat/avformat.h>
 
-@class SCTrack;
+@class ALCTrack;
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -17,7 +17,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 @property (nonatomic, assign, readonly) AVFormatContext *core;
 @property (nonatomic, assign, readonly) NSTimeInterval duration;
-@property (nonatomic, copy, readonly) NSArray<SCTrack *> *tracks;
+@property (nonatomic, copy, readonly) NSArray<ALCTrack *> *tracks;
 
 - (BOOL)openPath:(NSString *)path;
 - (int)readFrame:(AVPacket *)packet;

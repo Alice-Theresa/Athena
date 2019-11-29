@@ -11,7 +11,7 @@
 #import "SCAudioFrame.h"
 #import "SCPacket.h"
 #import "SCCodecContext.h"
-#import "SCCodecDescriptor.h"
+#import "ALCCodecDescriptor.h"
 
 @interface SCAudioDecoder ()
 

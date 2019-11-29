@@ -14,7 +14,7 @@
 #import "SCVideoFrame.h"
 #import "SCRender.h"
 #import "ALCSynchronizer.h"
-#import "SCAudioManager.h"
+#import "ALCAudioManager.h"
 #import "SCPlayerState.h"
 #import "ALCDecoderLoop.h"
 #import "ALCFrameQueue.h"
@@ -81,29 +81,29 @@
                                                              multiplier:1.0
                                                                constant:0.0];
         [view addConstraints:@[c1, c2, c3, c4]];
-        [SCAudioManager shared].delegate = self;
+        [ALCAudioManager shared].delegate = self;
     }
     return self;
 }
 
 - (void)start {
-    [[SCAudioManager shared] play];
+    [[ALCAudioManager shared] play];
 }
 
 - (void)resume {
-    [[SCAudioManager shared] play];
+    [[ALCAudioManager shared] play];
     self.controlState = SCPlayerStatePlaying;
     self.mtkView.paused = NO;
 }
 
 - (void)pause {
-    [[SCAudioManager shared] stop];
+    [[ALCAudioManager shared] stop];
     self.controlState = SCPlayerStatePaused;
     self.mtkView.paused = YES;
 }
 
 - (void)close {
-    [[SCAudioManager shared] stop];
+    [[ALCAudioManager shared] stop];
     self.controlState = SCPlayerStateClosed;
 }
 

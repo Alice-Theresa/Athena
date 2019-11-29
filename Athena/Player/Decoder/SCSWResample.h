@@ -8,12 +8,12 @@
 
 #import <Foundation/Foundation.h>
 
-@class SCAudioDescriptor;
+@class ALCAudioDescriptor;
 
 @interface SCSWResample : NSObject
 
-@property (nonatomic, strong) SCAudioDescriptor *inputDescriptor;
-@property (nonatomic, strong) SCAudioDescriptor *outputDescriptor;
+@property (nonatomic, strong) ALCAudioDescriptor *inputDescriptor;
+@property (nonatomic, strong) ALCAudioDescriptor *outputDescriptor;
 
 - (BOOL)open;
 - (int)write:(uint8_t **)data nb_samples:(int)nb_samples;

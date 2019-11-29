@@ -37,7 +37,7 @@ typedef NS_ENUM(int, SCVideoFrameFormat) {
 
 @end
 
-@class SCCodecDescriptor;
+@class ALCCodecDescriptor;
 
 @interface SCFlowData : NSObject
 
@@ -46,6 +46,6 @@ typedef NS_ENUM(int, SCVideoFrameFormat) {
 @property (nonatomic, assign) NSUInteger        size;
 @property (nonatomic, assign) SCFlowDataType    flowDataType;
 @property (nonatomic, assign) SCMediaType       mediaType;
-@property (nonatomic, strong) SCCodecDescriptor *codecDescriptor;
+@property (nonatomic, strong) ALCCodecDescriptor *codecDescriptor;
 
 @end

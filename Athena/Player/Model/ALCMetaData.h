@@ -11,7 +11,7 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-@interface SCMetaData : NSObject
+@interface ALCMetaData : NSObject
 
 + (instancetype)metadataWithAVDictionary:(AVDictionary *)avDictionary;
 

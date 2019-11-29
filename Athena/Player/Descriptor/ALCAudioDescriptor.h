@@ -12,7 +12,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 @class SCAudioFrame;
 
-@interface SCAudioDescriptor : NSObject
+@interface ALCAudioDescriptor : NSObject
 
 @property (nonatomic, assign) int format;
 @property (nonatomic, assign) int numberOfChannels;

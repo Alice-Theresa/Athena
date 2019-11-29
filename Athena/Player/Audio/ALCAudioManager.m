@@ -8,7 +8,7 @@
 
 #import <Accelerate/Accelerate.h>
 #import <AVFoundation/AVFoundation.h>
-#import "SCAudioManager.h"
+#import "ALCAudioManager.h"
 
 static OSStatus inputCallback(void *inRefCon,
                              AudioUnitRenderActionFlags *ioActionFlags,
@@ -17,20 +17,20 @@ static OSStatus inputCallback(void *inRefCon,
                              UInt32 inNumberFrames,
                              AudioBufferList *ioData) {
     @autoreleasepool {
-        SCAudioManager *player = (__bridge SCAudioManager *)inRefCon;
+        ALCAudioManager *player = (__bridge ALCAudioManager *)inRefCon;
         [player.delegate fetchoutputData:ioData numberOfFrames:inNumberFrames];
     }
     return noErr;
 }
 
-@interface SCAudioManager ()
+@interface ALCAudioManager ()
 
 @property (nonatomic, strong) AVAudioSession *audioSession;
 @property (nonatomic, assign) AudioUnit audioUnit;
 
 @end
 
-@implementation SCAudioManager
+@implementation ALCAudioManager
 
 + (AudioStreamBasicDescription)commonASBD {
     UInt32 byteSize = sizeof(float);
@@ -55,10 +55,10 @@ static OSStatus inputCallback(void *inRefCon,
 }
 
 + (instancetype)shared {
-    static SCAudioManager *manager;
+    static ALCAudioManager *manager;
     static dispatch_once_t onceToken;
     dispatch_once(&onceToken, ^{
-        manager = [[SCAudioManager alloc] init];
+        manager = [[ALCAudioManager alloc] init];
     });
     return manager;
 }
