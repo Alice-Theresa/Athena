@@ -17,14 +17,14 @@
 #import "SCAudioManager.h"
 #import "SCPlayerState.h"
 #import "SCDecoderLayer.h"
-#import "ALCQueueManager.h"
+#import "ALCFrameQueue.h"
 
 @interface SCRenderLayer () <SCAudioManagerDelegate, MTKViewDelegate> {
     int currentFrameCopiedFrames;
     int bufferCopiedFrames;
 }
 
-@property (nonatomic, strong) ALCQueueManager *manager;
+@property (nonatomic, strong) ALCFrameQueue *manager;
 
 @property (nonatomic, strong) ALCFormatContext *context;
 @property (nonatomic, assign) SCPlayerState   controlState;
@@ -43,10 +43,10 @@
     NSLog(@"render dealloc");
 }
 
-- (instancetype)initWithContext:(ALCFormatContext *)context queueManager:(ALCQueueManager *)manager renderView:(MTKView *)view {
+- (instancetype)initWithContext:(ALCFormatContext *)context frameQueue:(ALCFrameQueue *)frameQueue renderView:(MTKView *)view {
     if (self = [super init]) {
         _context = context;
-        _manager = manager;
+        _manager = frameQueue;
         _syncor = [[ALCSynchronizer alloc] init];
         _render = [[SCRender alloc] init];
         

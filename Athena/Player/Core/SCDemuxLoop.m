@@ -13,7 +13,7 @@
 #import "SCPacket.h"
 #import "SCCodecDescriptor.h"
 #import "SCPlayerState.h"
-#import "ALCQueueManager.h"
+#import "ALCPacketQueue.h"
 #import "SCTrack.h"
 #import "SCMetaData.h"
 
@@ -25,7 +25,7 @@
 @property (nonatomic, assign) BOOL             isSeeking;
 @property (nonatomic, assign) NSTimeInterval   videoSeekingTime;
 @property (nonatomic, assign) SCPlayerState   controlState;
-@property (nonatomic, strong) ALCQueueManager *queueManager;
+@property (nonatomic, strong) ALCPacketQueue *queueManager;
 
 @property (nonatomic, strong) NSCondition *wakeup;
 
@@ -37,7 +37,7 @@
     NSLog(@"demux dealloc");
 }
 
-- (instancetype)initWithContext:(ALCFormatContext *)context queueManager:(ALCQueueManager *)manager {
+- (instancetype)initWithContext:(ALCFormatContext *)context queueManager:(ALCPacketQueue *)manager {
     if (self = [super init]) {
         _context = context;
         _queueManager = manager;
@@ -64,8 +64,9 @@
 
 - (void)close {
     self.controlState = SCPlayerStateClosed;
+
     [self.controlQueue cancelAllOperations];
-    [self.controlQueue waitUntilAllOperationsAreFinished];
+//    [self.controlQueue waitUntilAllOperationsAreFinished];
 }
 
 - (void)seekingTime:(NSTimeInterval)time {
@@ -81,7 +82,9 @@
         }
         [self.queueManager packetQueueIsFull];
         if (self.controlState == SCPlayerStatePaused) {
+            [self.wakeup lock];
             [self.wakeup wait];
+            [self.wakeup unlock];
             continue;
         }
         if (self.isSeeking) {

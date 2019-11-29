@@ -13,7 +13,8 @@
 
 #import "ALCSynchronizer.h"
 #import "SCAudioFrame.h"
-#import "ALCQueueManager.h"
+#import "ALCPacketQueue.h"
+#import "ALCFrameQueue.h"
 
 #import "SCAudioDecoder.h"
 #import "SCVideoDecoder.h"
@@ -29,7 +30,8 @@
 @property (nonatomic, strong) UIView *view;
 
 @property (nonatomic, assign, readwrite) SCPlayerState controlState;
-@property (nonatomic, strong) ALCQueueManager *queueManager;
+@property (nonatomic, strong) ALCPacketQueue *packetQueue;
+@property (nonatomic, strong) ALCFrameQueue *frameQueue;
 
 @property (nonatomic, strong) SCDemuxLoop *demuxLayer;
 @property (nonatomic, strong) SCRenderLayer *renderLayer;
@@ -61,10 +63,11 @@
     if (!success) {
         return;
     }
-    self.queueManager = [[ALCQueueManager alloc] initWithContext:self.context];
-    self.demuxLayer   = [[SCDemuxLoop alloc] initWithContext:self.context queueManager:self.queueManager];
-    self.decoderLayer = [[SCDecoderLayer alloc] initWithContext:self.context queueManager:self.queueManager];
-    self.renderLayer  = [[SCRenderLayer alloc] initWithContext:self.context queueManager:self.queueManager renderView:(MTKView *)self.view];
+    self.packetQueue = [[ALCPacketQueue alloc] initWithContext:self.context];
+    self.frameQueue = [[ALCFrameQueue alloc] init];
+    self.demuxLayer   = [[SCDemuxLoop alloc] initWithContext:self.context queueManager:self.packetQueue];
+    self.decoderLayer = [[SCDecoderLayer alloc] initWithContext:self.context packetQueue:self.packetQueue frameQueue:self.frameQueue];
+    self.renderLayer  = [[SCRenderLayer alloc] initWithContext:self.context frameQueue:self.frameQueue renderView:(MTKView *)self.view];
     [self start];
 }
 
@@ -90,6 +93,8 @@
 }
 
 - (void)close {
+    [self.packetQueue destory];
+    [self.frameQueue destory];
     [self.demuxLayer close];
     [self.decoderLayer close];
     [self.renderLayer close];

@@ -8,13 +8,9 @@
 
 #import <Foundation/Foundation.h>
 
-NS_ASSUME_NONNULL_BEGIN
-
 @interface ALCSynchronizer : NSObject
 
 - (void)updateAudioClock:(NSTimeInterval)position;
 - (BOOL)shouldRenderVideoFrame:(NSTimeInterval)position duration:(NSTimeInterval)duration;
 
 @end
-
-NS_ASSUME_NONNULL_END

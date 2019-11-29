@@ -18,13 +18,15 @@
 #import "SCSWResample.h"
 #import "SCAudioDescriptor.h"
 #import "SCTrack.h"
-#import "ALCQueueManager.h"
+#import "ALCFrameQueue.h"
+#import "ALCPacketQueue.h"
 #import "SCCodecDescriptor.h"
 #import "SCDecoder.h"
 
 @interface SCDecoderLayer ()
 
-@property (nonatomic, strong) ALCQueueManager *manager;
+@property (nonatomic, strong) ALCPacketQueue *packetQueue;
+@property (nonatomic, strong) ALCFrameQueue *frameQueue;
 
 @property (nonatomic, assign) BOOL isSeeking;
 @property (nonatomic, strong) ALCFormatContext *context;
@@ -47,14 +49,15 @@
     NSLog(@"decoder dealloc");
 }
 
-- (instancetype)initWithContext:(ALCFormatContext *)context queueManager:(ALCQueueManager *)manager {
+- (instancetype)initWithContext:(ALCFormatContext *)context packetQueue:(ALCPacketQueue *)packetQueue frameQueue:(ALCFrameQueue *)frameQueue {
     if (self = [super init]) {
         _context      = context;
-        _manager      = manager;
+        _packetQueue  = packetQueue;
+        _frameQueue   = frameQueue;
         _videoDecoder = [[SCVideoDecoder alloc] init];
         _audioDecoder = [[SCAudioDecoder alloc] init];
         _controlQueue = [[NSOperationQueue alloc] init];
-        _wakeup = [[NSCondition alloc] init];
+        _wakeup       = [[NSCondition alloc] init];
     }
     return self;
 }
@@ -67,7 +70,9 @@
 
 - (void)resume {
     self.controlState = SCPlayerStatePlaying;
-    [self.wakeup signal];
+    [self.wakeup lock];
+    [self.wakeup broadcast];
+    [self.wakeup unlock];
 }
 
 - (void)pause {
@@ -77,27 +82,29 @@
 - (void)close {
     self.controlState = SCPlayerStateClosed;
     [self.controlQueue cancelAllOperations];
-    [self.controlQueue waitUntilAllOperationsAreFinished];
+//    [self.controlQueue waitUntilAllOperationsAreFinished];
 }
 
 - (void)decodeFrame {
     while (self.controlState != SCPlayerStateClosed) {
         if (self.controlState == SCPlayerStatePaused) {
+            [self.wakeup lock];
             [self.wakeup wait];
+            [self.wakeup unlock];
             continue;
         }
         @autoreleasepool {
-            SCPacket *packet = (SCPacket *)[self.manager dequeuePacket];
+            SCPacket *packet = (SCPacket *)[self.packetQueue dequeuePacket];
             if (!packet) {
                 continue;
             }
-            [self.manager frameQueueIsFull:packet.codecDescriptor.track.type];
+            [self.frameQueue frameQueueIsFull:packet.codecDescriptor.track.type];
             id<SCDecoder> decoder = packet.codecDescriptor.track.type == SCTrackTypeVideo ? self.videoDecoder : self.audioDecoder;
             if (packet.flowDataType == SCFlowDataTypeDiscard) {
                 SCMarker *frame = [[SCMarker alloc] init];
                 frame.mediaType = packet.codecDescriptor.track.type == SCTrackTypeVideo ? SCMediaTypeVideo : SCMediaTypeAudio;
-                [self.manager flushFrameQueue:packet.codecDescriptor.track.type];
-                [self.manager enqueueFrames:@[frame]];
+                [self.frameQueue flushFrameQueue:packet.codecDescriptor.track.type];
+                [self.frameQueue enqueueFrames:@[frame]];
                 [decoder flush];
                 continue;
             }
@@ -108,7 +115,7 @@
                     frame.codecDescriptor = packet.codecDescriptor;
                     [temp addObject:[self process:frame]];
                 }
-                [self.manager enqueueFrames:temp];
+                [self.frameQueue enqueueFrames:temp];
             }
         }
     }
