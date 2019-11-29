@@ -20,9 +20,9 @@
 #import "SCVideoDecoder.h"
 #import "SCRender.h"
 
-#import "SCDemuxLoop.h"
-#import "SCRenderLayer.h"
-#import "SCDecoderLayer.h"
+#import "ALCDemuxLoop.h"
+#import "ALCRenderLoop.h"
+#import "ALCDecoderLoop.h"
 
 @interface SCControl () 
 
@@ -33,9 +33,9 @@
 @property (nonatomic, strong) ALCPacketQueue *packetQueue;
 @property (nonatomic, strong) ALCFrameQueue *frameQueue;
 
-@property (nonatomic, strong) SCDemuxLoop *demuxLayer;
-@property (nonatomic, strong) SCRenderLayer *renderLayer;
-@property (nonatomic, strong) SCDecoderLayer *decoderLayer;
+@property (nonatomic, strong) ALCDemuxLoop *demuxLayer;
+@property (nonatomic, strong) ALCRenderLoop *renderLayer;
+@property (nonatomic, strong) ALCDecoderLoop *decoderLayer;
 
 @end
 
@@ -63,11 +63,11 @@
     if (!success) {
         return;
     }
-    self.packetQueue = [[ALCPacketQueue alloc] initWithContext:self.context];
-    self.frameQueue = [[ALCFrameQueue alloc] init];
-    self.demuxLayer   = [[SCDemuxLoop alloc] initWithContext:self.context queueManager:self.packetQueue];
-    self.decoderLayer = [[SCDecoderLayer alloc] initWithContext:self.context packetQueue:self.packetQueue frameQueue:self.frameQueue];
-    self.renderLayer  = [[SCRenderLayer alloc] initWithContext:self.context frameQueue:self.frameQueue renderView:(MTKView *)self.view];
+    self.packetQueue  = [[ALCPacketQueue alloc] initWithContext:self.context];
+    self.frameQueue   = [[ALCFrameQueue alloc] init];
+    self.demuxLayer   = [[ALCDemuxLoop alloc] initWithContext:self.context packetQueue:self.packetQueue];
+    self.decoderLayer = [[ALCDecoderLoop alloc] initWithContext:self.context packetQueue:self.packetQueue frameQueue:self.frameQueue];
+    self.renderLayer  = [[ALCRenderLoop alloc] initWithContext:self.context frameQueue:self.frameQueue renderView:(MTKView *)self.view];
     [self start];
 }
 
@@ -93,11 +93,11 @@
 }
 
 - (void)close {
-    [self.packetQueue destory];
-    [self.frameQueue destory];
     [self.demuxLayer close];
     [self.decoderLayer close];
     [self.renderLayer close];
+    [self.packetQueue destory];
+    [self.frameQueue destory];
     self.controlState = SCPlayerStateClosed;
     [self.context closeFile];
 }

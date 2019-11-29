@@ -7,7 +7,7 @@
 //
 
 #import <libavformat/avformat.h>
-#import "SCDemuxLoop.h"
+#import "ALCDemuxLoop.h"
 #import "ALCFormatContext.h"
 #import "SCControl.h"
 #import "SCPacket.h"
@@ -17,7 +17,7 @@
 #import "SCTrack.h"
 #import "SCMetaData.h"
 
-@interface SCDemuxLoop ()
+@interface ALCDemuxLoop ()
 
 @property (nonatomic, strong) ALCFormatContext  *context;
 @property (nonatomic, strong) NSOperationQueue *controlQueue;
@@ -25,22 +25,22 @@
 @property (nonatomic, assign) BOOL             isSeeking;
 @property (nonatomic, assign) NSTimeInterval   videoSeekingTime;
 @property (nonatomic, assign) SCPlayerState   controlState;
-@property (nonatomic, strong) ALCPacketQueue *queueManager;
+@property (nonatomic, strong) ALCPacketQueue *packetQueue;
 
 @property (nonatomic, strong) NSCondition *wakeup;
 
 @end
 
-@implementation SCDemuxLoop
+@implementation ALCDemuxLoop
 
 - (void)dealloc {
     NSLog(@"demux dealloc");
 }
 
-- (instancetype)initWithContext:(ALCFormatContext *)context queueManager:(ALCPacketQueue *)manager {
+- (instancetype)initWithContext:(ALCFormatContext *)context packetQueue:(ALCPacketQueue *)packetQueue {
     if (self = [super init]) {
         _context = context;
-        _queueManager = manager;
+        _packetQueue = packetQueue;
         _controlQueue = [[NSOperationQueue alloc] init];
         _wakeup = [[NSCondition alloc] init];
     }
@@ -64,9 +64,7 @@
 
 - (void)close {
     self.controlState = SCPlayerStateClosed;
-
     [self.controlQueue cancelAllOperations];
-//    [self.controlQueue waitUntilAllOperationsAreFinished];
 }
 
 - (void)seekingTime:(NSTimeInterval)time {
@@ -80,7 +78,7 @@
         if (self.controlState == SCPlayerStateClosed) {
             break;
         }
-        [self.queueManager packetQueueIsFull];
+        [self.packetQueue packetQueueIsFull];
         if (self.controlState == SCPlayerStatePaused) {
             [self.wakeup lock];
             [self.wakeup wait];
@@ -89,7 +87,7 @@
         }
         if (self.isSeeking) {
             [self.context seekingTime:self.videoSeekingTime];
-            [self.queueManager flushPacketQueue];
+            [self.packetQueue flushPacketQueue];
             self.isSeeking = NO;
             continue;
         }
@@ -113,7 +111,7 @@
             packet.size = packet.core->size;
             packet.flowDataType = SCFlowDataTypePacket;
 //            packet.mediaType =
-            [self.queueManager enqueuePacket:packet];
+            [self.packetQueue enqueuePacket:packet];
         }
     }
 }

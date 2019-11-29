@@ -7,7 +7,7 @@
 //
 
 #import <MetalKit/MetalKit.h>
-#import "SCRenderLayer.h"
+#import "ALCRenderLoop.h"
 #import "ALCFormatContext.h"
 
 #import "SCAudioFrame.h"
@@ -16,10 +16,10 @@
 #import "ALCSynchronizer.h"
 #import "SCAudioManager.h"
 #import "SCPlayerState.h"
-#import "SCDecoderLayer.h"
+#import "ALCDecoderLoop.h"
 #import "ALCFrameQueue.h"
 
-@interface SCRenderLayer () <SCAudioManagerDelegate, MTKViewDelegate> {
+@interface ALCRenderLoop () <SCAudioManagerDelegate, MTKViewDelegate> {
     int currentFrameCopiedFrames;
     int bufferCopiedFrames;
 }
@@ -37,7 +37,7 @@
 
 @end
 
-@implementation SCRenderLayer
+@implementation ALCRenderLoop
 
 - (void)dealloc {
     NSLog(@"render dealloc");

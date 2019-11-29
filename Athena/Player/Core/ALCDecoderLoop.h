@@ -14,7 +14,7 @@ NS_ASSUME_NONNULL_BEGIN
 @class ALCFrameQueue;
 @class ALCFormatContext;
 
-@interface SCDecoderLayer : NSObject
+@interface ALCDecoderLoop : NSObject
 
 - (instancetype)initWithContext:(ALCFormatContext *)context packetQueue:(ALCPacketQueue *)packetQueue frameQueue:(ALCFrameQueue *)frameQueue;
 - (void)start;

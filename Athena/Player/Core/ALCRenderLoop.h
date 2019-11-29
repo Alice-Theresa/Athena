@@ -1,5 +1,5 @@
 //
-//  DemuxLayer.h
+//  SCRenderLayer.h
 //  Athena
 //
 //  Created by Skylar on 2019/10/14.
@@ -10,18 +10,16 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-@class ALCPacketQueue;
+@class ALCFrameQueue;
 @class ALCFormatContext;
 
-@interface SCDemuxLoop : NSObject
+@interface ALCRenderLoop : NSObject
 
-- (instancetype)initWithContext:(ALCFormatContext *)context queueManager:(ALCPacketQueue *)manager;
-
+- (instancetype)initWithContext:(ALCFormatContext *)context frameQueue:(ALCFrameQueue *)frameQueue renderView:(MTKView *)view;
 - (void)start;
 - (void)resume;
 - (void)pause;
 - (void)close;
-- (void)seekingTime:(NSTimeInterval)time;
 
 @end
 

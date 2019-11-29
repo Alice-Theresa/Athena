@@ -6,7 +6,7 @@
 //  Copyright © 2019 Theresa. All rights reserved.
 //
 
-#import "SCDecoderLayer.h"
+#import "ALCDecoderLoop.h"
 #import "ALCFormatContext.h"
 #import "SCMarker.h"
 #import "SCVideoDecoder.h"
@@ -23,7 +23,7 @@
 #import "SCCodecDescriptor.h"
 #import "SCDecoder.h"
 
-@interface SCDecoderLayer ()
+@interface ALCDecoderLoop ()
 
 @property (nonatomic, strong) ALCPacketQueue *packetQueue;
 @property (nonatomic, strong) ALCFrameQueue *frameQueue;
@@ -43,7 +43,7 @@
 
 @end
 
-@implementation SCDecoderLayer
+@implementation ALCDecoderLoop
 
 - (void)dealloc {
     NSLog(@"decoder dealloc");
@@ -82,7 +82,6 @@
 - (void)close {
     self.controlState = SCPlayerStateClosed;
     [self.controlQueue cancelAllOperations];
-//    [self.controlQueue waitUntilAllOperationsAreFinished];
 }
 
 - (void)decodeFrame {
